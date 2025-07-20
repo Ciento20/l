@@ -185,31 +185,6 @@
       transition: all 0.2s;
       position: relative;
       user-select: none;
-      touch-action: none;
-    }
-    
-    .channel-card.draggable {
-      cursor: grab;
-    }
-    
-    .channel-card.draggable:active {
-      cursor: grabbing;
-    }
-    
-    .channel-card.dragging {
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      z-index: 100;
-      opacity: 0.9;
-    }
-    
-    .channel-card.dropzone {
-      border: 2px dashed var(--primary);
-    }
-    
-    .channel-card:focus {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
     }
     
     .channel-card:hover {
@@ -854,7 +829,6 @@
         <button class="btn btn-secondary" id="addLinkBtn">+ Añadir Enlace</button>
         <button class="btn btn-secondary" id="settingsBtn">⚙️ Ajustes</button>
         <button class="btn btn-secondary" id="toggleThemeBtn">🌓 Tema</button>
-        <button class="btn btn-secondary" id="toggleDragBtn">⇅ Reordenar</button>
         <button class="btn btn-danger" id="clearAllBtn">🗑️ Borrar Todo</button>
       </div>
     </div>
@@ -1240,8 +1214,7 @@
         playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: null,
-        expandedGroups: {},
-        dragEnabled: false
+        expandedGroups: {}
       },
       filters: {
         searchText: '',
@@ -1253,12 +1226,6 @@
         channelId: null,
         isSticky: false,
         isMinimized: false
-      },
-      dragState: {
-        isDragging: false,
-        draggedItem: null,
-        draggedIndex: null,
-        targetIndex: null
       },
       deleteState: {
         linkId: null
@@ -1346,7 +1313,6 @@
       addLinkBtn: document.getElementById('addLinkBtn'),
       settingsBtn: document.getElementById('settingsBtn'),
       toggleThemeBtn: document.getElementById('toggleThemeBtn'),
-      toggleDragBtn: document.getElementById('toggleDragBtn'),
       importExportTabs: document.querySelectorAll('.import-export-tab'),
       importExportContents: document.querySelectorAll('.import-export-content'),
       notification: document.getElementById('notification'),
@@ -1359,7 +1325,6 @@
       renderChannels();
       setupEventListeners();
       checkScrollPosition();
-      updateDragButton();
     }
 
     // Load settings from localStorage
@@ -1435,8 +1400,7 @@
         playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: null,
-        expandedGroups: {},
-        dragEnabled: false
+        expandedGroups: {}
       };
       
       localStorage.removeItem('daddyLiveHDSettings');
@@ -1462,7 +1426,6 @@
       
       closePlayer();
       renderChannels();
-      updateDragButton();
       
       showNotification('Todos los datos han sido borrados');
     }
@@ -1550,19 +1513,16 @@
           saveSettings();
         });
       });
-      
-      updateDragHandles();
     }
 
     // Render a single link card
     function renderLinkCard(link) {
       return `
-        <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''} ${state.settings.dragEnabled ? 'draggable' : ''}" 
-             data-id="${link.id}" 
-             draggable="${state.settings.dragEnabled}"
+        <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''}" 
+             data-id="${link.id}"
              style="${link.color ? `border-color: ${link.color}` : ''}">
           <button class="delete-btn" data-id="${link.id}" title="Borrar enlace">×</button>
-          ${state.settings.dragEnabled ? `<button class="edit-btn" data-id="${link.id}" title="Editar enlace">✏️</button>` : ''}
+          <button class="edit-btn" data-id="${link.id}" title="Editar enlace">✏️</button>
           ${link.idioma ? `<span class="channel-language">${link.idioma}</span>` : ''}
           <div class="channel-header">
             <div class="channel-name">${link.webName || link.title}</div>
@@ -1574,55 +1534,6 @@
           </div>
         </div>
       `;
-    }
-
-    // Update drag handles on all cards
-    function updateDragHandles() {
-      document.querySelectorAll('.channel-card').forEach(card => {
-        if (state.settings.dragEnabled) {
-          card.classList.add('draggable');
-          card.setAttribute('draggable', 'true');
-          
-          // Add edit button if not already present
-          if (!card.querySelector('.edit-btn')) {
-            const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn';
-            editBtn.setAttribute('data-id', card.dataset.id);
-            editBtn.setAttribute('title', 'Editar enlace');
-            editBtn.innerHTML = '✏️';
-            card.appendChild(editBtn);
-          }
-        } else {
-          card.classList.remove('draggable');
-          card.setAttribute('draggable', 'false');
-          
-          // Remove edit button if present
-          const editBtn = card.querySelector('.edit-btn');
-          if (editBtn) {
-            editBtn.remove();
-          }
-        }
-      });
-    }
-
-    // Update drag button state
-    function updateDragButton() {
-      if (state.settings.dragEnabled) {
-        elements.toggleDragBtn.classList.add('filter-button--active');
-        elements.toggleDragBtn.textContent = '✓ Reordenar';
-      } else {
-        elements.toggleDragBtn.classList.remove('filter-button--active');
-        elements.toggleDragBtn.textContent = '⇅ Reordenar';
-      }
-    }
-
-    // Toggle drag mode
-    function toggleDragMode() {
-      state.settings.dragEnabled = !state.settings.dragEnabled;
-      saveSettings();
-      updateDragHandles();
-      updateDragButton();
-      showNotification(state.settings.dragEnabled ? 'Modo reordenar activado' : 'Modo reordenar desactivado');
     }
 
     // Get display text for type
@@ -1776,108 +1687,6 @@
       }
     }
 
-    // Drag and drop functions
-    function handleDragStart(e) {
-      if (!state.settings.dragEnabled) return;
-      
-      if (e.target.classList.contains('channel-card')) {
-        state.dragState.isDragging = true;
-        state.dragState.draggedItem = e.target;
-        state.dragState.draggedIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
-        
-        e.target.classList.add('dragging');
-        e.dataTransfer.setData('text/plain', e.target.dataset.id);
-        e.dataTransfer.effectAllowed = 'move';
-        
-        // For touch devices
-        if (e.type === 'touchstart') {
-          e.preventDefault();
-        }
-      }
-    }
-
-    function handleDragOver(e) {
-      if (!state.settings.dragEnabled || !state.dragState.isDragging) return;
-      
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      
-      const card = getDragTargetCard(e);
-      if (card && card !== state.dragState.draggedItem) {
-        card.classList.add('dropzone');
-      }
-    }
-
-    function handleDragEnter(e) {
-      if (!state.settings.dragEnabled || !state.dragState.isDragging) return;
-      e.preventDefault();
-    }
-
-    function handleDragLeave(e) {
-      if (!state.settings.dragEnabled || !state.dragState.isDragging) return;
-      
-      const card = getDragTargetCard(e);
-      if (card) {
-        card.classList.remove('dropzone');
-      }
-    }
-
-    function handleDrop(e) {
-      if (!state.settings.dragEnabled || !state.dragState.isDragging) return;
-      
-      e.preventDefault();
-      
-      const card = getDragTargetCard(e);
-      if (card && card !== state.dragState.draggedItem) {
-        card.classList.remove('dropzone');
-        state.dragState.targetIndex = Array.from(card.parentNode.children).indexOf(card);
-        
-        // Reorder the links array
-        const draggedLink = state.links.find(l => l.id === state.dragState.draggedItem.dataset.id);
-        const targetLink = state.links.find(l => l.id === card.dataset.id);
-        
-        if (draggedLink && targetLink) {
-          const draggedIndex = state.links.indexOf(draggedLink);
-          const targetIndex = state.links.indexOf(targetLink);
-          
-          state.links.splice(draggedIndex, 1);
-          state.links.splice(targetIndex, 0, draggedLink);
-          
-          saveSettings();
-          renderChannels();
-        }
-      }
-    }
-
-    function handleDragEnd() {
-      if (!state.settings.dragEnabled || !state.dragState.isDragging) return;
-      
-      state.dragState.isDragging = false;
-      if (state.dragState.draggedItem) {
-        state.dragState.draggedItem.classList.remove('dragging');
-      }
-      
-      document.querySelectorAll('.channel-card').forEach(card => {
-        card.classList.remove('dropzone');
-      });
-    }
-
-    function getDragTargetCard(e) {
-      let target = e.target;
-      
-      // For touch events
-      if (e.type.includes('touch')) {
-        const touch = e.changedTouches[0];
-        target = document.elementFromPoint(touch.clientX, touch.clientY);
-      }
-      
-      while (target && !target.classList.contains('channel-card')) {
-        target = target.parentNode;
-      }
-      
-      return target;
-    }
-
     // Edit a link
     function editLink(linkId) {
       const link = state.links.find(l => l.id === linkId);
@@ -1984,56 +1793,6 @@
 
     // Setup all event listeners
     function setupEventListeners() {
-      // Drag and drop events
-      document.addEventListener('dragstart', handleDragStart);
-      document.addEventListener('dragover', handleDragOver);
-      document.addEventListener('dragenter', handleDragEnter);
-      document.addEventListener('dragleave', handleDragLeave);
-      document.addEventListener('drop', handleDrop);
-      document.addEventListener('dragend', handleDragEnd);
-      
-      // Touch events for mobile
-      document.addEventListener('touchstart', handleDragStart, { passive: false });
-      document.addEventListener('touchmove', (e) => {
-        if (state.settings.dragEnabled && state.dragState.isDragging) {
-          e.preventDefault();
-          const touch = e.touches[0];
-          const card = getDragTargetCard(e);
-          
-          if (card && card !== state.dragState.draggedItem) {
-            card.classList.add('dropzone');
-          }
-        }
-      }, { passive: false });
-      
-      document.addEventListener('touchend', (e) => {
-        if (state.settings.dragEnabled && state.dragState.isDragging) {
-          e.preventDefault();
-          const card = getDragTargetCard(e);
-          
-          if (card && card !== state.dragState.draggedItem) {
-            card.classList.remove('dropzone');
-            state.dragState.targetIndex = Array.from(card.parentNode.children).indexOf(card);
-            
-            const draggedLink = state.links.find(l => l.id === state.dragState.draggedItem.dataset.id);
-            const targetLink = state.links.find(l => l.id === card.dataset.id);
-            
-            if (draggedLink && targetLink) {
-              const draggedIndex = state.links.indexOf(draggedLink);
-              const targetIndex = state.links.indexOf(targetLink);
-              
-              state.links.splice(draggedIndex, 1);
-              state.links.splice(targetIndex, 0, draggedLink);
-              
-              saveSettings();
-              renderChannels();
-            }
-          }
-          
-          handleDragEnd();
-        }
-      }, { passive: false });
-      
       // Link cards
       document.addEventListener('click', function(e) {
         // Handle delete button clicks
@@ -2057,13 +1816,13 @@
         const linkCard = e.target.closest('.channel-card');
         if (linkCard) {
           const linkId = linkCard.dataset.id;
-          if (state.settings.playerMode === 'inline' || e.ctrlKey || e.metaKey) {
+          const link = state.links.find(l => l.id === linkId);
+          
+          if (state.settings.playerMode === 'inline') {
+            e.preventDefault();
             openLink(linkId);
           } else {
-            const link = state.links.find(l => l.id === linkId);
-            if (link) {
-              window.open(link.link, '_blank');
-            }
+            window.open(link.link, '_blank');
           }
         }
       });
@@ -2135,9 +1894,6 @@
           renderChannels();
         }
       });
-      
-      // Toggle drag mode
-      elements.toggleDragBtn.addEventListener('click', toggleDragMode);
       
       // Settings modal
       elements.settingsBtn.addEventListener('click', function() {
