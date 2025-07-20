@@ -750,6 +750,16 @@
       opacity: 1;
     }
     
+    .channel-card--edit-mode {
+      cursor: move;
+      border: 2px dashed var(--warning);
+    }
+    
+    .channel-card--edit-mode .delete-btn,
+    .channel-card--edit-mode .edit-btn {
+      display: none;
+    }
+    
     @keyframes pulse {
       0% { opacity: 1; }
       50% { opacity: 0.3; }
@@ -827,8 +837,6 @@
       <h1 class="app-title">🗒️</h1>
       <div class="header-actions">
         <button class="btn btn-secondary" id="addLinkBtn">+ Añadir Enlace</button>
-        <button class="btn btn-secondary" id="settingsBtn">⚙️ Ajustes</button>
-        <button class="btn btn-secondary" id="toggleThemeBtn">🌓 Tema</button>
         <button class="btn btn-danger" id="clearAllBtn">🗑️ Borrar Todo</button>
       </div>
     </div>
@@ -914,6 +922,16 @@
               <div class="color-option" style="background: #7c3aed;" data-color="#7c3aed"></div>
               <div class="color-option" style="background: #db2777;" data-color="#db2777"></div>
             </div>
+          </div>
+          <div class="settings-option">
+            <div class="settings-option-label">
+              Modo edición
+              <div class="settings-option-description">Permite reordenar los canales manualmente</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="editModeToggle">
+              <span class="slider round"></span>
+            </label>
           </div>
         </div>
         
@@ -1214,7 +1232,8 @@
         playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: null,
-        expandedGroups: {}
+        expandedGroups: {},
+        editMode: false
       },
       filters: {
         searchText: '',
@@ -1236,6 +1255,11 @@
       clearButtonState: {
         clickCount: 0,
         lastClickTime: 0
+      },
+      dragState: {
+        isDragging: false,
+        draggedItem: null,
+        startIndex: null
       }
     };
 
@@ -1271,6 +1295,7 @@
       confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
       clearAllBtn: document.getElementById('clearAllBtn'),
       darkModeToggle: document.getElementById('darkModeToggle'),
+      editModeToggle: document.getElementById('editModeToggle'),
       playerModeSelect: document.getElementById('playerModeSelect'),
       rememberPlayerSize: document.getElementById('rememberPlayerSize'),
       exportLinksData: document.getElementById('exportLinksData'),
@@ -1311,8 +1336,6 @@
       cancelEditLinkBtn: document.getElementById('cancelEditLinkBtn'),
       closeEditLinkModal: document.getElementById('closeEditLinkModal'),
       addLinkBtn: document.getElementById('addLinkBtn'),
-      settingsBtn: document.getElementById('settingsBtn'),
-      toggleThemeBtn: document.getElementById('toggleThemeBtn'),
       importExportTabs: document.querySelectorAll('.import-export-tab'),
       importExportContents: document.querySelectorAll('.import-export-content'),
       notification: document.getElementById('notification'),
@@ -1348,6 +1371,7 @@
       }
       
       elements.darkModeToggle.checked = state.settings.darkMode;
+      elements.editModeToggle.checked = state.settings.editMode;
       elements.playerModeSelect.value = state.settings.playerMode;
       elements.rememberPlayerSize.checked = state.settings.rememberPlayerSize;
       
@@ -1400,7 +1424,8 @@
         playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: null,
-        expandedGroups: {}
+        expandedGroups: {},
+        editMode: false
       };
       
       localStorage.removeItem('daddyLiveHDSettings');
@@ -1408,6 +1433,7 @@
       
       document.body.classList.remove('dark-mode');
       elements.darkModeToggle.checked = false;
+      elements.editModeToggle.checked = false;
       elements.playerModeSelect.value = 'newTab';
       elements.rememberPlayerSize.checked = true;
       updatePrimaryColor('#2563eb');
@@ -1513,12 +1539,19 @@
           saveSettings();
         });
       });
+      
+      // Setup drag and drop if edit mode is active
+      if (state.settings.editMode) {
+        setupDragAndDrop();
+      }
     }
 
     // Render a single link card
     function renderLinkCard(link) {
+      const editModeClass = state.settings.editMode ? 'channel-card--edit-mode' : '';
+      
       return `
-        <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''}" 
+        <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''} ${editModeClass}" 
              data-id="${link.id}"
              style="${link.color ? `border-color: ${link.color}` : ''}">
           <button class="delete-btn" data-id="${link.id}" title="Borrar enlace">×</button>
@@ -1534,6 +1567,112 @@
           </div>
         </div>
       `;
+    }
+
+    // Setup drag and drop functionality
+    function setupDragAndDrop() {
+      const channelCards = document.querySelectorAll('.channel-card');
+      
+      channelCards.forEach(card => {
+        card.draggable = true;
+        
+        card.addEventListener('dragstart', function(e) {
+          state.dragState.isDragging = true;
+          state.dragState.draggedItem = this;
+          state.dragState.startIndex = Array.from(this.parentNode.children).indexOf(this);
+          
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/html', this.innerHTML);
+          
+          setTimeout(() => {
+            this.classList.add('dragging');
+          }, 0);
+        });
+        
+        card.addEventListener('dragend', function() {
+          this.classList.remove('dragging');
+          state.dragState.isDragging = false;
+          state.dragState.draggedItem = null;
+        });
+        
+        card.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          
+          const draggingCard = state.dragState.draggedItem;
+          if (draggingCard && draggingCard !== this) {
+            const rect = this.getBoundingClientRect();
+            const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+            
+            if (next) {
+              this.parentNode.insertBefore(draggingCard, this.nextSibling);
+            } else {
+              this.parentNode.insertBefore(draggingCard, this);
+            }
+          }
+        });
+        
+        card.addEventListener('drop', function(e) {
+          e.preventDefault();
+          if (state.dragState.draggedItem !== this) {
+            const endIndex = Array.from(this.parentNode.children).indexOf(this);
+            reorderLinks(state.dragState.startIndex, endIndex);
+          }
+        });
+      });
+    }
+
+    // Reorder links after drag and drop
+    function reorderLinks(oldIndex, newIndex) {
+      if (oldIndex === newIndex) return;
+      
+      // Get all visible links (filtered)
+      const filteredLinks = state.links.filter(link => {
+        if (state.filters.searchText) {
+          const searchLower = state.filters.searchText.toLowerCase();
+          const matchesTitle = link.title.toLowerCase().includes(searchLower);
+          const matchesWebName = link.webName?.toLowerCase().includes(searchLower);
+          
+          if (!matchesTitle && !matchesWebName) {
+            return false;
+          }
+        }
+        
+        if (state.filters.type && link.type !== state.filters.type) {
+          return false;
+        }
+        
+        if (state.filters.sport && link.deporte !== state.filters.sport) {
+          return false;
+        }
+        
+        if (state.filters.favoritesOnly && !link.favorito) {
+          return false;
+        }
+        
+        return true;
+      });
+      
+      // Get the link being moved
+      const movedLink = filteredLinks[oldIndex];
+      
+      // Remove from original position
+      const originalIndex = state.links.findIndex(l => l.id === movedLink.id);
+      state.links.splice(originalIndex, 1);
+      
+      // Find new position in the full list
+      let targetLink = filteredLinks[newIndex];
+      let targetIndex = state.links.findIndex(l => l.id === targetLink.id);
+      
+      if (oldIndex < newIndex) {
+        targetIndex += 1; // Insert after if moving down
+      }
+      
+      // Insert at new position
+      state.links.splice(targetIndex, 0, movedLink);
+      
+      saveSettings();
+      renderChannels();
     }
 
     // Get display text for type
@@ -1562,6 +1701,8 @@
 
     // Open link in player
     function openLink(linkId) {
+      if (state.settings.editMode) return;
+      
       const link = state.links.find(l => l.id === linkId);
       if (!link) return;
       
@@ -1814,7 +1955,7 @@
         
         // Handle link card clicks
         const linkCard = e.target.closest('.channel-card');
-        if (linkCard) {
+        if (linkCard && !state.settings.editMode) {
           const linkId = linkCard.dataset.id;
           const link = state.links.find(l => l.id === linkId);
           
@@ -1896,16 +2037,12 @@
       });
       
       // Settings modal
-      elements.settingsBtn.addEventListener('click', function() {
-        elements.exportLinksData.value = JSON.stringify(state.links, null, 2);
-        elements.settingsModal.classList.add('modal--active');
-      });
-      
       elements.closeSettingsModal.addEventListener('click', closeSettingsModal);
       elements.cancelSettingsBtn.addEventListener('click', closeSettingsModal);
       
       elements.saveSettingsBtn.addEventListener('click', function() {
         state.settings.darkMode = elements.darkModeToggle.checked;
+        state.settings.editMode = elements.editModeToggle.checked;
         state.settings.playerMode = elements.playerModeSelect.value;
         state.settings.rememberPlayerSize = elements.rememberPlayerSize.checked;
         
@@ -1916,6 +2053,7 @@
         }
         
         saveSettings();
+        renderChannels();
         closeSettingsModal();
         showNotification('Configuración guardada');
       });
@@ -2070,19 +2208,6 @@
             }
           });
         }
-      });
-      
-      // Toggle theme button
-      elements.toggleThemeBtn.addEventListener('click', function() {
-        state.settings.darkMode = !state.settings.darkMode;
-        
-        if (state.settings.darkMode) {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-        
-        saveSettings();
       });
       
       // Clear all button
