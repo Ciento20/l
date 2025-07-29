@@ -1781,9 +1781,9 @@
       if (!elements.playerContainer.classList.contains('player-container--active')) return;
       
       const currentHeight = elements.playerContainer.offsetHeight;
-      const minHeight = 200; // Tamaño mínimo del reproductor
-      const maxHeight = window.innerHeight * 0.85; // 85% del viewport
-      const step = 50; // Cantidad de píxeles para aumentar/reducir
+      const minHeight = 200;
+      const maxHeight = window.innerHeight * 0.85;
+      const step = 50;
       
       let newHeight;
       
@@ -2001,8 +2001,8 @@
 
     async function importFromGist() {
       try {
-        const gistId = '80b0b2d2e20ed0a455b66303b468e90b';
-        const rawUrl = `https://gist.githubusercontent.com/T22V/${gistId}/raw`;
+        const gistId = 'be82cec2fed5b9886b07fc171f2d9744';
+        const rawUrl = `https://gist.githubusercontent.com/Ciento20/${gistId}/raw`;
         
         const response = await fetch(rawUrl);
         if (!response.ok) {
@@ -2014,22 +2014,40 @@
           throw new Error('Los datos del Gist no son válidos');
         }
         
-        const newLinks = data.filter(newLink => 
-          !state.links.some(existingLink => existingLink.link === newLink.link)
-        );
+        // Normalizar los datos del Gist
+        const normalizedData = data.map(item => ({
+          id: generateShortId(),
+          link: item.link || item.url || '',
+          title: item.title || item.name || 'Sin título',
+          webName: item.webName || item.source || null,
+          deporte: item.deporte || item.sport || 'Otros',
+          type: item.type || 'web',
+          idioma: item.idioma || item.language || 'ES',
+          color: item.color || '#2563eb',
+          mostrarIcono: item.mostrarIcono || false,
+          mostrarMulti: item.mostrarMulti || false,
+          puntuacion: item.puntuacion || item.rating || 3,
+          favorito: item.favorito || false
+        })).filter(item => item.link); // Filtrar elementos sin URL
         
-        if (newLinks.length > 0) {
-          state.links = [...state.links, ...newLinks];
-          saveSettings();
-          renderChannels();
-          showNotification(`Se añadieron ${newLinks.length} nuevos enlaces desde el Gist`);
-        } else {
-          showNotification('No se encontraron enlaces nuevos para importar', 'info');
+        if (normalizedData.length === 0) {
+          showNotification('El Gist no contiene enlaces válidos', 'error');
+          return;
         }
+        
+        // Reemplazar todos los enlaces existentes con los nuevos
+        state.links = normalizedData;
+        saveSettings();
+        renderChannels();
+        showNotification(`Se importaron ${normalizedData.length} enlaces desde el Gist`);
       } catch (error) {
         showNotification(`Error al importar desde Gist: ${error.message}`, 'error');
         console.error('Error al importar desde Gist:', error);
       }
+    }
+
+    function generateShortId() {
+      return Math.random().toString(36).substr(2, 9);
     }
 
     function setupEventListeners() {
@@ -2134,7 +2152,6 @@
       elements.closeSettingsModal.addEventListener('click', closeSettingsModal);
       elements.cancelSettingsBtn.addEventListener('click', closeSettingsModal);
       
-      // Configuración que se guarda automáticamente
       elements.darkModeToggle.addEventListener('change', function() {
         state.settings.darkMode = this.checked;
         if (this.checked) {
@@ -2209,7 +2226,22 @@
             throw new Error('Formato de datos inválido');
           }
           
-          const newLinks = data.filter(newLink => 
+          const normalizedData = data.map(item => ({
+            id: generateShortId(),
+            link: item.link,
+            title: item.title || 'Sin título',
+            webName: item.webName || null,
+            deporte: item.deporte || 'Otros',
+            type: item.type || 'web',
+            idioma: item.idioma || 'ES',
+            color: item.color || '#2563eb',
+            mostrarIcono: item.mostrarIcono || false,
+            mostrarMulti: item.mostrarMulti || false,
+            puntuacion: item.puntuacion || 3,
+            favorito: item.favorito || false
+          }));
+          
+          const newLinks = normalizedData.filter(newLink => 
             !state.links.some(existingLink => existingLink.link === newLink.link)
           );
           
@@ -2278,7 +2310,7 @@
         const rating = activeStars.length;
         
         const newLink = {
-          id: Date.now().toString(),
+          id: generateShortId(),
           link: elements.linkUrl.value,
           title: elements.linkTitle.value,
           webName: elements.webName.value || null,
