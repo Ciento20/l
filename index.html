@@ -1026,112 +1026,8 @@
         <div class="settings-section">
           <h3 class="settings-section-title">🔗 Acciones</h3>
           <div class="form-actions">
-            <button class="btn btn-secondary" id="addLinkBtn">+ Añadir Enlace</button>
             <button class="btn btn-danger" id="clearAllBtn">🗑️ Borrar Todo</button>
           </div>
-        </div>
-        
-        <div class="form-actions">
-          <button class="btn btn-secondary" id="cancelSettingsBtn">Cancelar</button>
-          <button class="btn btn-primary" id="saveSettingsBtn">Guardar</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Add Link Modal -->
-    <div class="modal" id="addLinkModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">➕ Añadir Nuevo Enlace</h2>
-          <button class="modal-close" id="closeAddLinkModal">&times;</button>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">URL del enlace</label>
-          <input type="text" class="form-input" id="linkUrl" placeholder="https://ejemplo.com/stream">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Título</label>
-          <input type="text" class="form-input" id="linkTitle" placeholder="Nombre del canal o evento">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Web de origen (opcional)</label>
-          <input type="text" class="form-input" id="webName" placeholder="Ej: Movistar, DAZN...">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Deporte</label>
-          <select class="form-select" id="linkSport">
-            <option value="F1">🏎️</option>
-            <option value="Baloncesto">🏀</option>
-            <option value="Fútbol">⚽</option>
-            <option value="Motorsport">🏁</option>
-            <option value="Tenis">🎾</option>
-            <option value="TV">📺</option>
-            <option value="Otros">🏅</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Color de borde (opcional)</label>
-          <input type="color" class="form-input" id="linkColor" value="#2563eb">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Idioma</label>
-          <select class="form-select" id="linkLanguage">
-            <option value="ES">Español 🇪🇸</option>
-            <option value="EN">Inglés 🇬🇧</option>
-            <option value="OT">Otro 🏳️‍⚧️</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Tipo de enlace</label>
-          <select class="form-select" id="linkType">
-            <option value="web">Vía Web</option>
-            <option value="acestream">Acestream</option>
-            <option value="source">Fuente</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Mostrar icono</label>
-          <label class="switch">
-            <input type="checkbox" id="mostrarIcono">
-            <span class="slider round"></span>
-          </label>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Mostrar múltiple</label>
-          <label class="switch">
-            <input type="checkbox" id="mostrarMulti">
-            <span class="slider round"></span>
-          </label>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Puntuación (1-5)</label>
-          <div class="rating-stars" id="ratingStars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Etiquetas (separadas por comas)</label>
-          <input type="text" class="form-input" id="etiquetas" placeholder="Ej: HD, 4K, Deportes">
-        </div>
-        
-        <div class="form-actions">
-          <button class="btn btn-secondary" id="cancelAddLinkBtn">Cancelar</button>
-          <button class="btn btn-primary" id="saveLinkBtn">Guardar Enlace</button>
         </div>
       </div>
     </div>
@@ -1306,6 +1202,7 @@
         playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: null,
+        minimizedPlayerHeight: 200,
         expandedGroups: {},
         editMode: false
       },
@@ -1369,7 +1266,6 @@
       clearFilters: document.getElementById('clearFilters'),
       emojiFilters: document.getElementById('emojiFilters'),
       settingsModal: document.getElementById('settingsModal'),
-      addLinkModal: document.getElementById('addLinkModal'),
       editLinkModal: document.getElementById('editLinkModal'),
       confirmClearModal: document.getElementById('confirmClearModal'),
       confirmDeleteModal: document.getElementById('confirmDeleteModal'),
@@ -1388,23 +1284,7 @@
       importLinksBtn: document.getElementById('importLinksBtn'),
       importGistBtn: document.getElementById('importGistBtn'),
       cancelImportBtn: document.getElementById('cancelImportBtn'),
-      saveSettingsBtn: document.getElementById('saveSettingsBtn'),
       closeSettingsModal: document.getElementById('closeSettingsModal'),
-      cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
-      linkUrl: document.getElementById('linkUrl'),
-      linkTitle: document.getElementById('linkTitle'),
-      webName: document.getElementById('webName'),
-      linkSport: document.getElementById('linkSport'),
-      linkLanguage: document.getElementById('linkLanguage'),
-      linkType: document.getElementById('linkType'),
-      linkColor: document.getElementById('linkColor'),
-      mostrarIcono: document.getElementById('mostrarIcono'),
-      mostrarMulti: document.getElementById('mostrarMulti'),
-      etiquetas: document.getElementById('etiquetas'),
-      ratingStars: document.getElementById('ratingStars'),
-      saveLinkBtn: document.getElementById('saveLinkBtn'),
-      cancelAddLinkBtn: document.getElementById('cancelAddLinkBtn'),
-      closeAddLinkModal: document.getElementById('closeAddLinkModal'),
       editLinkUrl: document.getElementById('editLinkUrl'),
       editLinkTitle: document.getElementById('editLinkTitle'),
       editWebName: document.getElementById('editWebName'),
@@ -1419,7 +1299,6 @@
       saveEditLinkBtn: document.getElementById('saveEditLinkBtn'),
       cancelEditLinkBtn: document.getElementById('cancelEditLinkBtn'),
       closeEditLinkModal: document.getElementById('closeEditLinkModal'),
-      addLinkBtn: document.getElementById('addLinkBtn'),
       importExportTabs: document.querySelectorAll('.import-export-tab'),
       importExportContents: document.querySelectorAll('.import-export-content'),
       notification: document.getElementById('notification'),
@@ -1458,8 +1337,13 @@
         document.body.classList.add('dark-mode');
       }
       
-      if (state.settings.playerHeight && state.settings.rememberPlayerSize) {
-        elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
+      if (state.settings.rememberPlayerSize) {
+        if (state.settings.playerHeight) {
+          elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
+        }
+        if (state.settings.minimizedPlayerHeight) {
+          // No aplicamos aquí porque solo se aplica cuando está minimizado
+        }
       }
       
       elements.darkModeToggle.checked = state.settings.darkMode;
@@ -1512,6 +1396,7 @@
         playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: null,
+        minimizedPlayerHeight: 200,
         expandedGroups: {},
         editMode: false
       };
@@ -1732,8 +1617,11 @@
       elements.playerSection.scrollIntoView({ behavior: 'smooth' });
       
       if (state.settings.rememberPlayerSize) {
-        state.settings.playerHeight = elements.playerContainer.offsetHeight;
-        saveSettings();
+        if (state.currentPlayer.isMinimized) {
+          elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+        } else {
+          elements.playerContainer.style.height = state.settings.playerHeight ? `${state.settings.playerHeight}px` : 'calc(57vw + 40px)';
+        }
       }
     }
 
@@ -1753,10 +1641,25 @@
       if (state.currentPlayer.isMinimized) {
         elements.playerContainer.classList.add('player-container--minimized');
         elements.toggleStickyBtn.classList.add('control-btn--active');
+        
+        if (state.settings.rememberPlayerSize) {
+          // Guardamos el tamaño normal antes de minimizar
+          if (!elements.playerContainer.classList.contains('player-container--minimized')) {
+            state.settings.playerHeight = elements.playerContainer.offsetHeight;
+          }
+          // Aplicamos el tamaño minimizado guardado
+          elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+        }
       } else {
         elements.playerContainer.classList.remove('player-container--minimized');
         elements.toggleStickyBtn.classList.remove('control-btn--active');
+        
+        if (state.settings.rememberPlayerSize && state.settings.playerHeight) {
+          elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
+        }
       }
+      
+      saveSettings();
     }
 
     function toggleFavorite() {
@@ -1796,7 +1699,11 @@
       elements.playerContainer.style.height = `${newHeight}px`;
       
       if (state.settings.rememberPlayerSize) {
-        state.settings.playerHeight = newHeight;
+        if (state.currentPlayer.isMinimized) {
+          state.settings.minimizedPlayerHeight = newHeight;
+        } else {
+          state.settings.playerHeight = newHeight;
+        }
         saveSettings();
       }
     }
@@ -1852,7 +1759,11 @@
 
     function saveEditedLink() {
       const link = state.links.find(l => l.id === state.editState.linkId);
-      if (!link) return;
+      if (!link) {
+        // Si no encontramos el enlace, es un nuevo enlace
+        addNewLink();
+        return;
+      }
       
       if (!elements.editLinkUrl.value || !elements.editLinkTitle.value) {
         showNotification('URL y título son obligatorios', 'error');
@@ -1878,6 +1789,37 @@
       renderChannels();
       closeEditLinkModal();
       showNotification('Enlace actualizado correctamente');
+    }
+
+    function addNewLink() {
+      if (!elements.editLinkUrl.value || !elements.editLinkTitle.value) {
+        showNotification('URL y título son obligatorios', 'error');
+        return;
+      }
+      
+      const activeStars = elements.editRatingStars.querySelectorAll('.star.active');
+      const rating = activeStars.length;
+      
+      const newLink = {
+        id: generateShortId(),
+        link: elements.editLinkUrl.value,
+        title: elements.editLinkTitle.value,
+        webName: elements.editWebName.value || null,
+        deporte: elements.editLinkSport.value,
+        type: elements.editLinkType.value,
+        idioma: elements.editLinkLanguage.value,
+        color: elements.editLinkColor.value,
+        mostrarIcono: elements.editMostrarIcono.checked,
+        mostrarMulti: elements.editMostrarMulti.checked,
+        puntuacion: rating,
+        favorito: elements.editFavorito.checked
+      };
+      
+      state.links.push(newLink);
+      saveSettings();
+      renderChannels();
+      closeEditLinkModal();
+      showNotification('Nuevo enlace añadido');
     }
 
     function handleClearFiltersClick() {
@@ -1926,22 +1868,24 @@
       state.filterButtonState.lastClickTime = now;
       
       if (state.filterButtonState.clickCount >= 3) {
-        elements.linkUrl.value = '';
-        elements.linkTitle.value = '';
-        elements.webName.value = '';
-        elements.linkSport.value = 'Fútbol';
-        elements.linkLanguage.value = 'ES';
-        elements.linkType.value = buttonId === 'filterWeb' ? 'web' : 
+        state.editState.linkId = null; // Indica que es un nuevo enlace
+        elements.editLinkUrl.value = '';
+        elements.editLinkTitle.value = '';
+        elements.editWebName.value = '';
+        elements.editLinkSport.value = 'Fútbol';
+        elements.editLinkLanguage.value = 'ES';
+        elements.editLinkType.value = buttonId === 'filterWeb' ? 'web' : 
                                 buttonId === 'filterAcestream' ? 'acestream' : 'source';
-        elements.linkColor.value = '#2563eb';
-        elements.mostrarIcono.checked = false;
-        elements.mostrarMulti.checked = false;
+        elements.editLinkColor.value = '#2563eb';
+        elements.editMostrarIcono.checked = false;
+        elements.editMostrarMulti.checked = false;
+        elements.editFavorito.checked = false;
         
-        elements.ratingStars.querySelectorAll('.star').forEach(star => {
+        elements.editRatingStars.querySelectorAll('.star').forEach(star => {
           star.classList.remove('active');
         });
         
-        elements.addLinkModal.classList.add('modal--active');
+        elements.editLinkModal.classList.add('modal--active');
         state.filterButtonState.clickCount = 0;
       } else {
         if (buttonId === 'filterWeb') {
@@ -2014,7 +1958,6 @@
           throw new Error('Los datos del Gist no son válidos');
         }
         
-        // Normalizar los datos del Gist
         const normalizedData = data.map(item => ({
           id: generateShortId(),
           link: item.link || item.url || '',
@@ -2028,14 +1971,13 @@
           mostrarMulti: item.mostrarMulti || false,
           puntuacion: item.puntuacion || item.rating || 3,
           favorito: item.favorito || false
-        })).filter(item => item.link); // Filtrar elementos sin URL
+        })).filter(item => item.link);
         
         if (normalizedData.length === 0) {
           showNotification('El Gist no contiene enlaces válidos', 'error');
           return;
         }
         
-        // Reemplazar todos los enlaces existentes con los nuevos
         state.links = normalizedData;
         saveSettings();
         renderChannels();
@@ -2150,7 +2092,6 @@
       });
       
       elements.closeSettingsModal.addEventListener('click', closeSettingsModal);
-      elements.cancelSettingsBtn.addEventListener('click', closeSettingsModal);
       
       elements.darkModeToggle.addEventListener('change', function() {
         state.settings.darkMode = this.checked;
@@ -2273,78 +2214,17 @@
         showNotification('Cambios guardados');
       });
       
-      elements.addLinkBtn.addEventListener('click', function() {
-        elements.linkUrl.value = '';
-        elements.linkTitle.value = '';
-        elements.webName.value = '';
-        elements.linkSport.value = 'Fútbol';
-        elements.linkLanguage.value = 'ES';
-        elements.linkType.value = 'web';
-        elements.linkColor.value = '#2563eb';
-        elements.mostrarIcono.checked = false;
-        elements.mostrarMulti.checked = false;
-        
-        elements.ratingStars.querySelectorAll('.star').forEach(star => {
-          star.classList.remove('active');
-        });
-        
-        elements.addLinkModal.classList.add('modal--active');
+      elements.clearAllBtn.addEventListener('click', function() {
+        elements.confirmClearModal.classList.add('modal--active');
       });
       
-      elements.closeAddLinkModal.addEventListener('click', closeAddLinkModal);
-      elements.cancelAddLinkBtn.addEventListener('click', closeAddLinkModal);
-      
-      elements.saveLinkBtn.addEventListener('click', function() {
-        if (!elements.linkUrl.value || !elements.linkTitle.value) {
-          showNotification('URL y título son obligatorios', 'error');
-          return;
-        }
-        
-        const urlExists = state.links.some(link => link.link === elements.linkUrl.value);
-        if (urlExists) {
-          showNotification('Esta URL ya existe en la lista', 'error');
-          return;
-        }
-        
-        const activeStars = elements.ratingStars.querySelectorAll('.star.active');
-        const rating = activeStars.length;
-        
-        const newLink = {
-          id: generateShortId(),
-          link: elements.linkUrl.value,
-          title: elements.linkTitle.value,
-          webName: elements.webName.value || null,
-          deporte: elements.linkSport.value,
-          type: elements.linkType.value,
-          color: elements.linkColor.value,
-          idioma: elements.linkLanguage.value,
-          mostrarIcono: elements.mostrarIcono.checked,
-          mostrarMulti: elements.mostrarMulti.checked,
-          puntuacion: rating,
-          favorito: false
-        };
-        
-        state.links.push(newLink);
-        saveSettings();
-        renderChannels();
-        closeAddLinkModal();
-        showNotification('Enlace añadido correctamente');
+      elements.cancelClearBtn.addEventListener('click', function() {
+        elements.confirmClearModal.classList.remove('modal--active');
       });
       
-      elements.ratingStars.addEventListener('click', function(e) {
-        const star = e.target.closest('.star');
-        if (star) {
-          const value = parseInt(star.dataset.value);
-          
-          const stars = elements.ratingStars.querySelectorAll('.star');
-          stars.forEach((s, index) => {
-            if (index < value) {
-              s.classList.add('active');
-            } else {
-              s.classList.remove('active');
-            }
-          });
-        }
+      elements.confirmClearBtn.addEventListener('click', function() {
+        elements.confirmClearModal.classList.remove('modal--active');
+        clearAllData();
       });
       
       elements.closeEditLinkModal.addEventListener('click', closeEditLinkModal);
@@ -2366,19 +2246,6 @@
             }
           });
         }
-      });
-      
-      elements.clearAllBtn.addEventListener('click', function() {
-        elements.confirmClearModal.classList.add('modal--active');
-      });
-      
-      elements.cancelClearBtn.addEventListener('click', function() {
-        elements.confirmClearModal.classList.remove('modal--active');
-      });
-      
-      elements.confirmClearBtn.addEventListener('click', function() {
-        elements.confirmClearModal.classList.remove('modal--active');
-        clearAllData();
       });
       
       window.addEventListener('scroll', checkScrollPosition);
@@ -2407,10 +2274,6 @@
 
     function closeSettingsModal() {
       elements.settingsModal.classList.remove('modal--active');
-    }
-
-    function closeAddLinkModal() {
-      elements.addLinkModal.classList.remove('modal--active');
     }
 
     function closeEditLinkModal() {
