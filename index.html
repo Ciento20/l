@@ -266,6 +266,10 @@
       color: var(--warning);
     }
     
+    .player-section {
+      position: relative;
+    }
+    
     .player-container {
       background: black;
       border-radius: var(--radius-md);
@@ -287,7 +291,7 @@
       height: 200px;
       width: 300px;
       position: fixed;
-      bottom: 20px;
+      bottom: 80px;
       right: 20px;
       z-index: 100;
       box-shadow: 0 0 20px rgba(0,0,0,0.3);
@@ -313,6 +317,14 @@
     
     .player-controls--active {
       display: flex;
+    }
+    
+    .player-controls--minimized {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      z-index: 100;
     }
     
     .control-btn {
@@ -849,6 +861,16 @@
       .player-container {
         height: calc(100vw * 0.56);
       }
+      
+      .player-container--minimized {
+        width: 250px;
+        height: 150px;
+        bottom: 70px;
+      }
+      
+      .player-controls--minimized {
+        width: 250px;
+      }
     }
     
     @media (min-width: 768px) {
@@ -1092,17 +1114,9 @@
         </div>
         
         <div class="form-group">
-          <label class="form-label">Mostrar icono</label>
+          <label class="form-label">Abrir en reproductor</label>
           <label class="switch">
-            <input type="checkbox" id="editMostrarIcono">
-            <span class="slider round"></span>
-          </label>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Mostrar múltiple</label>
-          <label class="switch">
-            <input type="checkbox" id="editMostrarMulti">
+            <input type="checkbox" id="editOpenInPlayer">
             <span class="slider round"></span>
           </label>
         </div>
@@ -1176,8 +1190,7 @@
           type: 'web',
           idioma: 'ES',
           color: '#2563eb',
-          mostrarIcono: true,
-          mostrarMulti: false,
+          openInPlayer: true,
           puntuacion: 4,
           favorito: false
         },
@@ -1190,8 +1203,7 @@
           type: 'web',
           idioma: 'EN',
           color: '#dc2626',
-          mostrarIcono: false,
-          mostrarMulti: true,
+          openInPlayer: false,
           puntuacion: 3,
           favorito: true
         }
@@ -1292,8 +1304,7 @@
       editLinkLanguage: document.getElementById('editLinkLanguage'),
       editLinkType: document.getElementById('editLinkType'),
       editLinkColor: document.getElementById('editLinkColor'),
-      editMostrarIcono: document.getElementById('editMostrarIcono'),
-      editMostrarMulti: document.getElementById('editMostrarMulti'),
+      editOpenInPlayer: document.getElementById('editOpenInPlayer'),
       editFavorito: document.getElementById('editFavorito'),
       editRatingStars: document.getElementById('editRatingStars'),
       saveEditLinkBtn: document.getElementById('saveEditLinkBtn'),
@@ -1605,23 +1616,27 @@
       const link = state.links.find(l => l.id === linkId);
       if (!link) return;
       
-      state.currentPlayer.channelId = linkId;
-      
-      elements.channelInfo.textContent = link.title;
-      elements.favoriteBtn.classList.toggle('control-btn--active', link.favorito);
-      
-      elements.videoFrame.src = link.link;
-      
-      elements.playerContainer.classList.add('player-container--active');
-      elements.playerControls.classList.add('player-controls--active');
-      elements.playerSection.scrollIntoView({ behavior: 'smooth' });
-      
-      if (state.settings.rememberPlayerSize) {
-        if (state.currentPlayer.isMinimized) {
-          elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
-        } else {
-          elements.playerContainer.style.height = state.settings.playerHeight ? `${state.settings.playerHeight}px` : 'calc(57vw + 40px)';
+      if (link.openInPlayer && state.settings.playerMode === 'inline') {
+        state.currentPlayer.channelId = linkId;
+        
+        elements.channelInfo.textContent = link.title;
+        elements.favoriteBtn.classList.toggle('control-btn--active', link.favorito);
+        
+        elements.videoFrame.src = link.link;
+        
+        elements.playerContainer.classList.add('player-container--active');
+        elements.playerControls.classList.add('player-controls--active');
+        elements.playerSection.scrollIntoView({ behavior: 'smooth' });
+        
+        if (state.settings.rememberPlayerSize) {
+          if (state.currentPlayer.isMinimized) {
+            elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+          } else {
+            elements.playerContainer.style.height = state.settings.playerHeight ? `${state.settings.playerHeight}px` : 'calc(57vw + 40px)';
+          }
         }
+      } else {
+        window.open(link.link, '_blank');
       }
     }
 
@@ -1640,6 +1655,7 @@
       
       if (state.currentPlayer.isMinimized) {
         elements.playerContainer.classList.add('player-container--minimized');
+        elements.playerControls.classList.add('player-controls--minimized');
         elements.toggleStickyBtn.classList.add('control-btn--active');
         
         if (state.settings.rememberPlayerSize) {
@@ -1652,6 +1668,7 @@
         }
       } else {
         elements.playerContainer.classList.remove('player-container--minimized');
+        elements.playerControls.classList.remove('player-controls--minimized');
         elements.toggleStickyBtn.classList.remove('control-btn--active');
         
         if (state.settings.rememberPlayerSize && state.settings.playerHeight) {
@@ -1739,8 +1756,7 @@
       elements.editLinkLanguage.value = link.idioma;
       elements.editLinkType.value = link.type;
       elements.editLinkColor.value = link.color || '#2563eb';
-      elements.editMostrarIcono.checked = link.mostrarIcono || false;
-      elements.editMostrarMulti.checked = link.mostrarMulti || false;
+      elements.editOpenInPlayer.checked = link.openInPlayer || false;
       elements.editFavorito.checked = link.favorito || false;
       
       const stars = elements.editRatingStars.querySelectorAll('.star');
@@ -1780,8 +1796,7 @@
       link.idioma = elements.editLinkLanguage.value;
       link.type = elements.editLinkType.value;
       link.color = elements.editLinkColor.value;
-      link.mostrarIcono = elements.editMostrarIcono.checked;
-      link.mostrarMulti = elements.editMostrarMulti.checked;
+      link.openInPlayer = elements.editOpenInPlayer.checked;
       link.favorito = elements.editFavorito.checked;
       link.puntuacion = rating;
       
@@ -1809,8 +1824,7 @@
         type: elements.editLinkType.value,
         idioma: elements.editLinkLanguage.value,
         color: elements.editLinkColor.value,
-        mostrarIcono: elements.editMostrarIcono.checked,
-        mostrarMulti: elements.editMostrarMulti.checked,
+        openInPlayer: elements.editOpenInPlayer.checked,
         puntuacion: rating,
         favorito: elements.editFavorito.checked
       };
@@ -1877,8 +1891,7 @@
         elements.editLinkType.value = buttonId === 'filterWeb' ? 'web' : 
                                 buttonId === 'filterAcestream' ? 'acestream' : 'source';
         elements.editLinkColor.value = '#2563eb';
-        elements.editMostrarIcono.checked = false;
-        elements.editMostrarMulti.checked = false;
+        elements.editOpenInPlayer.checked = false;
         elements.editFavorito.checked = false;
         
         elements.editRatingStars.querySelectorAll('.star').forEach(star => {
@@ -1967,8 +1980,7 @@
           type: item.type || 'web',
           idioma: item.idioma || item.language || 'ES',
           color: item.color || '#2563eb',
-          mostrarIcono: item.mostrarIcono || false,
-          mostrarMulti: item.mostrarMulti || false,
+          openInPlayer: item.openInPlayer || false,
           puntuacion: item.puntuacion || item.rating || 3,
           favorito: item.favorito || false
         })).filter(item => item.link);
@@ -1981,6 +1993,7 @@
         state.links = normalizedData;
         saveSettings();
         renderChannels();
+        closeSettingsModal();
         showNotification(`Se importaron ${normalizedData.length} enlaces desde el Gist`);
       } catch (error) {
         showNotification(`Error al importar desde Gist: ${error.message}`, 'error');
@@ -2016,7 +2029,7 @@
           const linkId = linkCard.dataset.id;
           const link = state.links.find(l => l.id === linkId);
           
-          if (state.settings.playerMode === 'inline') {
+          if (link.openInPlayer && state.settings.playerMode === 'inline') {
             e.preventDefault();
             openLink(linkId);
           } else {
@@ -2176,8 +2189,7 @@
             type: item.type || 'web',
             idioma: item.idioma || 'ES',
             color: item.color || '#2563eb',
-            mostrarIcono: item.mostrarIcono || false,
-            mostrarMulti: item.mostrarMulti || false,
+            openInPlayer: item.openInPlayer || false,
             puntuacion: item.puntuacion || 3,
             favorito: item.favorito || false
           }));
