@@ -295,6 +295,7 @@
       right: 20px;
       z-index: 100;
       box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      cursor: move;
     }
     
     #videoFrame {
@@ -325,6 +326,7 @@
       right: 20px;
       width: 300px;
       z-index: 100;
+      cursor: move;
     }
     
     .control-btn {
@@ -360,6 +362,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      cursor: move;
+      user-select: none;
     }
     
     .channel-number-display {
@@ -388,6 +392,10 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
+    }
+    
+    .channel-group__header--collapsed {
+      border-bottom: none;
     }
     
     .channel-group__title {
@@ -841,6 +849,15 @@
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       }
       
+      .channel-group__content .channel-card:last-child:nth-child(3n+1) {
+        grid-column: 1 / -1;
+      }
+      
+      .channel-group__content .channel-card:last-child:nth-child(3n+2),
+      .channel-group__content .channel-card:nth-last-child(2):nth-child(3n+1) {
+        grid-column: span 1;
+      }
+      
       .channel-info, .channel-number-display {
         position: static;
         transform: none;
@@ -1254,6 +1271,11 @@
       touchState: {
         startX: 0,
         startY: 0
+      },
+      playerDragState: {
+        isDragging: false,
+        offsetX: 0,
+        offsetY: 0
       }
     };
 
@@ -1503,7 +1525,7 @@
         
         html += `
           <div class="channel-group" id="${groupId}">
-            <div class="channel-group__header">
+            <div class="channel-group__header ${isExpanded ? '' : 'channel-group__header--collapsed'}">
               <div class="channel-group__title">${title}</div>
             </div>
             <div class="channel-group__content ${isExpanded ? '' : 'channel-group__content--collapsed'}">
@@ -1521,6 +1543,7 @@
           const content = this.nextElementSibling;
           
           content.classList.toggle('channel-group__content--collapsed');
+          this.classList.toggle('channel-group__header--collapsed');
           
           state.settings.expandedGroups[groupId] = !content.classList.contains('channel-group__content--collapsed');
           saveSettings();
@@ -2005,8 +2028,75 @@
       return Math.random().toString(36).substr(2, 9);
     }
 
+    function setupPlayerDrag() {
+      const playerContainer = elements.playerContainer;
+      const playerControls = elements.playerControls;
+      const channelInfo = elements.channelInfo;
+      
+      function startDrag(e) {
+        if (!state.currentPlayer.isMinimized) return;
+        
+        state.playerDragState.isDragging = true;
+        
+        const rect = playerContainer.getBoundingClientRect();
+        state.playerDragState.offsetX = e.clientX - rect.left;
+        state.playerDragState.offsetY = e.clientY - rect.top;
+        
+        playerContainer.style.cursor = 'grabbing';
+        playerControls.style.cursor = 'grabbing';
+        channelInfo.style.cursor = 'grabbing';
+        
+        e.preventDefault();
+      }
+      
+      function drag(e) {
+        if (!state.playerDragState.isDragging) return;
+        
+        let x = e.clientX - state.playerDragState.offsetX;
+        let y = e.clientY - state.playerDragState.offsetY;
+        
+        // Limitar a los bordes de la pantalla
+        const maxX = window.innerWidth - playerContainer.offsetWidth;
+        const maxY = window.innerHeight - playerContainer.offsetHeight;
+        
+        x = Math.max(0, Math.min(x, maxX));
+        y = Math.max(0, Math.min(y, maxY));
+        
+        playerContainer.style.left = `${x}px`;
+        playerContainer.style.top = `${y}px`;
+        playerControls.style.left = `${x}px`;
+        playerControls.style.bottom = `${window.innerHeight - y - playerContainer.offsetHeight - 60}px`;
+      }
+      
+      function endDrag() {
+        if (!state.playerDragState.isDragging) return;
+        
+        state.playerDragState.isDragging = false;
+        playerContainer.style.cursor = 'move';
+        playerControls.style.cursor = 'move';
+        channelInfo.style.cursor = 'move';
+      }
+      
+      // Eventos para el ratón
+      channelInfo.addEventListener('mousedown', startDrag);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', endDrag);
+      
+      // Eventos para pantallas táctiles
+      channelInfo.addEventListener('touchstart', function(e) {
+        startDrag(e.touches[0]);
+      }, { passive: false });
+      
+      document.addEventListener('touchmove', function(e) {
+        drag(e.touches[0]);
+      }, { passive: false });
+      
+      document.addEventListener('touchend', endDrag);
+    }
+
     function setupEventListeners() {
       setupTouchEvents();
+      setupPlayerDrag();
       
       document.addEventListener('click', function(e) {
         const deleteBtn = e.target.closest('.delete-btn');
