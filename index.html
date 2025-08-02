@@ -46,6 +46,47 @@
       padding: 0 1rem;
     }
     
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      width: 100%;
+    }
+    
+    .channel-group {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    
+    .channel-group__content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.8rem;
+      padding: 0.8rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .channel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.8rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+      position: relative;
+      user-select: none;
+      min-height: 100px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
     .app-header {
       display: flex;
       justify-content: center;
@@ -169,24 +210,6 @@
       border-color: var(--primary);
     }
     
-    .channels-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-    
-    .channel-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 0.8rem;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s;
-      position: relative;
-      user-select: none;
-    }
-    
     .channel-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -277,6 +300,7 @@
       width: 100%;
       height: calc(57vw + 40px);
       max-height: 85vh;
+      min-height: 300px;
       display: none;
       position: relative;
       transition: all 0.3s ease;
@@ -375,15 +399,6 @@
       font-weight: 600;
     }
     
-    .channel-group {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 0;
-      margin-bottom: 1rem;
-      box-shadow: var(--shadow-sm);
-    }
-    
     .channel-group__header {
       padding: 0.8rem 1rem;
       background: rgba(var(--primary-rgb), 0.1);
@@ -407,13 +422,6 @@
       font-size: 0.8rem;
       color: var(--primary);
       margin-top: 0.2rem;
-    }
-    
-    .channel-group__content {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 0.8rem;
-      padding: 0.8rem;
     }
     
     .channel-group__content--collapsed {
@@ -838,7 +846,7 @@
     
     @media (max-width: 768px) {
       .channels-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       }
       
       .filter-buttons {
@@ -846,7 +854,7 @@
       }
       
       .channel-group__content {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       }
       
       .channel-group__content .channel-card:last-child:nth-child(3n+1) {
@@ -891,10 +899,6 @@
     }
     
     @media (min-width: 768px) {
-      .channels-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      }
-      
       .channel-name {
         font-size: 0.9rem;
       }
@@ -912,7 +916,6 @@
 <body>
   <div class="main-container">
     
-    <!-- Player Section -->
     <div class="player-section" id="playerSection">
       <div class="player-container" id="playerContainer">
         <iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
@@ -928,7 +931,6 @@
       </div>
     </div>
     
-    <!-- Search & Filters -->
     <div class="search-filters">
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Buscar canales, número (ej: #123) o hora (ej: 15:30)">
@@ -950,20 +952,14 @@
       </div>
     </div>
     
-    <!-- Channels Content -->
-    <div id="channelsContent">
-      <!-- Content will be dynamically generated -->
-    </div>
+    <div id="channelsContent"></div>
     
-    <!-- No Results -->
     <div class="no-results" id="noResults" style="display: none;">
       No se encontraron resultados. Prueba con otros filtros.
     </div>
     
-    <!-- Botón fijo para guardar cambios en modo edición -->
     <button class="save-edit-btn" id="saveEditBtn" title="Guardar cambios">✓</button>
     
-    <!-- Settings Modal -->
     <div class="modal" id="settingsModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -1071,7 +1067,6 @@
       </div>
     </div>
     
-    <!-- Edit Link Modal -->
     <div class="modal" id="editLinkModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -1164,7 +1159,6 @@
       </div>
     </div>
     
-    <!-- Confirm Clear All Modal -->
     <div class="modal" id="confirmClearModal">
       <div class="confirm-dialog">
         <h3>¿Estás seguro?</h3>
@@ -1176,7 +1170,6 @@
       </div>
     </div>
     
-    <!-- Confirm Delete Modal -->
     <div class="modal" id="confirmDeleteModal">
       <div class="confirm-dialog">
         <h3>¿Borrar este enlace?</h3>
@@ -1188,10 +1181,8 @@
       </div>
     </div>
     
-    <!-- Notification -->
     <div class="notification" id="notification"></div>
     
-    <!-- Scroll to top -->
     <div class="scroll-to-top" id="scrollToTop">↑</div>
   </div>
 
@@ -1724,7 +1715,7 @@
       if (!elements.playerContainer.classList.contains('player-container--active')) return;
       
       const currentHeight = elements.playerContainer.offsetHeight;
-      const minHeight = 200;
+      const minHeight = 300; // Cambiado de 200px a 300px
       const maxHeight = window.innerHeight * 0.85;
       const step = 50;
       
