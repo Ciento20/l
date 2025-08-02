@@ -300,7 +300,7 @@
       width: 100%;
       height: calc(57vw + 40px);
       max-height: 85vh;
-      min-height: 300px;
+      min-height: 311px;
       display: none;
       position: relative;
       transition: all 0.3s ease;
@@ -313,7 +313,7 @@
     
     .player-container--minimized {
       height: 200px;
-      width: 300px;
+      width: 311px;
       position: fixed;
       bottom: 80px;
       right: 20px;
@@ -348,7 +348,7 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 300px;
+      width: 311px;
       z-index: 100;
       cursor: move;
     }
@@ -922,8 +922,8 @@
       </div>
       <div class="player-controls" id="playerControls">
         <span class="channel-info" id="channelInfo"></span>
-        <button class="control-btn" id="prevChannelBtn" title="Reducir tamaño">▼</button>
-        <button class="control-btn" id="nextChannelBtn" title="Aumentar tamaño">▲</button>
+        <button class="control-btn" id="prevChannelBtn" title="Reducir tamaño">▲</button>
+        <button class="control-btn" id="nextChannelBtn" title="Aumentar tamaño">▼</button>
         <button class="control-btn" id="toggleStickyBtn" title="Fijar reproductor">⛊</button>
         <button class="control-btn" id="favoriteBtn" title="Guardar favorito">★</button>
         <button class="control-btn" id="closePlayerBtn" title="Cerrar">×</button>
@@ -1715,7 +1715,7 @@
       if (!elements.playerContainer.classList.contains('player-container--active')) return;
       
       const currentHeight = elements.playerContainer.offsetHeight;
-      const minHeight = 300; // Cambiado de 200px a 300px
+      const minHeight = 311; // Cambiado de 200px a 300px
       const maxHeight = window.innerHeight * 0.85;
       const step = 50;
       
