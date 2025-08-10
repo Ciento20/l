@@ -298,9 +298,7 @@
       border-radius: var(--radius-md);
       overflow: hidden;
       width: 100%;
-      height: calc(57vw + 40px);
-      max-height: 85vh;
-      min-height: 311px;
+      height: 400px;
       display: none;
       position: relative;
       transition: all 0.3s ease;
@@ -312,8 +310,8 @@
     }
     
     .player-container--minimized {
-      height: 200px;
-      width: 311px;
+      width: 320px;
+      height: 180px;
       position: fixed;
       bottom: 80px;
       right: 20px;
@@ -326,6 +324,7 @@
       width: 100%;
       height: 100%;
       border: none;
+      object-fit: cover;
     }
     
     .player-controls {
@@ -348,7 +347,7 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 311px;
+      width: 320px;
       z-index: 100;
       cursor: move;
     }
@@ -884,17 +883,17 @@
       }
       
       .player-container {
-        height: calc(100vw * 0.56);
+        height: 400px;
       }
       
       .player-container--minimized {
-        width: 250px;
-        height: 150px;
+        width: 280px;
+        height: 157.5px;
         bottom: 70px;
       }
       
       .player-controls--minimized {
-        width: 250px;
+        width: 280px;
       }
     }
     
@@ -1221,8 +1220,9 @@
         primaryColor: '#2563eb',
         playerMode: 'newTab',
         rememberPlayerSize: true,
-        playerHeight: null,
-        minimizedPlayerHeight: 200,
+        playerHeight: 400,
+        minimizedPlayerHeight: 180,
+        minimizedPlayerWidth: 320,
         expandedGroups: {},
         editMode: false
       },
@@ -1366,7 +1366,8 @@
           elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
         }
         if (state.settings.minimizedPlayerHeight) {
-          // No aplicamos aquí porque solo se aplica cuando está minimizado
+          elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+          elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
         }
       }
       
@@ -1419,8 +1420,9 @@
         primaryColor: '#2563eb',
         playerMode: 'newTab',
         rememberPlayerSize: true,
-        playerHeight: null,
-        minimizedPlayerHeight: 200,
+        playerHeight: 400,
+        minimizedPlayerHeight: 180,
+        minimizedPlayerWidth: 320,
         expandedGroups: {},
         editMode: false
       };
@@ -1645,8 +1647,10 @@
         if (state.settings.rememberPlayerSize) {
           if (state.currentPlayer.isMinimized) {
             elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+            elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
           } else {
-            elements.playerContainer.style.height = state.settings.playerHeight ? `${state.settings.playerHeight}px` : 'calc(57vw + 40px)';
+            elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
+            elements.playerContainer.style.width = '100%';
           }
         }
       } else {
@@ -1673,12 +1677,11 @@
         elements.toggleStickyBtn.classList.add('control-btn--active');
         
         if (state.settings.rememberPlayerSize) {
-          // Guardamos el tamaño normal antes de minimizar
           if (!elements.playerContainer.classList.contains('player-container--minimized')) {
             state.settings.playerHeight = elements.playerContainer.offsetHeight;
           }
-          // Aplicamos el tamaño minimizado guardado
           elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+          elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
         }
       } else {
         elements.playerContainer.classList.remove('player-container--minimized');
@@ -1687,6 +1690,7 @@
         
         if (state.settings.rememberPlayerSize && state.settings.playerHeight) {
           elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
+          elements.playerContainer.style.width = '100%';
         }
       }
       
@@ -1714,29 +1718,54 @@
     function resizePlayer(direction) {
       if (!elements.playerContainer.classList.contains('player-container--active')) return;
       
-      const currentHeight = elements.playerContainer.offsetHeight;
-      const minHeight = 311; // Cambiado de 200px a 300px
-      const maxHeight = window.innerHeight * 0.85;
-      const step = 50;
-      
-      let newHeight;
-      
-      if (direction === 'increase') {
-        newHeight = Math.min(currentHeight + step, maxHeight);
-      } else {
-        newHeight = Math.max(currentHeight - step, minHeight);
-      }
-      
-      elements.playerContainer.style.height = `${newHeight}px`;
-      
-      if (state.settings.rememberPlayerSize) {
-        if (state.currentPlayer.isMinimized) {
-          state.settings.minimizedPlayerHeight = newHeight;
+      if (state.currentPlayer.isMinimized) {
+        const currentHeight = elements.playerContainer.offsetHeight;
+        const currentWidth = elements.playerContainer.offsetWidth;
+        const minHeight = 120;
+        const maxHeight = 300;
+        const minWidth = 213;
+        const maxWidth = 533;
+        const step = 20;
+        
+        let newHeight, newWidth;
+        
+        if (direction === 'increase') {
+          newHeight = Math.min(currentHeight + step, maxHeight);
+          newWidth = Math.round(newHeight * 16/9);
         } else {
+          newHeight = Math.max(currentHeight - step, minHeight);
+          newWidth = Math.round(newHeight * 16/9);
+        }
+        
+        elements.playerContainer.style.height = `${newHeight}px`;
+        elements.playerContainer.style.width = `${newWidth}px`;
+        
+        if (state.settings.rememberPlayerSize) {
+          state.settings.minimizedPlayerHeight = newHeight;
+          state.settings.minimizedPlayerWidth = newWidth;
+        }
+      } else {
+        const currentHeight = elements.playerContainer.offsetHeight;
+        const minHeight = 311;
+        const maxHeight = window.innerHeight * 0.85;
+        const step = 50;
+        
+        let newHeight;
+        
+        if (direction === 'increase') {
+          newHeight = Math.min(currentHeight + step, maxHeight);
+        } else {
+          newHeight = Math.max(currentHeight - step, minHeight);
+        }
+        
+        elements.playerContainer.style.height = `${newHeight}px`;
+        
+        if (state.settings.rememberPlayerSize) {
           state.settings.playerHeight = newHeight;
         }
-        saveSettings();
       }
+      
+      saveSettings();
     }
 
     function showNotification(message, type = 'success') {
@@ -1790,7 +1819,6 @@
     function saveEditedLink() {
       const link = state.links.find(l => l.id === state.editState.linkId);
       if (!link) {
-        // Si no encontramos el enlace, es un nuevo enlace
         addNewLink();
         return;
       }
@@ -1896,7 +1924,7 @@
       state.filterButtonState.lastClickTime = now;
       
       if (state.filterButtonState.clickCount >= 3) {
-        state.editState.linkId = null; // Indica que es un nuevo enlace
+        state.editState.linkId = null;
         elements.editLinkUrl.value = '';
         elements.editLinkTitle.value = '';
         elements.editWebName.value = '';
@@ -2043,10 +2071,14 @@
       function drag(e) {
         if (!state.playerDragState.isDragging) return;
         
-        let x = e.clientX - state.playerDragState.offsetX;
-        let y = e.clientY - state.playerDragState.offsetY;
+        e.preventDefault();
         
-        // Limitar a los bordes de la pantalla
+        let clientX = e.clientX || e.touches[0].clientX;
+        let clientY = e.clientY || e.touches[0].clientY;
+        
+        let x = clientX - state.playerDragState.offsetX;
+        let y = clientY - state.playerDragState.offsetY;
+        
         const maxX = window.innerWidth - playerContainer.offsetWidth;
         const maxY = window.innerHeight - playerContainer.offsetHeight;
         
@@ -2068,18 +2100,16 @@
         channelInfo.style.cursor = 'move';
       }
       
-      // Eventos para el ratón
       channelInfo.addEventListener('mousedown', startDrag);
       document.addEventListener('mousemove', drag);
       document.addEventListener('mouseup', endDrag);
       
-      // Eventos para pantallas táctiles
       channelInfo.addEventListener('touchstart', function(e) {
         startDrag(e.touches[0]);
       }, { passive: false });
       
       document.addEventListener('touchmove', function(e) {
-        drag(e.touches[0]);
+        drag(e);
       }, { passive: false });
       
       document.addEventListener('touchend', endDrag);
