@@ -456,12 +456,14 @@
       background: var(--card-bg);
       border-radius: var(--radius-md);
       width: 90%;
-      max-width: 600px;
+      max-width: 800px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 1.5rem;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
       animation: modalFadeIn 0.3s ease;
+      display: flex;
+      flex-direction: column;
     }
     
     .modal-header {
@@ -579,6 +581,10 @@
       cursor: pointer;
       font-weight: 500;
       transition: all 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
     }
     
     .btn-primary {
@@ -827,6 +833,200 @@
       visibility: visible;
     }
     
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 26px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+    
+    /* Nuevos estilos para el modal de configuración */
+    .settings-modal__body {
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+    }
+
+    .settings-tabs {
+      width: 180px;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .settings-tab {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .settings-tab:hover {
+      opacity: 0.7;
+    }
+
+    .settings-tab--active {
+      border-left-color: var(--primary);
+      background: rgba(var(--primary-rgb), 0.05);
+      color: var(--primary);
+      font-weight: 600;
+      opacity: 1;
+    }
+
+    .settings-tab span {
+      font-size: 1rem;
+    }
+
+    .settings-content-wrapper {
+      flex-grow: 1;
+    }
+
+    .settings-tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .settings-tab-content--active {
+      display: block;
+    }
+
+    .theme-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .theme-selector button {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-selector button:hover {
+      border-color: var(--primary);
+      transform: scale(1.02);
+    }
+    
+    .theme-selector button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-secondary.icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .zone-peligro {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .zone-peligro-title {
+      font-weight: 600;
+      color: var(--error);
+      margin-bottom: 1rem;
+    }
+
+    .form-input[type="number"] {
+      width: 100px;
+    }
+    
+    .edit-modal-content {
+      padding: 1.5rem;
+    }
+    
+    .edit-modal-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .edit-modal-section-title {
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .edit-modal-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .edit-modal-option:last-of-type {
+      border-bottom: none;
+    }
+    
+    .edit-modal-option-label {
+      flex-grow: 1;
+    }
+    
+    .edit-modal-option-label .description {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+    
     @keyframes pulse {
       0% { opacity: 1; }
       50% { opacity: 0.3; }
@@ -841,6 +1041,11 @@
     @keyframes modalFadeIn {
       0% { opacity: 0; transform: translateY(-20px); }
       100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
     
     @media (max-width: 768px) {
@@ -894,6 +1099,28 @@
       
       .player-controls--minimized {
         width: 280px;
+      }
+
+      .settings-modal__body {
+        flex-direction: column;
+      }
+
+      .settings-tabs {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-bottom: 1.5px solid var(--border-color);
+        margin-bottom: 1rem;
+      }
+
+      .settings-tab {
+        border-left: none;
+        border-bottom: 3px solid transparent;
+      }
+
+      .settings-tab--active {
+        border-bottom-color: var(--primary);
+        background: none;
       }
     }
     
@@ -966,110 +1193,152 @@
           <button class="modal-close" id="closeSettingsModal">&times;</button>
         </div>
         
-        <div class="settings-section">
-          <h3 class="settings-section-title">⚙️ Preferencias</h3>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Modo oscuro
-              <div class="settings-option-description">Cambia entre tema claro y oscuro</div>
+        <div class="settings-modal__body">
+          <div class="settings-tabs">
+            <div class="settings-tab settings-tab--active" data-tab="general">
+              <span>⚙️</span>
+              <span>General</span>
             </div>
-            <label class="switch">
-              <input type="checkbox" id="darkModeToggle">
-              <span class="slider round"></span>
-            </label>
-          </div>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Color principal
-              <div class="settings-option-description">Personaliza el color de la interfaz</div>
+            <div class="settings-tab" data-tab="apariencia">
+              <span>🎨</span>
+              <span>Apariencia</span>
             </div>
-            <div class="color-picker">
-              <div class="color-option color-option--active" style="background: #2563eb;" data-color="#2563eb"></div>
-              <div class="color-option" style="background: #dc2626;" data-color="#dc2626"></div>
-              <div class="color-option" style="background: #16a34a;" data-color="#16a34a"></div>
-              <div class="color-option" style="background: #d97706;" data-color="#d97706"></div>
-              <div class="color-option" style="background: #7c3aed;" data-color="#7c3aed"></div>
-              <div class="color-option" style="background: #db2777;" data-color="#db2777"></div>
+            <div class="settings-tab" data-tab="reproductor">
+              <span>📺</span>
+              <span>Reproductor</span>
+            </div>
+            <div class="settings-tab" data-tab="datos">
+              <span>💾</span>
+              <span>Datos</span>
             </div>
           </div>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Modo edición
-              <div class="settings-option-description">Permite reordenar los canales manualmente</div>
+
+          <div class="settings-content-wrapper">
+            <div class="settings-tab-content settings-tab-content--active" id="generalTab">
+              <div class="settings-section">
+                <h3 class="settings-section-title">⚙️ General</h3>
+                <div class="settings-option">
+                  <div class="settings-option-label">
+                    Permitir edición de canales
+                    <div class="settings-option-description">Activa/desactiva el modo para reorganizar canales</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="editModeToggle">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="settings-option">
+                  <div class="settings-option-label">
+                    Mostrar notificaciones
+                    <div class="settings-option-description">Muestra mensajes al realizar acciones</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="notificationToggle" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
             </div>
-            <label class="switch">
-              <input type="checkbox" id="editModeToggle">
-              <span class="slider round"></span>
-            </label>
-          </div>
-        </div>
-        
-        <div class="settings-section">
-          <h3 class="settings-section-title">📺 Reproductor</h3>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Modo de apertura
-              <div class="settings-option-description">Cómo se abren los enlaces</div>
+
+            <div class="settings-tab-content" id="aparienciaTab">
+              <div class="settings-section">
+                <h3 class="settings-section-title">🎨 Apariencia</h3>
+                <div class="form-group">
+                  <label class="form-label">Selector de tema</label>
+                  <div class="theme-selector" id="themeSelector">
+                    <button data-theme="light">☀️ Claro</button>
+                    <button data-theme="dark">🌙 Oscuro</button>
+                    <button data-theme="system">💻 Sistema</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Color principal</label>
+                  <div class="color-picker" id="colorPicker">
+                    <div class="color-option color-option--active" style="background: #2563eb;" data-color="#2563eb"></div>
+                    <div class="color-option" style="background: #dc2626;" data-color="#dc2626"></div>
+                    <div class="color-option" style="background: #16a34a;" data-color="#16a34a"></div>
+                    <div class="color-option" style="background: #d97706;" data-color="#d97706"></div>
+                    <div class="color-option" style="background: #7c3aed;" data-color="#7c3aed"></div>
+                    <div class="color-option" style="background: #db2777;" data-color="#db2777"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <select class="form-select" id="playerModeSelect">
-              <option value="newTab">Nueva pestaña (predeterminado)</option>
-              <option value="inline">Reproductor interno (solo web)</option>
-            </select>
-          </div>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Recordar tamaño del reproductor
-              <div class="settings-option-description">Guarda la última altura del reproductor</div>
+
+            <div class="settings-tab-content" id="reproductorTab">
+              <div class="settings-section">
+                <h3 class="settings-section-title">📺 Reproductor</h3>
+                <div class="settings-option">
+                  <div class="settings-option-label">
+                    Recordar tamaño del reproductor
+                    <div class="settings-option-description">Guarda la última altura del reproductor</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="rememberPlayerSize" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="settings-option">
+                  <div class="settings-option-label">
+                    Reproducción automática
+                    <div class="settings-option-description">Inicia la reproducción al seleccionar un canal</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="autoPlayToggle" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tamaño predeterminado</label>
+                <input type="number" class="form-input" id="defaultPlayerSize" value="400" min="200" max="1000">
+              </div>
             </div>
-            <label class="switch">
-              <input type="checkbox" id="rememberPlayerSize" checked>
-              <span class="slider round"></span>
-            </label>
-          </div>
-        </div>
-        
-        <div class="settings-section">
-          <h3 class="settings-section-title">📁 Gestión de Datos</h3>
-          <div class="import-export-tabs">
-            <div class="import-export-tab import-export-tab--active" data-tab="export">Exportar</div>
-            <div class="import-export-tab" data-tab="import">Importar</div>
-            <div class="import-export-tab" data-tab="github">GitHub</div>
-          </div>
-          
-          <div class="import-export-content import-export-content--active" id="exportTab">
-            <textarea class="json-textarea" id="exportLinksData" readonly></textarea>
-            <button class="btn btn-primary" id="copyExportLinksBtn">Copiar JSON</button>
-          </div>
-          
-          <div class="import-export-content" id="importTab">
-            <textarea class="json-textarea" id="importLinksData" placeholder="Pega aquí el JSON de exportación"></textarea>
-            <div class="form-actions">
-              <button class="btn btn-secondary" id="cancelImportBtn">Cancelar</button>
-              <button class="btn btn-primary" id="importLinksBtn">Importar Datos</button>
+
+            <div class="settings-tab-content" id="datosTab">
+              <div class="settings-section">
+                <h3 class="settings-section-title">💾 Gestión de Datos</h3>
+                <div class="form-group">
+                  <label class="form-label">Exportar datos (JSON)</label>
+                  <textarea class="json-textarea" id="exportLinksData" readonly></textarea>
+                  <div class="form-actions" style="justify-content: flex-start;">
+                    <button class="btn btn-primary" id="copyExportLinksBtn">📋 Copiar JSON</button>
+                    <button class="btn btn-secondary" id="downloadExportLinksBtn">⤓ Descargar</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Importar datos (JSON)</label>
+                  <textarea class="json-textarea" id="importLinksData" placeholder="Pega JSON aquí"></textarea>
+                  <div class="form-actions" style="justify-content: flex-start;">
+                    <button class="btn btn-secondary" id="cancelImportBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="importLinksBtn">Importar</button>
+                  </div>
+                  <div class="form-actions" style="justify-content: flex-start; margin-top: 1rem;">
+                    <button class="btn btn-secondary icon-btn" id="importGistBtn">
+                      <span>🐙</span>
+                      <span>GitHub Gist</span>
+                    </button>
+                    <button class="btn btn-secondary icon-btn" id="importFileBtn">
+                      <span>📁</span>
+                      <span>Archivo JSON</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="zone-peligro">
+                <h3 class="zone-peligro-title">Zona Peligro</h3>
+                <button class="btn btn-danger" id="clearAllBtn">🗑️ Borrar Todos los Datos</button>
+              </div>
             </div>
-          </div>
-          
-          <div class="import-export-content" id="githubTab">
-            <div class="form-group">
-              <p>Importar lista de canales desde un Gist de GitHub:</p>
-              <button class="import-gist-btn" id="importGistBtn">Importar desde Gist</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="settings-section">
-          <h3 class="settings-section-title">🔗 Acciones</h3>
-          <div class="form-actions">
-            <button class="btn btn-danger" id="clearAllBtn">🗑️ Borrar Todo</button>
           </div>
         </div>
       </div>
     </div>
     
     <div class="modal" id="editLinkModal">
-      <div class="modal-content">
+      <div class="modal-content edit-modal-content">
         <div class="modal-header">
-          <h2 class="modal-title">✏️ Editar Enlace</h2>
+          <h2 class="edit-modal-title">✏️ Editar Enlace</h2>
           <button class="modal-close" id="closeEditLinkModal">&times;</button>
         </div>
         
@@ -1089,58 +1358,75 @@
         </div>
         
         <div class="form-group">
-          <label class="form-label">Deporte</label>
-          <select class="form-select" id="editLinkSport">
-            <option value="F1">🏎️</option>
-            <option value="Baloncesto">🏀</option>
-            <option value="Fútbol">⚽</option>
-            <option value="Motorsport">🏁</option>
-            <option value="Tenis">🎾</option>
-            <option value="TV">📺</option>
-            <option value="Otros">🏅</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
           <label class="form-label">Color de borde (opcional)</label>
           <input type="color" class="form-input" id="editLinkColor" value="#2563eb">
         </div>
+
+        <h3 class="edit-modal-section-title">Opciones Adicionales</h3>
+
+        <div class="edit-modal-option">
+          <div class="edit-modal-option-label">
+            Deporte
+            <div class="description">Selecciona el icono de deporte</div>
+          </div>
+          <select class="form-select" id="editLinkSport" style="width: auto;">
+            <option value="F1">🏎️ F1</option>
+            <option value="Baloncesto">🏀 Baloncesto</option>
+            <option value="Fútbol">⚽ Fútbol</option>
+            <option value="Motorsport">🏁 Motorsport</option>
+            <option value="Tenis">🎾 Tenis</option>
+            <option value="TV">📺 TV</option>
+            <option value="Otros">🏅 Otros</option>
+          </select>
+        </div>
         
-        <div class="form-group">
-          <label class="form-label">Idioma</label>
-          <select class="form-select" id="editLinkLanguage">
+        <div class="edit-modal-option">
+          <div class="edit-modal-option-label">
+            Idioma
+            <div class="description">Idioma del enlace</div>
+          </div>
+          <select class="form-select" id="editLinkLanguage" style="width: auto;">
             <option value="ES">Español 🇪🇸</option>
             <option value="EN">Inglés 🇬🇧</option>
             <option value="OT">Otro 🏳️‍⚧️</option>
           </select>
         </div>
         
-        <div class="form-group">
-          <label class="form-label">Tipo de enlace</label>
-          <select class="form-select" id="editLinkType">
+        <div class="edit-modal-option">
+          <div class="edit-modal-option-label">
+            Tipo de enlace
+            <div class="description">Define la fuente del stream</div>
+          </div>
+          <select class="form-select" id="editLinkType" style="width: auto;">
             <option value="web">Vía Web</option>
             <option value="acestream">Acestream</option>
             <option value="source">Fuente</option>
           </select>
         </div>
         
-        <div class="form-group">
-          <label class="form-label">Abrir en reproductor</label>
+        <div class="edit-modal-option">
+          <div class="edit-modal-option-label">
+            Abrir en reproductor
+            <div class="description">Si está desactivado, abre en una nueva pestaña</div>
+          </div>
           <label class="switch">
             <input type="checkbox" id="editOpenInPlayer">
-            <span class="slider round"></span>
+            <span class="slider"></span>
           </label>
         </div>
         
-        <div class="form-group">
-          <label class="form-label">Favorito</label>
+        <div class="edit-modal-option">
+          <div class="edit-modal-option-label">
+            Favorito
+            <div class="description">Marcar como favorito</div>
+          </div>
           <label class="switch">
             <input type="checkbox" id="editFavorito">
-            <span class="slider round"></span>
+            <span class="slider"></span>
           </label>
         </div>
-        
-        <div class="form-group">
+
+        <div class="form-group" style="margin-top: 1rem;">
           <label class="form-label">Puntuación (1-5)</label>
           <div class="rating-stars" id="editRatingStars">
             <span class="star" data-value="1">★</span>
@@ -1218,13 +1504,16 @@
       settings: {
         darkMode: false,
         primaryColor: '#2563eb',
-        playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: 400,
         minimizedPlayerHeight: 180,
         minimizedPlayerWidth: 320,
         expandedGroups: {},
-        editMode: false
+        editMode: false,
+        notificationsEnabled: true,
+        autoPlay: true,
+        defaultPlayerSize: 400,
+        theme: 'system'
       },
       filters: {
         searchText: '',
@@ -1245,13 +1534,9 @@
       editState: {
         linkId: null
       },
-      clearButtonState: {
-        clickCount: 0,
-        lastClickTime: 0
-      },
-      filterButtonState: {
+      filterClicks: {
         lastClickedButton: null,
-        clickCount: 0,
+        count: 0,
         lastClickTime: 0
       },
       dragState: {
@@ -1277,7 +1562,6 @@
       playerControls: document.getElementById('playerControls'),
       videoFrame: document.getElementById('videoFrame'),
       channelInfo: document.getElementById('channelInfo'),
-      channelNumberDisplay: document.getElementById('channelNumberDisplay'),
       prevChannelBtn: document.getElementById('prevChannelBtn'),
       nextChannelBtn: document.getElementById('nextChannelBtn'),
       toggleStickyBtn: document.getElementById('toggleStickyBtn'),
@@ -1299,15 +1583,15 @@
       cancelDeleteBtn: document.getElementById('cancelDeleteBtn'),
       confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
       clearAllBtn: document.getElementById('clearAllBtn'),
-      darkModeToggle: document.getElementById('darkModeToggle'),
       editModeToggle: document.getElementById('editModeToggle'),
-      playerModeSelect: document.getElementById('playerModeSelect'),
       rememberPlayerSize: document.getElementById('rememberPlayerSize'),
       exportLinksData: document.getElementById('exportLinksData'),
       importLinksData: document.getElementById('importLinksData'),
       copyExportLinksBtn: document.getElementById('copyExportLinksBtn'),
+      downloadExportLinksBtn: document.getElementById('downloadExportLinksBtn'),
       importLinksBtn: document.getElementById('importLinksBtn'),
       importGistBtn: document.getElementById('importGistBtn'),
+      importFileBtn: document.getElementById('importFileBtn'),
       cancelImportBtn: document.getElementById('cancelImportBtn'),
       closeSettingsModal: document.getElementById('closeSettingsModal'),
       editLinkUrl: document.getElementById('editLinkUrl'),
@@ -1323,12 +1607,49 @@
       saveEditLinkBtn: document.getElementById('saveEditLinkBtn'),
       cancelEditLinkBtn: document.getElementById('cancelEditLinkBtn'),
       closeEditLinkModal: document.getElementById('closeEditLinkModal'),
-      importExportTabs: document.querySelectorAll('.import-export-tab'),
-      importExportContents: document.querySelectorAll('.import-export-content'),
       notification: document.getElementById('notification'),
       scrollToTop: document.getElementById('scrollToTop'),
       saveEditBtn: document.getElementById('saveEditBtn'),
-      playerSection: document.getElementById('playerSection')
+      playerSection: document.getElementById('playerSection'),
+      colorOptions: document.querySelectorAll('#colorPicker .color-option'),
+      themeSelector: document.getElementById('themeSelector'),
+      notificationToggle: document.getElementById('notificationToggle'),
+      autoPlayToggle: document.getElementById('autoPlayToggle'),
+      defaultPlayerSize: document.getElementById('defaultPlayerSize'),
+      settingsTabs: document.querySelectorAll('.settings-tab'),
+      settingsContents: document.querySelectorAll('.settings-tab-content')
+    };
+
+    const classNames = {
+        active: 'modal--active',
+        activeFilter: 'filter-button--active',
+        activeEmoji: 'emoji-filter-btn--active',
+        activeTab: 'settings-tab--active',
+        visibleContent: 'settings-tab-content--active',
+        visibleNotification: 'notification--active',
+        visibleScrollBtn: 'scroll-to-top--visible',
+        editMode: 'channel-card--edit-mode',
+        favoriteCard: 'channel-card--favorite',
+        playerActive: 'player-container--active',
+        controlsActive: 'player-controls--active',
+        minimizedPlayer: 'player-container--minimized',
+        minimizedControls: 'player-controls--minimized',
+        collapsedHeader: 'channel-group__header--collapsed',
+        collapsedContent: 'channel-group__content--collapsed',
+        darkMode: 'dark-mode'
+    };
+
+    const emojis = {
+        'F1': '🏎️',
+        'Baloncesto': '🏀',
+        'Fútbol': '⚽',
+        'Motorsport': '🏁',
+        'Tenis': '🎾',
+        'TV': '📺',
+        'Otros': '🏅',
+        'ES': '🇪🇸',
+        'EN': '🇬🇧',
+        'OT': '🏳️‍⚧️'
     };
 
     function init() {
@@ -1357,9 +1678,7 @@
         state.links = JSON.parse(savedLinks);
       }
       
-      if (state.settings.darkMode) {
-        document.body.classList.add('dark-mode');
-      }
+      applyTheme(state.settings.theme);
       
       if (state.settings.rememberPlayerSize) {
         if (state.settings.playerHeight) {
@@ -1371,14 +1690,36 @@
         }
       }
       
-      elements.darkModeToggle.checked = state.settings.darkMode;
       elements.editModeToggle.checked = state.settings.editMode;
-      elements.playerModeSelect.value = state.settings.playerMode;
       elements.rememberPlayerSize.checked = state.settings.rememberPlayerSize;
+      elements.notificationToggle.checked = state.settings.notificationsEnabled;
+      elements.autoPlayToggle.checked = state.settings.autoPlay;
+      elements.defaultPlayerSize.value = state.settings.defaultPlayerSize;
       
       if (state.settings.primaryColor) {
         updatePrimaryColor(state.settings.primaryColor);
       }
+    }
+
+    function applyTheme(theme) {
+      document.body.classList.remove('light-mode', 'dark-mode');
+      if (theme === 'system') {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.body.classList.add('dark-mode');
+          state.settings.darkMode = true;
+        } else {
+          document.body.classList.remove('dark-mode');
+          state.settings.darkMode = false;
+        }
+      } else {
+        document.body.classList.add(theme + '-mode');
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        state.settings.darkMode = theme === 'dark';
+      }
+
+      elements.themeSelector.querySelectorAll('button').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.theme === theme);
+      });
     }
 
     function updatePrimaryColor(color) {
@@ -1391,11 +1732,8 @@
         document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
       }
       
-      document.querySelectorAll('.color-option').forEach(opt => {
-        opt.classList.remove('color-option--active');
-        if (opt.dataset.color === color) {
-          opt.classList.add('color-option--active');
-        }
+      elements.colorOptions.forEach(opt => {
+        opt.classList.toggle('color-option--active', opt.dataset.color === color);
       });
     }
 
@@ -1418,23 +1756,27 @@
       state.settings = {
         darkMode: false,
         primaryColor: '#2563eb',
-        playerMode: 'newTab',
         rememberPlayerSize: true,
         playerHeight: 400,
         minimizedPlayerHeight: 180,
         minimizedPlayerWidth: 320,
         expandedGroups: {},
-        editMode: false
+        editMode: false,
+        notificationsEnabled: true,
+        autoPlay: true,
+        defaultPlayerSize: 400,
+        theme: 'system'
       };
       
       localStorage.removeItem('daddyLiveHDSettings');
       localStorage.removeItem('daddyLiveHDLinks');
       
-      document.body.classList.remove('dark-mode');
-      elements.darkModeToggle.checked = false;
+      applyTheme('system');
       elements.editModeToggle.checked = false;
-      elements.playerModeSelect.value = 'newTab';
       elements.rememberPlayerSize.checked = true;
+      elements.notificationToggle.checked = true;
+      elements.autoPlayToggle.checked = true;
+      elements.defaultPlayerSize.value = 400;
       updatePrimaryColor('#2563eb');
       
       state.filters = {
@@ -1448,61 +1790,44 @@
       elements.searchInput.value = '';
       updateTypeFilterButtons();
       updateEmojiFilterButtons();
-      elements.filterFavorites.classList.remove('filter-button--active');
+      elements.filterFavorites.classList.remove(classNames.activeFilter);
       
       closePlayer();
       renderChannels();
       
-      showNotification('Todos los datos han sido borrados');
+      if (state.settings.notificationsEnabled) {
+        showNotification('Todos los datos han sido borrados');
+      }
     }
 
     function deleteLink(linkId) {
       state.links = state.links.filter(link => link.id !== linkId);
       saveSettings();
       renderChannels();
-      showNotification('Enlace eliminado');
+      if (state.settings.notificationsEnabled) {
+        showNotification('Enlace eliminado');
+      }
     }
 
     function renderChannels() {
       const filteredLinks = state.links.filter(link => {
-        if (state.filters.searchText) {
-          const searchLower = state.filters.searchText.toLowerCase();
-          const matchesTitle = link.title.toLowerCase().includes(searchLower);
-          const matchesWebName = link.webName?.toLowerCase().includes(searchLower);
-          
-          if (!matchesTitle && !matchesWebName) {
-            return false;
-          }
-        }
+        const searchLower = state.filters.searchText.toLowerCase();
+        const matchesSearch = !state.filters.searchText || link.title.toLowerCase().includes(searchLower) || (link.webName?.toLowerCase().includes(searchLower));
+        const matchesType = !state.filters.type || link.type === state.filters.type;
+        const matchesSport = !state.filters.sport || link.deporte === state.filters.sport;
+        const matchesLanguage = !state.filters.language || link.idioma === state.filters.language;
+        const matchesFavorites = !state.filters.favoritesOnly || link.favorito;
         
-        if (state.filters.type && link.type !== state.filters.type) {
-          return false;
-        }
-        
-        if (state.filters.sport && link.deporte !== state.filters.sport) {
-          return false;
-        }
-        
-        if (state.filters.language && link.idioma !== state.filters.language) {
-          return false;
-        }
-        
-        if (state.filters.favoritesOnly && !link.favorito) {
-          return false;
-        }
-        
-        return true;
+        return matchesSearch && matchesType && matchesSport && matchesLanguage && matchesFavorites;
       });
       
-      const linksByTitle = {};
-      filteredLinks.forEach(link => {
-        if (!linksByTitle[link.title]) {
-          linksByTitle[link.title] = [];
+      const linksByTitle = filteredLinks.reduce((acc, link) => {
+        if (!acc[link.title]) {
+          acc[link.title] = [];
         }
-        linksByTitle[link.title].push(link);
-      });
-      
-      let html = '';
+        acc[link.title].push(link);
+        return acc;
+      }, {});
       
       if (Object.keys(linksByTitle).length === 0) {
         elements.noResults.style.display = 'block';
@@ -1512,21 +1837,23 @@
       
       elements.noResults.style.display = 'none';
       
-      for (const [title, links] of Object.entries(linksByTitle)) {
+      const html = Object.entries(linksByTitle).map(([title, links]) => {
         const groupId = `group-${title.replace(/\s+/g, '-').toLowerCase()}`;
         const isExpanded = state.settings.expandedGroups[groupId] !== false;
         
-        html += `
+        const cardsHtml = links.map(renderLinkCard).join('');
+        
+        return `
           <div class="channel-group" id="${groupId}">
-            <div class="channel-group__header ${isExpanded ? '' : 'channel-group__header--collapsed'}">
+            <div class="channel-group__header ${isExpanded ? '' : classNames.collapsedHeader}">
               <div class="channel-group__title">${title}</div>
             </div>
-            <div class="channel-group__content ${isExpanded ? '' : 'channel-group__content--collapsed'}">
-              ${links.map(link => renderLinkCard(link)).join('')}
+            <div class="channel-group__content ${isExpanded ? '' : classNames.collapsedContent}">
+              ${cardsHtml}
             </div>
           </div>
         `;
-      }
+      }).join('');
       
       elements.channelsContent.innerHTML = html;
       
@@ -1535,28 +1862,23 @@
           const groupId = this.parentElement.id;
           const content = this.nextElementSibling;
           
-          content.classList.toggle('channel-group__content--collapsed');
-          this.classList.toggle('channel-group__header--collapsed');
+          content.classList.toggle(classNames.collapsedContent);
+          this.classList.toggle(classNames.collapsedHeader);
           
-          state.settings.expandedGroups[groupId] = !content.classList.contains('channel-group__content--collapsed');
+          state.settings.expandedGroups[groupId] = !content.classList.contains(classNames.collapsedContent);
           saveSettings();
         });
       });
       
-      if (state.settings.editMode) {
-        setupEditMode();
-        elements.saveEditBtn.classList.add('save-edit-btn--visible');
-      } else {
-        elements.saveEditBtn.classList.remove('save-edit-btn--visible');
-      }
+      elements.saveEditBtn.classList.toggle('save-edit-btn--visible', state.settings.editMode);
     }
 
     function renderLinkCard(link) {
-      const editModeClass = state.settings.editMode ? 'channel-card--edit-mode' : '';
-      const languageFlag = link.idioma === 'ES' ? '🇪🇸' : link.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
+      const editModeClass = state.settings.editMode ? classNames.editMode : '';
+      const languageFlag = emojis[link.idioma] || emojis['OT'];
       
       return `
-        <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''} ${editModeClass}" 
+        <div class="channel-card ${link.favorito ? classNames.favoriteCard : ''} ${editModeClass}" 
              data-id="${link.id}"
              style="${link.color ? `border-color: ${link.color}` : ''}">
           <button class="delete-btn" data-id="${link.id}" title="Borrar enlace">×</button>
@@ -1565,74 +1887,19 @@
           <div class="channel-header">
             <div class="channel-name">${link.webName || link.title}</div>
           </div>
-          <div class="channel-sport">${getSportEmoji(link.deporte)}</div>
+          <div class="channel-sport">${emojis[link.deporte] || ''}</div>
           ${link.puntuacion ? `<div class="channel-rating">${'★'.repeat(link.puntuacion)}${'☆'.repeat(5 - link.puntuacion)}</div>` : ''}
         </div>
       `;
     }
-
-    function setupEditMode() {
-      const channelCards = document.querySelectorAll('.channel-card');
-      
-      channelCards.forEach(card => {
-        card.addEventListener('click', function(e) {
-          if (!state.settings.editMode) return;
-          
-          const linkId = this.dataset.id;
-          const link = state.links.find(l => l.id === linkId);
-          
-          if (state.dragState.isDragging) {
-            state.dragState.isDragging = false;
-            const draggedCard = state.dragState.draggedItem;
-            
-            if (draggedCard && draggedCard !== this) {
-              const startIndex = state.links.findIndex(l => l.id === state.dragState.draggedItem.dataset.id);
-              const endIndex = state.links.findIndex(l => l.id === this.dataset.id);
-              
-              if (startIndex !== -1 && endIndex !== -1) {
-                const [movedLink] = state.links.splice(startIndex, 1);
-                state.links.splice(endIndex, 0, movedLink);
-                saveSettings();
-                renderChannels();
-              }
-            }
-          } else {
-            state.dragState.isDragging = true;
-            state.dragState.draggedItem = this;
-          }
-        });
-      });
-    }
-
-    function getTypeDisplay(type) {
-      const types = {
-        'web': 'Vía Web',
-        'acestream': 'Acestream',
-        'source': 'Fuente'
-      };
-      return types[type] || type;
-    }
-
-    function getSportEmoji(sport) {
-      const emojis = {
-        'F1': '🏎️',
-        'Baloncesto': '🏀',
-        'Fútbol': '⚽',
-        'Motorsport': '🏁',
-        'Tenis': '🎾',
-        'TV': '📺',
-        'Otros': '🏅'
-      };
-      return emojis[sport] || '';
-    }
-
+    
     function openLink(linkId) {
       if (state.settings.editMode) return;
       
       const link = state.links.find(l => l.id === linkId);
       if (!link) return;
       
-      if (link.openInPlayer && state.settings.playerMode === 'inline') {
+      if (link.openInPlayer) {
         state.currentPlayer.channelId = linkId;
         
         elements.channelInfo.textContent = link.title;
@@ -1640,18 +1907,17 @@
         
         elements.videoFrame.src = link.link;
         
-        elements.playerContainer.classList.add('player-container--active');
-        elements.playerControls.classList.add('player-controls--active');
+        elements.playerContainer.classList.add(classNames.playerActive);
+        elements.playerControls.classList.add(classNames.controlsActive);
         elements.playerSection.scrollIntoView({ behavior: 'smooth' });
         
         if (state.settings.rememberPlayerSize) {
-          if (state.currentPlayer.isMinimized) {
-            elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
-            elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
-          } else {
-            elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
-            elements.playerContainer.style.width = '100%';
-          }
+          elements.playerContainer.style.height = state.currentPlayer.isMinimized
+            ? `${state.settings.minimizedPlayerHeight}px`
+            : `${state.settings.playerHeight}px`;
+          elements.playerContainer.style.width = state.currentPlayer.isMinimized
+            ? `${state.settings.minimizedPlayerWidth}px`
+            : '100%';
         }
       } else {
         window.open(link.link, '_blank');
@@ -1659,8 +1925,8 @@
     }
 
     function closePlayer() {
-      elements.playerContainer.classList.remove('player-container--active');
-      elements.playerControls.classList.remove('player-controls--active');
+      elements.playerContainer.classList.remove(classNames.playerActive);
+      elements.playerControls.classList.remove(classNames.controlsActive);
       state.currentPlayer.channelId = null;
       
       if (state.currentPlayer.isMinimized) {
@@ -1671,24 +1937,18 @@
     function toggleMinimizePlayer() {
       state.currentPlayer.isMinimized = !state.currentPlayer.isMinimized;
       
-      if (state.currentPlayer.isMinimized) {
-        elements.playerContainer.classList.add('player-container--minimized');
-        elements.playerControls.classList.add('player-controls--minimized');
-        elements.toggleStickyBtn.classList.add('control-btn--active');
-        
-        if (state.settings.rememberPlayerSize) {
-          if (!elements.playerContainer.classList.contains('player-container--minimized')) {
-            state.settings.playerHeight = elements.playerContainer.offsetHeight;
-          }
+      elements.playerContainer.classList.toggle(classNames.minimizedPlayer, state.currentPlayer.isMinimized);
+      elements.playerControls.classList.toggle(classNames.minimizedControls, state.currentPlayer.isMinimized);
+      elements.toggleStickyBtn.classList.toggle('control-btn--active', state.currentPlayer.isMinimized);
+      
+      if (state.settings.rememberPlayerSize) {
+        if (state.currentPlayer.isMinimized) {
+          state.settings.playerHeight = elements.playerContainer.offsetHeight;
           elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
           elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
-        }
-      } else {
-        elements.playerContainer.classList.remove('player-container--minimized');
-        elements.playerControls.classList.remove('player-controls--minimized');
-        elements.toggleStickyBtn.classList.remove('control-btn--active');
-        
-        if (state.settings.rememberPlayerSize && state.settings.playerHeight) {
+        } else {
+          state.settings.minimizedPlayerHeight = elements.playerContainer.offsetHeight;
+          state.settings.minimizedPlayerWidth = elements.playerContainer.offsetWidth;
           elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
           elements.playerContainer.style.width = '100%';
         }
@@ -1707,60 +1967,46 @@
         
         const linkCard = document.querySelector(`.channel-card[data-id="${link.id}"]`);
         if (linkCard) {
-          linkCard.classList.toggle('channel-card--favorite', link.favorito);
+          linkCard.classList.toggle(classNames.favoriteCard, link.favorito);
         }
         
-        showNotification(link.favorito ? 'Añadido a favoritos' : 'Eliminado de favoritos');
+        if (state.settings.notificationsEnabled) {
+          showNotification(link.favorito ? 'Añadido a favoritos' : 'Eliminado de favoritos');
+        }
         saveSettings();
       }
     }
 
     function resizePlayer(direction) {
-      if (!elements.playerContainer.classList.contains('player-container--active')) return;
+      if (!elements.playerContainer.classList.contains(classNames.playerActive)) return;
       
-      if (state.currentPlayer.isMinimized) {
-        const currentHeight = elements.playerContainer.offsetHeight;
-        const currentWidth = elements.playerContainer.offsetWidth;
-        const minHeight = 120;
-        const maxHeight = 300;
-        const minWidth = 213;
-        const maxWidth = 533;
-        const step = 20;
-        
-        let newHeight, newWidth;
-        
-        if (direction === 'increase') {
-          newHeight = Math.min(currentHeight + step, maxHeight);
-          newWidth = Math.round(newHeight * 16/9);
-        } else {
-          newHeight = Math.max(currentHeight - step, minHeight);
-          newWidth = Math.round(newHeight * 16/9);
-        }
-        
-        elements.playerContainer.style.height = `${newHeight}px`;
-        elements.playerContainer.style.width = `${newWidth}px`;
-        
-        if (state.settings.rememberPlayerSize) {
+      const isMinimized = state.currentPlayer.isMinimized;
+      const currentHeight = elements.playerContainer.offsetHeight;
+      const step = isMinimized ? 20 : 50;
+      
+      let newHeight;
+      if (direction === 'increase') {
+        newHeight = currentHeight + step;
+      } else {
+        newHeight = currentHeight - step;
+      }
+      
+      let newWidth = elements.playerContainer.offsetWidth;
+      if (isMinimized) {
+        newHeight = Math.max(120, Math.min(newHeight, 300));
+        newWidth = Math.round(newHeight * 16/9);
+      } else {
+        newHeight = Math.max(311, Math.min(newHeight, window.innerHeight * 0.85));
+      }
+      
+      elements.playerContainer.style.height = `${newHeight}px`;
+      elements.playerContainer.style.width = `${newWidth}px`;
+      
+      if (state.settings.rememberPlayerSize) {
+        if (isMinimized) {
           state.settings.minimizedPlayerHeight = newHeight;
           state.settings.minimizedPlayerWidth = newWidth;
-        }
-      } else {
-        const currentHeight = elements.playerContainer.offsetHeight;
-        const minHeight = 311;
-        const maxHeight = window.innerHeight * 0.85;
-        const step = 50;
-        
-        let newHeight;
-        
-        if (direction === 'increase') {
-          newHeight = Math.min(currentHeight + step, maxHeight);
         } else {
-          newHeight = Math.max(currentHeight - step, minHeight);
-        }
-        
-        elements.playerContainer.style.height = `${newHeight}px`;
-        
-        if (state.settings.rememberPlayerSize) {
           state.settings.playerHeight = newHeight;
         }
       }
@@ -1769,21 +2015,18 @@
     }
 
     function showNotification(message, type = 'success') {
+      if (!state.settings.notificationsEnabled) return;
       elements.notification.textContent = message;
       elements.notification.className = `notification notification--${type}`;
-      elements.notification.classList.add('notification--active');
+      elements.notification.classList.add(classNames.visibleNotification);
       
       setTimeout(() => {
-        elements.notification.classList.remove('notification--active');
+        elements.notification.classList.remove(classNames.visibleNotification);
       }, 3000);
     }
 
     function checkScrollPosition() {
-      if (window.scrollY > 300) {
-        elements.scrollToTop.classList.add('scroll-to-top--visible');
-      } else {
-        elements.scrollToTop.classList.remove('scroll-to-top--visible');
-      }
+      elements.scrollToTop.classList.toggle(classNames.visibleScrollBtn, window.scrollY > 300);
     }
 
     function editLink(linkId) {
@@ -1803,215 +2046,148 @@
       elements.editFavorito.checked = link.favorito || false;
       
       const stars = elements.editRatingStars.querySelectorAll('.star');
-      stars.forEach(star => {
-        star.classList.remove('active');
+      stars.forEach((star, index) => {
+        star.classList.toggle('active', index < (link.puntuacion || 0));
       });
       
-      for (let i = 0; i < (link.puntuacion || 0); i++) {
-        if (stars[i]) {
-          stars[i].classList.add('active');
-        }
-      }
-      
-      elements.editLinkModal.classList.add('modal--active');
+      elements.editLinkModal.classList.add(classNames.active);
     }
 
     function saveEditedLink() {
-      const link = state.links.find(l => l.id === state.editState.linkId);
-      if (!link) {
-        addNewLink();
-        return;
-      }
-      
-      if (!elements.editLinkUrl.value || !elements.editLinkTitle.value) {
-        showNotification('URL y título son obligatorios', 'error');
-        return;
-      }
-      
+      const linkId = state.editState.linkId;
       const activeStars = elements.editRatingStars.querySelectorAll('.star.active');
       const rating = activeStars.length;
-      
-      link.link = elements.editLinkUrl.value;
-      link.title = elements.editLinkTitle.value;
-      link.webName = elements.editWebName.value || null;
-      link.deporte = elements.editLinkSport.value;
-      link.idioma = elements.editLinkLanguage.value;
-      link.type = elements.editLinkType.value;
-      link.color = elements.editLinkColor.value;
-      link.openInPlayer = elements.editOpenInPlayer.checked;
-      link.favorito = elements.editFavorito.checked;
-      link.puntuacion = rating;
-      
-      saveSettings();
-      renderChannels();
-      closeEditLinkModal();
-      showNotification('Enlace actualizado correctamente');
-    }
 
-    function addNewLink() {
       if (!elements.editLinkUrl.value || !elements.editLinkTitle.value) {
-        showNotification('URL y título son obligatorios', 'error');
+        if (state.settings.notificationsEnabled) {
+          showNotification('URL y título son obligatorios', 'error');
+        }
         return;
       }
-      
-      const activeStars = elements.editRatingStars.querySelectorAll('.star.active');
-      const rating = activeStars.length;
-      
-      const newLink = {
-        id: generateShortId(),
+
+      const linkData = {
+        id: linkId || generateShortId(),
         link: elements.editLinkUrl.value,
         title: elements.editLinkTitle.value,
         webName: elements.editWebName.value || null,
         deporte: elements.editLinkSport.value,
-        type: elements.editLinkType.value,
         idioma: elements.editLinkLanguage.value,
+        type: elements.editLinkType.value,
         color: elements.editLinkColor.value,
         openInPlayer: elements.editOpenInPlayer.checked,
-        puntuacion: rating,
-        favorito: elements.editFavorito.checked
+        favorito: elements.editFavorito.checked,
+        puntuacion: rating
       };
-      
-      state.links.push(newLink);
+
+      if (linkId) {
+        const index = state.links.findIndex(l => l.id === linkId);
+        if (index !== -1) {
+          Object.assign(state.links[index], linkData);
+          if (state.settings.notificationsEnabled) {
+            showNotification('Enlace actualizado correctamente');
+          }
+        }
+      } else {
+        state.links.push(linkData);
+        if (state.settings.notificationsEnabled) {
+          showNotification('Nuevo enlace añadido');
+        }
+      }
+
       saveSettings();
       renderChannels();
       closeEditLinkModal();
-      showNotification('Nuevo enlace añadido');
-    }
-
-    function handleClearFiltersClick() {
-      const now = Date.now();
-      
-      if (now - state.clearButtonState.lastClickTime > 1000) {
-        state.clearButtonState.clickCount = 0;
-      }
-      
-      state.clearButtonState.clickCount++;
-      state.clearButtonState.lastClickTime = now;
-      
-      if (state.clearButtonState.clickCount >= 3) {
-        elements.exportLinksData.value = JSON.stringify(state.links, null, 2);
-        elements.settingsModal.classList.add('modal--active');
-        state.clearButtonState.clickCount = 0;
-      } else {
-        state.filters = {
-          searchText: '',
-          type: 'web',
-          sport: null,
-          language: null,
-          favoritesOnly: false
-        };
-        
-        elements.searchInput.value = '';
-        updateTypeFilterButtons();
-        updateEmojiFilterButtons();
-        elements.filterFavorites.classList.remove('filter-button--active');
-        
-        renderChannels();
-      }
     }
 
     function handleFilterButtonClick(buttonId) {
       const now = Date.now();
+      const isSameButton = state.filterClicks.lastClickedButton === buttonId;
+      const isQuickClick = now - state.filterClicks.lastClickTime < 1000;
       
-      if (now - state.filterButtonState.lastClickTime > 1000 || 
-          state.filterButtonState.lastClickedButton !== buttonId) {
-        state.filterButtonState.clickCount = 1;
-        state.filterButtonState.lastClickedButton = buttonId;
-      } else {
-        state.filterButtonState.clickCount++;
-      }
+      state.filterClicks.lastClickedButton = buttonId;
+      state.filterClicks.lastClickTime = now;
+      state.filterClicks.count = (isSameButton && isQuickClick) ? state.filterClicks.count + 1 : 1;
       
-      state.filterButtonState.lastClickTime = now;
-      
-      if (state.filterButtonState.clickCount >= 3) {
+      if (state.filterClicks.count >= 3 && buttonId !== 'clearFilters') {
         state.editState.linkId = null;
-        elements.editLinkUrl.value = '';
-        elements.editLinkTitle.value = '';
-        elements.editWebName.value = '';
+        Object.values(elements).forEach(el => {
+            if(el.value !== undefined) el.value = '';
+            if(el.type === 'checkbox') el.checked = false;
+        });
+        
         elements.editLinkSport.value = 'Fútbol';
         elements.editLinkLanguage.value = 'ES';
         elements.editLinkType.value = buttonId === 'filterWeb' ? 'web' : 
-                                buttonId === 'filterAcestream' ? 'acestream' : 'source';
+                                      buttonId === 'filterAcestream' ? 'acestream' : 'source';
         elements.editLinkColor.value = '#2563eb';
-        elements.editOpenInPlayer.checked = false;
-        elements.editFavorito.checked = false;
         
-        elements.editRatingStars.querySelectorAll('.star').forEach(star => {
-          star.classList.remove('active');
-        });
+        elements.editRatingStars.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
         
-        elements.editLinkModal.classList.add('modal--active');
-        state.filterButtonState.clickCount = 0;
+        elements.editLinkModal.classList.add(classNames.active);
+        state.filterClicks.count = 0;
+      } else if (buttonId === 'clearFilters') {
+          if(state.filterClicks.count >= 3) {
+            elements.exportLinksData.value = JSON.stringify(state.links, null, 2);
+            elements.settingsModal.classList.add(classNames.active);
+            state.filterClicks.count = 0;
+          } else {
+            state.filters = {
+              searchText: '',
+              type: 'web',
+              sport: null,
+              language: null,
+              favoritesOnly: false
+            };
+            
+            elements.searchInput.value = '';
+            updateTypeFilterButtons();
+            updateEmojiFilterButtons();
+            elements.filterFavorites.classList.remove(classNames.activeFilter);
+            
+            renderChannels();
+          }
       } else {
-        if (buttonId === 'filterWeb') {
-          state.filters.type = 'web';
-        } else if (buttonId === 'filterAcestream') {
-          state.filters.type = 'acestream';
-        } else if (buttonId === 'filterSources') {
-          state.filters.type = 'source';
-        }
-        
+        state.filters.type = buttonId.replace('filter', '').toLowerCase();
         updateTypeFilterButtons();
         renderChannels();
       }
+    }
+
+    function handleEmojiFilterClick(emojiBtn) {
+        const filterType = emojiBtn.dataset.filter;
+        const isLang = ['ES', 'EN'].includes(filterType);
+        const filterStateKey = isLang ? 'language' : 'sport';
+        
+        if (state.filters[filterStateKey] === filterType) {
+            state.filters[filterStateKey] = null;
+        } else {
+            state.filters[filterStateKey] = filterType;
+        }
+        
+        updateEmojiFilterButtons();
+        renderChannels();
     }
 
     function handleSwipe(direction) {
       const filterOrder = ['web', 'acestream', 'source'];
       const currentIndex = filterOrder.indexOf(state.filters.type);
-      let newIndex;
-      
-      if (direction === 'left') {
-        newIndex = (currentIndex + 1) % filterOrder.length;
-      } else if (direction === 'right') {
-        newIndex = (currentIndex - 1 + filterOrder.length) % filterOrder.length;
-      } else {
-        return;
-      }
+      let newIndex = (currentIndex + (direction === 'left' ? 1 : -1) + filterOrder.length) % filterOrder.length;
       
       state.filters.type = filterOrder[newIndex];
       updateTypeFilterButtons();
       renderChannels();
     }
-
-    function setupTouchEvents() {
-      document.addEventListener('touchstart', function(e) {
-        state.touchState.startX = e.changedTouches[0].screenX;
-        state.touchState.startY = e.changedTouches[0].screenY;
-      }, { passive: true });
-      
-      document.addEventListener('touchend', function(e) {
-        const endX = e.changedTouches[0].screenX;
-        const endY = e.changedTouches[0].screenY;
-        const diffX = endX - state.touchState.startX;
-        const diffY = endY - state.touchState.startY;
-        
-        if (Math.abs(diffX) > Math.abs(diffY)) {
-          if (Math.abs(diffX) > 50) {
-            if (diffX > 0) {
-              handleSwipe('right');
-            } else {
-              handleSwipe('left');
-            }
-          }
-        }
-      }, { passive: true });
-    }
-
+    
     async function importFromGist() {
       try {
         const gistId = 'be82cec2fed5b9886b07fc171f2d9744';
         const rawUrl = `https://gist.githubusercontent.com/Ciento20/${gistId}/raw`;
         
         const response = await fetch(rawUrl);
-        if (!response.ok) {
-          throw new Error('Error al obtener los datos del Gist');
-        }
+        if (!response.ok) throw new Error('Error al obtener los datos del Gist');
         
         const data = await response.json();
-        if (!Array.isArray(data)) {
-          throw new Error('Los datos del Gist no son válidos');
-        }
+        if (!Array.isArray(data)) throw new Error('Los datos del Gist no son válidos');
         
         const normalizedData = data.map(item => ({
           id: generateShortId(),
@@ -2028,7 +2204,9 @@
         })).filter(item => item.link);
         
         if (normalizedData.length === 0) {
-          showNotification('El Gist no contiene enlaces válidos', 'error');
+          if (state.settings.notificationsEnabled) {
+            showNotification('El Gist no contiene enlaces válidos', 'error');
+          }
           return;
         }
         
@@ -2036,9 +2214,13 @@
         saveSettings();
         renderChannels();
         closeSettingsModal();
-        showNotification(`Se importaron ${normalizedData.length} enlaces desde el Gist`);
+        if (state.settings.notificationsEnabled) {
+          showNotification(`Se importaron ${normalizedData.length} enlaces desde el Gist`);
+        }
       } catch (error) {
-        showNotification(`Error al importar desde Gist: ${error.message}`, 'error');
+        if (state.settings.notificationsEnabled) {
+          showNotification(`Error al importar desde Gist: ${error.message}`, 'error');
+        }
         console.error('Error al importar desde Gist:', error);
       }
     }
@@ -2046,252 +2228,292 @@
     function generateShortId() {
       return Math.random().toString(36).substr(2, 9);
     }
+    
+    function setupDragAndDrop() {
+      const isElement = el => el instanceof Element;
+      
+      document.addEventListener('mousedown', e => {
+        const card = e.target.closest('.channel-card');
+        if (!state.settings.editMode || !card) return;
+        
+        state.dragState.isDragging = true;
+        state.dragState.draggedItem = card;
+        state.dragState.startIndex = state.links.findIndex(l => l.id === card.dataset.id);
+        
+        card.style.opacity = '0.5';
+        card.style.transform = 'rotate(2deg)';
+        e.preventDefault();
+      });
+      
+      document.addEventListener('mousemove', e => {
+        if (!state.dragState.isDragging || !state.dragState.draggedItem) return;
+        
+        const target = e.target.closest('.channel-card');
+        if (target && target !== state.dragState.draggedItem) {
+          const targetIndex = state.links.findIndex(l => l.id === target.dataset.id);
+          const draggedLink = state.links.splice(state.dragState.startIndex, 1)[0];
+          state.links.splice(targetIndex, 0, draggedLink);
+          state.dragState.startIndex = targetIndex;
+          renderChannels();
+        }
+      });
+      
+      document.addEventListener('mouseup', () => {
+        if (state.dragState.isDragging) {
+          state.dragState.isDragging = false;
+          state.dragState.draggedItem.style.opacity = '';
+          state.dragState.draggedItem.style.transform = '';
+          state.dragState.draggedItem = null;
+          saveSettings();
+          if (state.settings.notificationsEnabled) {
+            showNotification('Orden de canales guardado');
+          }
+        }
+      });
+    }
 
     function setupPlayerDrag() {
       const playerContainer = elements.playerContainer;
       const playerControls = elements.playerControls;
       const channelInfo = elements.channelInfo;
-      
-      function startDrag(e) {
+
+      const handleStartDrag = (e) => {
         if (!state.currentPlayer.isMinimized) return;
-        
         state.playerDragState.isDragging = true;
-        
         const rect = playerContainer.getBoundingClientRect();
-        state.playerDragState.offsetX = e.clientX - rect.left;
-        state.playerDragState.offsetY = e.clientY - rect.top;
-        
-        playerContainer.style.cursor = 'grabbing';
-        playerControls.style.cursor = 'grabbing';
-        channelInfo.style.cursor = 'grabbing';
-        
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
+        state.playerDragState.offsetX = clientX - rect.left;
+        state.playerDragState.offsetY = clientY - rect.top;
+        document.body.style.userSelect = 'none';
+        playerContainer.style.transition = 'none';
         e.preventDefault();
-      }
-      
-      function drag(e) {
+      };
+
+      const handleDrag = (e) => {
         if (!state.playerDragState.isDragging) return;
-        
-        e.preventDefault();
-        
-        let clientX = e.clientX || e.touches[0].clientX;
-        let clientY = e.clientY || e.touches[0].clientY;
-        
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
         let x = clientX - state.playerDragState.offsetX;
         let y = clientY - state.playerDragState.offsetY;
-        
+
         const maxX = window.innerWidth - playerContainer.offsetWidth;
         const maxY = window.innerHeight - playerContainer.offsetHeight;
-        
         x = Math.max(0, Math.min(x, maxX));
         y = Math.max(0, Math.min(y, maxY));
-        
+
         playerContainer.style.left = `${x}px`;
         playerContainer.style.top = `${y}px`;
         playerControls.style.left = `${x}px`;
         playerControls.style.bottom = `${window.innerHeight - y - playerContainer.offsetHeight - 60}px`;
-      }
-      
-      function endDrag() {
-        if (!state.playerDragState.isDragging) return;
-        
+      };
+
+      const handleEndDrag = () => {
         state.playerDragState.isDragging = false;
-        playerContainer.style.cursor = 'move';
-        playerControls.style.cursor = 'move';
-        channelInfo.style.cursor = 'move';
-      }
+        document.body.style.userSelect = '';
+        playerContainer.style.transition = 'all 0.3s ease';
+      };
+
+      channelInfo.addEventListener('mousedown', handleStartDrag);
+      channelInfo.addEventListener('touchstart', handleStartDrag, { passive: false });
+      document.addEventListener('mousemove', handleDrag);
+      document.addEventListener('touchmove', handleDrag, { passive: false });
+      document.addEventListener('mouseup', handleEndDrag);
+      document.addEventListener('touchend', handleEndDrag);
+    }
+    
+    function setupTouchEvents() {
+      document.addEventListener('touchstart', (e) => {
+        state.touchState.startX = e.changedTouches[0].screenX;
+        state.touchState.startY = e.changedTouches[0].screenY;
+      }, { passive: true });
       
-      channelInfo.addEventListener('mousedown', startDrag);
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('mouseup', endDrag);
-      
-      channelInfo.addEventListener('touchstart', function(e) {
-        startDrag(e.touches[0]);
-      }, { passive: false });
-      
-      document.addEventListener('touchmove', function(e) {
-        drag(e);
-      }, { passive: false });
-      
-      document.addEventListener('touchend', endDrag);
+      document.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].screenX;
+        const endY = e.changedTouches[0].screenY;
+        const diffX = endX - state.touchState.startX;
+        const diffY = endY - state.touchState.startY;
+        
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+          handleSwipe(diffX > 0 ? 'right' : 'left');
+        }
+      }, { passive: true });
+    }
+    
+    function setupModalEvents() {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target.classList.contains('modal')) {
+            modal.classList.remove(classNames.active);
+          }
+        });
+      });
     }
 
     function setupEventListeners() {
       setupTouchEvents();
       setupPlayerDrag();
-      
-      document.addEventListener('click', function(e) {
-        const deleteBtn = e.target.closest('.delete-btn');
+      setupDragAndDrop();
+      setupModalEvents();
+
+      document.addEventListener('click', (e) => {
+        const { target } = e;
+        const deleteBtn = target.closest('.delete-btn');
+        const editBtn = target.closest('.edit-btn');
+        const linkCard = target.closest('.channel-card');
+        
         if (deleteBtn) {
           e.stopPropagation();
           state.deleteState.linkId = deleteBtn.dataset.id;
-          elements.confirmDeleteModal.classList.add('modal--active');
-          return;
-        }
-        
-        const editBtn = e.target.closest('.edit-btn');
-        if (editBtn) {
+          elements.confirmDeleteModal.classList.add(classNames.active);
+        } else if (editBtn) {
           e.stopPropagation();
           editLink(editBtn.dataset.id);
-          return;
-        }
-        
-        const linkCard = e.target.closest('.channel-card');
-        if (linkCard && !state.settings.editMode) {
-          const linkId = linkCard.dataset.id;
-          const link = state.links.find(l => l.id === linkId);
-          
-          if (link.openInPlayer && state.settings.playerMode === 'inline') {
-            e.preventDefault();
-            openLink(linkId);
-          } else {
-            window.open(link.link, '_blank');
-          }
+        } else if (linkCard && !state.settings.editMode) {
+          openLink(linkCard.dataset.id);
         }
       });
-      
-      elements.cancelDeleteBtn.addEventListener('click', function() {
-        elements.confirmDeleteModal.classList.remove('modal--active');
+
+      elements.confirmDeleteBtn.addEventListener('click', () => {
+        elements.confirmDeleteModal.classList.remove(classNames.active);
+        if (state.deleteState.linkId) deleteLink(state.deleteState.linkId);
       });
-      
-      elements.confirmDeleteBtn.addEventListener('click', function() {
-        elements.confirmDeleteModal.classList.remove('modal--active');
-        if (state.deleteState.linkId) {
-          deleteLink(state.deleteState.linkId);
-        }
-      });
-      
+      elements.cancelDeleteBtn.addEventListener('click', () => elements.confirmDeleteModal.classList.remove(classNames.active));
+
       elements.prevChannelBtn.addEventListener('click', () => resizePlayer('decrease'));
       elements.nextChannelBtn.addEventListener('click', () => resizePlayer('increase'));
       elements.toggleStickyBtn.addEventListener('click', toggleMinimizePlayer);
       elements.favoriteBtn.addEventListener('click', toggleFavorite);
       elements.closePlayerBtn.addEventListener('click', closePlayer);
       
-      elements.searchInput.addEventListener('input', function() {
-        state.filters.searchText = this.value;
+      elements.searchInput.addEventListener('input', () => {
+        state.filters.searchText = elements.searchInput.value;
         renderChannels();
       });
-      
-      elements.filterFavorites.addEventListener('click', function() {
+
+      elements.filterFavorites.addEventListener('click', () => {
         state.filters.favoritesOnly = !state.filters.favoritesOnly;
-        this.classList.toggle('filter-button--active', state.filters.favoritesOnly);
+        elements.filterFavorites.classList.toggle(classNames.activeFilter, state.filters.favoritesOnly);
         renderChannels();
       });
-      
-      elements.filterWeb.addEventListener('click', function() {
-        handleFilterButtonClick('filterWeb');
-      });
-      
-      elements.filterAcestream.addEventListener('click', function() {
-        handleFilterButtonClick('filterAcestream');
-      });
-      
-      elements.filterSources.addEventListener('click', function() {
-        handleFilterButtonClick('filterSources');
-      });
-      
-      elements.clearFilters.addEventListener('click', handleClearFiltersClick);
-      
-      elements.emojiFilters.addEventListener('click', function(e) {
+
+      elements.filterWeb.addEventListener('click', () => handleFilterButtonClick('filterWeb'));
+      elements.filterAcestream.addEventListener('click', () => handleFilterButtonClick('filterAcestream'));
+      elements.filterSources.addEventListener('click', () => handleFilterButtonClick('filterSources'));
+      elements.clearFilters.addEventListener('click', () => handleFilterButtonClick('clearFilters'));
+
+      elements.emojiFilters.addEventListener('click', (e) => {
         const emojiBtn = e.target.closest('.emoji-filter-btn');
-        if (emojiBtn) {
-          const filterType = emojiBtn.dataset.filter;
-          
-          if (filterType === 'ES' || filterType === 'EN') {
-            if (state.filters.language === filterType) {
-              state.filters.language = null;
-            } else {
-              state.filters.language = filterType;
-            }
-          } else {
-            if (state.filters.sport === filterType) {
-              state.filters.sport = null;
-            } else {
-              state.filters.sport = filterType;
-            }
-          }
-          
-          updateEmojiFilterButtons();
-          renderChannels();
-        }
+        if (emojiBtn) handleEmojiFilterClick(emojiBtn);
       });
       
-      elements.closeSettingsModal.addEventListener('click', closeSettingsModal);
-      
-      elements.darkModeToggle.addEventListener('change', function() {
-        state.settings.darkMode = this.checked;
-        if (this.checked) {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-        saveSettings();
-        showNotification('Modo oscuro ' + (this.checked ? 'activado' : 'desactivado'));
-      });
-      
-      elements.editModeToggle.addEventListener('change', function() {
-        state.settings.editMode = this.checked;
+      elements.closeSettingsModal.addEventListener('click', () => elements.settingsModal.classList.remove(classNames.active));
+      elements.editModeToggle.addEventListener('change', () => {
+        state.settings.editMode = elements.editModeToggle.checked;
         saveSettings();
         renderChannels();
-        showNotification('Modo edición ' + (this.checked ? 'activado' : 'desactivado'));
+        if (state.settings.notificationsEnabled) {
+          showNotification('Modo edición ' + (state.settings.editMode ? 'activado' : 'desactivado'));
+        }
       });
-      
-      elements.playerModeSelect.addEventListener('change', function() {
-        state.settings.playerMode = this.value;
+
+      elements.notificationToggle.addEventListener('change', () => {
+        state.settings.notificationsEnabled = elements.notificationToggle.checked;
         saveSettings();
-        showNotification('Modo de reproductor actualizado');
+        if (state.settings.notificationsEnabled) {
+          showNotification('Notificaciones activadas');
+        }
       });
       
-      elements.rememberPlayerSize.addEventListener('change', function() {
-        state.settings.rememberPlayerSize = this.checked;
+      elements.rememberPlayerSize.addEventListener('change', () => {
+        state.settings.rememberPlayerSize = elements.rememberPlayerSize.checked;
         saveSettings();
-        showNotification('Recordar tamaño ' + (this.checked ? 'activado' : 'desactivado'));
+        if (state.settings.notificationsEnabled) {
+          showNotification('Recordar tamaño ' + (state.settings.rememberPlayerSize ? 'activado' : 'desactivado'));
+        }
+      });
+
+      elements.autoPlayToggle.addEventListener('change', () => {
+        state.settings.autoPlay = elements.autoPlayToggle.checked;
+        saveSettings();
+        if (state.settings.notificationsEnabled) {
+          showNotification('Reproducción automática ' + (state.settings.autoPlay ? 'activada' : 'desactivada'));
+        }
       });
       
-      document.querySelectorAll('.color-option').forEach(option => {
-        option.addEventListener('click', function() {
-          document.querySelectorAll('.color-option').forEach(opt => {
-            opt.classList.remove('color-option--active');
-          });
-          
-          this.classList.add('color-option--active');
-          const color = this.dataset.color;
+      elements.defaultPlayerSize.addEventListener('change', () => {
+        state.settings.defaultPlayerSize = parseInt(elements.defaultPlayerSize.value, 10);
+        saveSettings();
+        if (state.settings.notificationsEnabled) {
+          showNotification('Tamaño predeterminado del reproductor actualizado');
+        }
+      });
+
+      elements.themeSelector.addEventListener('click', (e) => {
+        const themeBtn = e.target.closest('button');
+        if (themeBtn) {
+          state.settings.theme = themeBtn.dataset.theme;
+          applyTheme(state.settings.theme);
+          saveSettings();
+          if (state.settings.notificationsEnabled) {
+            showNotification('Tema actualizado');
+          }
+        }
+      });
+      
+      elements.colorOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          const color = option.dataset.color;
           state.settings.primaryColor = color;
           updatePrimaryColor(color);
           saveSettings();
-          showNotification('Color principal actualizado');
+          if (state.settings.notificationsEnabled) {
+            showNotification('Color principal actualizado');
+          }
         });
       });
       
-      elements.importExportTabs.forEach(tab => {
+      elements.settingsTabs.forEach(tab => {
         tab.addEventListener('click', function() {
           const tabName = this.dataset.tab;
-          
-          elements.importExportTabs.forEach(t => {
-            t.classList.remove('import-export-tab--active');
-          });
-          this.classList.add('import-export-tab--active');
-          
-          elements.importExportContents.forEach(content => {
-            content.classList.remove('import-export-content--active');
-          });
-          document.getElementById(`${tabName}Tab`).classList.add('import-export-content--active');
+          elements.settingsTabs.forEach(t => t.classList.remove(classNames.activeTab));
+          this.classList.add(classNames.activeTab);
+          elements.settingsContents.forEach(c => c.classList.remove(classNames.visibleContent));
+          document.getElementById(`${tabName}Tab`).classList.add(classNames.visibleContent);
         });
       });
       
-      elements.copyExportLinksBtn.addEventListener('click', function() {
+      elements.copyExportLinksBtn.addEventListener('click', () => {
         elements.exportLinksData.select();
         document.execCommand('copy');
-        showNotification('JSON copiado al portapapeles');
+        if (state.settings.notificationsEnabled) {
+          showNotification('¡Copiado!');
+        }
+      });
+
+      elements.downloadExportLinksBtn.addEventListener('click', () => {
+        const data = elements.exportLinksData.value;
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'daddy_links.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        if (state.settings.notificationsEnabled) {
+          showNotification('Archivo JSON descargado');
+        }
       });
       
-      elements.importLinksBtn.addEventListener('click', function() {
+      elements.importLinksBtn.addEventListener('click', () => {
         try {
           const data = JSON.parse(elements.importLinksData.value);
-          if (!Array.isArray(data)) {
-            throw new Error('Formato de datos inválido');
-          }
+          if (!Array.isArray(data)) throw new Error('Formato de datos inválido');
           
-          const normalizedData = data.map(item => ({
+          const newLinks = data.map(item => ({
             id: generateShortId(),
             link: item.link,
             title: item.title || 'Sin título',
@@ -2303,104 +2525,104 @@
             openInPlayer: item.openInPlayer || false,
             puntuacion: item.puntuacion || 3,
             favorito: item.favorito || false
-          }));
+          })).filter(item => item.link);
           
-          const newLinks = normalizedData.filter(newLink => 
+          const uniqueNewLinks = newLinks.filter(newLink => 
             !state.links.some(existingLink => existingLink.link === newLink.link)
           );
           
-          if (newLinks.length > 0) {
-            state.links = [...state.links, ...newLinks];
+          if (uniqueNewLinks.length > 0) {
+            state.links = [...state.links, ...uniqueNewLinks];
             saveSettings();
             renderChannels();
             closeSettingsModal();
-            showNotification(`Se añadieron ${newLinks.length} nuevos enlaces`);
+            if (state.settings.notificationsEnabled) {
+              showNotification(`Se añadieron ${uniqueNewLinks.length} nuevos enlaces`);
+            }
           } else {
-            showNotification('No se encontraron enlaces nuevos para importar', 'info');
+            if (state.settings.notificationsEnabled) {
+              showNotification('No se encontraron enlaces nuevos para importar', 'info');
+            }
           }
         } catch (e) {
-          showNotification('Error al importar datos: JSON inválido', 'error');
+          if (state.settings.notificationsEnabled) {
+            showNotification('Error al importar datos: JSON inválido', 'error');
+          }
         }
       });
       
       elements.importGistBtn.addEventListener('click', importFromGist);
-      
-      elements.cancelImportBtn.addEventListener('click', function() {
-        elements.importLinksData.value = '';
+
+      elements.importFileBtn.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            elements.importLinksData.value = event.target.result;
+            if (state.settings.notificationsEnabled) {
+              showNotification('Archivo cargado en el campo de texto');
+            }
+          };
+          reader.readAsText(file);
+        };
+        input.click();
       });
       
-      elements.saveEditBtn.addEventListener('click', function() {
+      elements.cancelImportBtn.addEventListener('click', () => elements.importLinksData.value = '');
+      
+      elements.saveEditBtn.addEventListener('click', () => {
         state.settings.editMode = false;
         elements.editModeToggle.checked = false;
         saveSettings();
         renderChannels();
-        showNotification('Cambios guardados');
+        if (state.settings.notificationsEnabled) {
+          showNotification('Cambios guardados');
+        }
       });
       
-      elements.clearAllBtn.addEventListener('click', function() {
-        elements.confirmClearModal.classList.add('modal--active');
-      });
-      
-      elements.cancelClearBtn.addEventListener('click', function() {
-        elements.confirmClearModal.classList.remove('modal--active');
-      });
-      
-      elements.confirmClearBtn.addEventListener('click', function() {
-        elements.confirmClearModal.classList.remove('modal--active');
+      elements.clearAllBtn.addEventListener('click', () => elements.confirmClearModal.classList.add(classNames.active));
+      elements.cancelClearBtn.addEventListener('click', () => elements.confirmClearModal.classList.remove(classNames.active));
+      elements.confirmClearBtn.addEventListener('click', () => {
+        elements.confirmClearModal.classList.remove(classNames.active);
         clearAllData();
       });
       
-      elements.closeEditLinkModal.addEventListener('click', closeEditLinkModal);
-      elements.cancelEditLinkBtn.addEventListener('click', closeEditLinkModal);
-      
+      elements.closeEditLinkModal.addEventListener('click', () => elements.editLinkModal.classList.remove(classNames.active));
+      elements.cancelEditLinkBtn.addEventListener('click', () => elements.editLinkModal.classList.remove(classNames.active));
       elements.saveEditLinkBtn.addEventListener('click', saveEditedLink);
       
-      elements.editRatingStars.addEventListener('click', function(e) {
+      elements.editRatingStars.addEventListener('click', (e) => {
         const star = e.target.closest('.star');
         if (star) {
           const value = parseInt(star.dataset.value);
-          
-          const stars = elements.editRatingStars.querySelectorAll('.star');
-          stars.forEach((s, index) => {
-            if (index < value) {
-              s.classList.add('active');
-            } else {
-              s.classList.remove('active');
-            }
+          elements.editRatingStars.querySelectorAll('.star').forEach((s, index) => {
+            s.classList.toggle('active', index < value);
           });
         }
       });
       
       window.addEventListener('scroll', checkScrollPosition);
-      
-      elements.scrollToTop.addEventListener('click', function() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      elements.scrollToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     }
 
     function updateTypeFilterButtons() {
-      elements.filterWeb.classList.toggle('filter-button--active', state.filters.type === 'web');
-      elements.filterAcestream.classList.toggle('filter-button--active', state.filters.type === 'acestream');
-      elements.filterSources.classList.toggle('filter-button--active', state.filters.type === 'source');
+      const type = state.filters.type;
+      elements.filterWeb.classList.toggle(classNames.activeFilter, type === 'web');
+      elements.filterAcestream.classList.toggle(classNames.activeFilter, type === 'acestream');
+      elements.filterSources.classList.toggle(classNames.activeFilter, type === 'source');
     }
 
     function updateEmojiFilterButtons() {
       document.querySelectorAll('.emoji-filter-btn').forEach(btn => {
         const filterType = btn.dataset.filter;
-        if (filterType === 'ES' || filterType === 'EN') {
-          btn.classList.toggle('emoji-filter-btn--active', state.filters.language === filterType);
-        } else {
-          btn.classList.toggle('emoji-filter-btn--active', state.filters.sport === filterType);
-        }
+        const isLang = ['ES', 'EN'].includes(filterType);
+        const filterStateValue = isLang ? state.filters.language : state.filters.sport;
+        btn.classList.toggle(classNames.activeEmoji, filterStateValue === filterType);
       });
-    }
-
-    function closeSettingsModal() {
-      elements.settingsModal.classList.remove('modal--active');
-    }
-
-    function closeEditLinkModal() {
-      elements.editLinkModal.classList.remove('modal--active');
     }
 
     function shadeColor(color, percent) {
