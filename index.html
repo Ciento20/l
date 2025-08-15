@@ -1139,6 +1139,11 @@
           <label class="form-label">Color de borde (opcional)</label>
           <input type="color" class="form-input" id="editLinkColor" value="#2563eb">
         </div>
+
+        <div class="form-group">
+          <label class="form-label">Color de borde (código HEX)</label>
+          <input type="text" class="form-input" id="editLinkColorHex" placeholder="Ej: #FF5733">
+        </div>
         
         <div class="form-group">
           <label class="form-label">Idioma</label>
@@ -1350,6 +1355,7 @@
       editLinkLanguage: document.getElementById('editLinkLanguage'),
       editLinkType: document.getElementById('editLinkType'),
       editLinkColor: document.getElementById('editLinkColor'),
+      editLinkColorHex: document.getElementById('editLinkColorHex'),
       editOpenInPlayer: document.getElementById('editOpenInPlayer'),
       editFavorito: document.getElementById('editFavorito'),
       editRatingStars: document.getElementById('editRatingStars'),
@@ -1795,6 +1801,7 @@
       elements.editLinkLanguage.value = link.idioma;
       elements.editLinkType.value = link.type;
       elements.editLinkColor.value = link.color || '#2563eb';
+      elements.editLinkColorHex.value = link.color || '';
       elements.editOpenInPlayer.checked = link.openInPlayer || false;
       elements.editFavorito.checked = link.favorito || false;
       
@@ -1826,6 +1833,12 @@
       
       const activeStars = elements.editRatingStars.querySelectorAll('.star.active');
       const rating = activeStars.length;
+
+      const newColor = elements.editLinkColorHex.value || elements.editLinkColor.value;
+      if (!isValidHexColor(newColor)) {
+          showNotification('Código de color HEX no válido', 'error');
+          return;
+      }
       
       link.link = elements.editLinkUrl.value;
       link.title = elements.editLinkTitle.value;
@@ -1833,7 +1846,7 @@
       link.deporte = elements.editLinkSport.value;
       link.idioma = elements.editLinkLanguage.value;
       link.type = elements.editLinkType.value;
-      link.color = elements.editLinkColor.value;
+      link.color = newColor;
       link.openInPlayer = elements.editOpenInPlayer.checked;
       link.favorito = elements.editFavorito.checked;
       link.puntuacion = rating;
@@ -1853,6 +1866,12 @@
       const activeStars = elements.editRatingStars.querySelectorAll('.star.active');
       const rating = activeStars.length;
       
+      const newColor = elements.editLinkColorHex.value || elements.editLinkColor.value;
+      if (!isValidHexColor(newColor)) {
+          showNotification('Código de color HEX no válido', 'error');
+          return;
+      }
+
       const newLink = {
         id: generateShortId(),
         link: elements.editLinkUrl.value,
@@ -1861,7 +1880,7 @@
         deporte: elements.editLinkSport.value,
         type: elements.editLinkType.value,
         idioma: elements.editLinkLanguage.value,
-        color: elements.editLinkColor.value,
+        color: newColor,
         openInPlayer: elements.editOpenInPlayer.checked,
         puntuacion: rating,
         favorito: elements.editFavorito.checked
@@ -1955,6 +1974,7 @@
         elements.editLinkColor.value = '#2563eb';
         elements.editOpenInPlayer.checked = false;
         elements.editFavorito.checked = false;
+        elements.editLinkColorHex.value = '';
         
         elements.editRatingStars.querySelectorAll('.star').forEach(star => {
           star.classList.remove('active');
@@ -2133,6 +2153,10 @@
       }, { passive: false });
       
       document.addEventListener('touchend', endDrag);
+    }
+
+    function isValidHexColor(hex) {
+        return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
     }
 
     function setupEventListeners() {
@@ -2366,6 +2390,17 @@
           });
         }
       });
+
+      elements.editLinkColorHex.addEventListener('input', function() {
+        const hexValue = this.value;
+        if (isValidHexColor(hexValue)) {
+            elements.editLinkColor.value = hexValue;
+        }
+      });
+      
+      elements.editLinkColor.addEventListener('input', function() {
+        elements.editLinkColorHex.value = this.value;
+      });
       
       window.addEventListener('scroll', checkScrollPosition);
       
@@ -2397,6 +2432,11 @@
 
     function closeEditLinkModal() {
       elements.editLinkModal.classList.remove('modal--active');
+    }
+
+    function cancelEditLinkModal() {
+      closeEditLinkModal();
+      editLink(state.editState.linkId);
     }
 
     function shadeColor(color, percent) {
