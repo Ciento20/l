@@ -1060,40 +1060,6 @@
               <div class="color-option" style="background: #db2777;" data-color="#db2777"></div>
             </div>
           </div>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Modo edición
-              <div class="settings-option-description">Permite reordenar los canales manualmente</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="editModeToggle">
-              <span class="slider round"></span>
-            </label>
-          </div>
-        </div>
-        
-        <div class="settings-section">
-          <h3 class="settings-section-title">📺 Reproductor</h3>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Modo de apertura
-              <div class="settings-option-description">Cómo se abren los enlaces</div>
-            </div>
-            <select class="form-select" id="playerModeSelect">
-              <option value="newTab">Nueva pestaña (predeterminado)</option>
-              <option value="inline">Reproductor interno (solo web)</option>
-            </select>
-          </div>
-          <div class="settings-option">
-            <div class="settings-option-label">
-              Recordar tamaño del reproductor
-              <div class="settings-option-description">Guarda la última altura del reproductor</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="rememberPlayerSize" checked>
-              <span class="slider round"></span>
-            </label>
-          </div>
         </div>
         
         <div class="settings-section">
@@ -1286,8 +1252,6 @@
       settings: {
         darkMode: false,
         primaryColor: '#2563eb',
-        playerMode: 'newTab',
-        rememberPlayerSize: true,
         playerHeight: 400,
         minimizedPlayerHeight: 180,
         minimizedPlayerWidth: 320,
@@ -1314,6 +1278,10 @@
         linkId: null
       },
       clearButtonState: {
+        clickCount: 0,
+        lastClickTime: 0
+      },
+      favoriteButtonState: {
         clickCount: 0,
         lastClickTime: 0
       },
@@ -1368,9 +1336,6 @@
       confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
       clearAllBtn: document.getElementById('clearAllBtn'),
       darkModeToggle: document.getElementById('darkModeToggle'),
-      editModeToggle: document.getElementById('editModeToggle'),
-      playerModeSelect: document.getElementById('playerModeSelect'),
-      rememberPlayerSize: document.getElementById('rememberPlayerSize'),
       exportLinksData: document.getElementById('exportLinksData'),
       importLinksData: document.getElementById('importLinksData'),
       copyExportLinksBtn: document.getElementById('copyExportLinksBtn'),
@@ -1429,20 +1394,7 @@
         document.body.classList.add('dark-mode');
       }
       
-      if (state.settings.rememberPlayerSize) {
-        if (state.settings.playerHeight) {
-          elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
-        }
-        if (state.settings.minimizedPlayerHeight) {
-          elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
-          elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
-        }
-      }
-      
       elements.darkModeToggle.checked = state.settings.darkMode;
-      elements.editModeToggle.checked = state.settings.editMode;
-      elements.playerModeSelect.value = state.settings.playerMode;
-      elements.rememberPlayerSize.checked = state.settings.rememberPlayerSize;
       
       if (state.settings.primaryColor) {
         updatePrimaryColor(state.settings.primaryColor);
@@ -1486,8 +1438,6 @@
       state.settings = {
         darkMode: false,
         primaryColor: '#2563eb',
-        playerMode: 'newTab',
-        rememberPlayerSize: true,
         playerHeight: 400,
         minimizedPlayerHeight: 180,
         minimizedPlayerWidth: 320,
@@ -1500,9 +1450,6 @@
       
       document.body.classList.remove('dark-mode');
       elements.darkModeToggle.checked = false;
-      elements.editModeToggle.checked = false;
-      elements.playerModeSelect.value = 'newTab';
-      elements.rememberPlayerSize.checked = true;
       updatePrimaryColor('#2563eb');
       
       state.filters = {
@@ -1699,7 +1646,7 @@
       const link = state.links.find(l => l.id === linkId);
       if (!link) return;
       
-      if (link.openInPlayer && state.settings.playerMode === 'inline') {
+      if (link.openInPlayer) {
         state.currentPlayer.channelId = linkId;
         
         elements.channelInfo.textContent = link.title;
@@ -1711,14 +1658,12 @@
         elements.playerControls.classList.add('player-controls--active');
         elements.playerSection.scrollIntoView({ behavior: 'smooth' });
         
-        if (state.settings.rememberPlayerSize) {
-          if (state.currentPlayer.isMinimized) {
-            elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
-            elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
-          } else {
-            elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
-            elements.playerContainer.style.width = '100%';
-          }
+        if (state.currentPlayer.isMinimized) {
+          elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+          elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
+        } else {
+          elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
+          elements.playerContainer.style.width = '100%';
         }
       } else {
         window.open(link.link, '_blank');
@@ -1743,22 +1688,15 @@
         elements.playerControls.classList.add('player-controls--minimized');
         elements.toggleStickyBtn.classList.add('control-btn--active');
         
-        if (state.settings.rememberPlayerSize) {
-          if (!elements.playerContainer.classList.contains('player-container--minimized')) {
-            state.settings.playerHeight = elements.playerContainer.offsetHeight;
-          }
-          elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
-          elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
-        }
+        elements.playerContainer.style.height = `${state.settings.minimizedPlayerHeight}px`;
+        elements.playerContainer.style.width = `${state.settings.minimizedPlayerWidth}px`;
       } else {
         elements.playerContainer.classList.remove('player-container--minimized');
         elements.playerControls.classList.remove('player-controls--minimized');
         elements.toggleStickyBtn.classList.remove('control-btn--active');
         
-        if (state.settings.rememberPlayerSize && state.settings.playerHeight) {
-          elements.playerContainer.style.height = `${state.settings.playerHeight}px`;
-          elements.playerContainer.style.width = '100%';
-        }
+        elements.playerContainer.style.height = `400px`;
+        elements.playerContainer.style.width = '100%';
       }
       
       saveSettings();
@@ -1806,11 +1744,6 @@
         
         elements.playerContainer.style.height = `${newHeight}px`;
         elements.playerContainer.style.width = `${newWidth}px`;
-        
-        if (state.settings.rememberPlayerSize) {
-          state.settings.minimizedPlayerHeight = newHeight;
-          state.settings.minimizedPlayerWidth = newWidth;
-        }
       } else {
         const currentHeight = elements.playerContainer.offsetHeight;
         const minHeight = 311;
@@ -1826,10 +1759,6 @@
         }
         
         elements.playerContainer.style.height = `${newHeight}px`;
-        
-        if (state.settings.rememberPlayerSize) {
-          state.settings.playerHeight = newHeight;
-        }
       }
       
       saveSettings();
@@ -1975,6 +1904,30 @@
         
         renderChannels();
       }
+    }
+    
+    function handleFavoriteButtonClick(event) {
+        event.stopPropagation();
+        const now = Date.now();
+        
+        if (now - state.favoriteButtonState.lastClickTime > 500) {
+            state.favoriteButtonState.clickCount = 0;
+        }
+        
+        state.favoriteButtonState.clickCount++;
+        state.favoriteButtonState.lastClickTime = now;
+        
+        if (state.favoriteButtonState.clickCount >= 3) {
+            state.settings.editMode = !state.settings.editMode;
+            saveSettings();
+            renderChannels();
+            showNotification('Modo edición ' + (state.settings.editMode ? 'activado' : 'desactivado'));
+            state.favoriteButtonState.clickCount = 0; 
+        } else {
+            state.filters.favoritesOnly = !state.filters.favoritesOnly;
+            event.target.classList.toggle('filter-button--active', state.filters.favoritesOnly);
+            renderChannels();
+        }
     }
 
     function handleFilterButtonClick(buttonId) {
@@ -2207,7 +2160,7 @@
           const linkId = linkCard.dataset.id;
           const link = state.links.find(l => l.id === linkId);
           
-          if (link.openInPlayer && state.settings.playerMode === 'inline') {
+          if (link.openInPlayer) {
             e.preventDefault();
             openLink(linkId);
           } else {
@@ -2238,11 +2191,7 @@
         renderChannels();
       });
       
-      elements.filterFavorites.addEventListener('click', function() {
-        state.filters.favoritesOnly = !state.filters.favoritesOnly;
-        this.classList.toggle('filter-button--active', state.filters.favoritesOnly);
-        renderChannels();
-      });
+      elements.filterFavorites.addEventListener('click', handleFavoriteButtonClick);
       
       elements.filterWeb.addEventListener('click', function() {
         handleFilterButtonClick('filterWeb');
@@ -2293,25 +2242,6 @@
         }
         saveSettings();
         showNotification('Modo oscuro ' + (this.checked ? 'activado' : 'desactivado'));
-      });
-      
-      elements.editModeToggle.addEventListener('change', function() {
-        state.settings.editMode = this.checked;
-        saveSettings();
-        renderChannels();
-        showNotification('Modo edición ' + (this.checked ? 'activado' : 'desactivado'));
-      });
-      
-      elements.playerModeSelect.addEventListener('change', function() {
-        state.settings.playerMode = this.value;
-        saveSettings();
-        showNotification('Modo de reproductor actualizado');
-      });
-      
-      elements.rememberPlayerSize.addEventListener('change', function() {
-        state.settings.rememberPlayerSize = this.checked;
-        saveSettings();
-        showNotification('Recordar tamaño ' + (this.checked ? 'activado' : 'desactivado'));
       });
       
       document.querySelectorAll('.color-option').forEach(option => {
@@ -2398,7 +2328,6 @@
       
       elements.saveEditBtn.addEventListener('click', function() {
         state.settings.editMode = false;
-        elements.editModeToggle.checked = false;
         saveSettings();
         renderChannels();
         showNotification('Cambios guardados');
@@ -2418,7 +2347,7 @@
       });
       
       elements.closeEditLinkModal.addEventListener('click', closeEditLinkModal);
-      elements.cancelEditLinkBtn.addEventListener('click', closeEditLinkModal);
+      elements.cancelEditLinkBtn.addEventListener('click', cancelEditLinkModal);
       
       elements.saveEditLinkBtn.addEventListener('click', saveEditedLink);
       
