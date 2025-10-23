@@ -1499,9 +1499,16 @@
           return false;
         }
         
-        if (state.filters.sport && link.deporte !== state.filters.sport) {
-          return false;
+        // --- MODIFICACIÓN DEL FILTRO DE DEPORTE INICIA AQUÍ ---
+        if (state.filters.sport) {
+          // Permite que pasen:
+          // 1. El deporte filtrado (ej: 'Fútbol')
+          // 2. Si el deporte es 'Otros' (🏅)
+          if (link.deporte !== state.filters.sport && link.deporte !== 'Otros') {
+            return false;
+          }
         }
+        // --- MODIFICACIÓN DEL FILTRO DE DEPORTE TERMINA AQUÍ ---
         
         if (state.filters.language && link.idioma !== state.filters.language) {
           return false;
