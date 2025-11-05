@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=no">
-  <title>🗒️</title>
+  <title>🗒️ Fuentes</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -1004,9 +1004,7 @@
       </div>
       <div class="filter-buttons">
         <button class="filter-button filter-button--favorites" id="filterFavorites">★</button>
-        <button class="filter-button filter-button--active" id="filterWeb">Vía Web</button>
-        <button class="filter-button" id="filterAcestream">Acestream</button>
-        <button class="filter-button" id="filterSources">Fuentes</button>
+        <button class="filter-button filter-button--active" id="filterSources">Fuentes</button>
         <button class="filter-button filter-button--clear" id="clearFilters">x</button>
       </div>
       <div class="emoji-filters" id="emojiFilters">
@@ -1157,8 +1155,6 @@
         <div class="form-group">
           <label class="form-label">Tipo de enlace</label>
           <select class="form-select" id="editLinkType">
-            <option value="web">Vía Web</option>
-            <option value="acestream">Acestream</option>
             <option value="source">Fuente</option>
           </select>
         </div>
@@ -1219,6 +1215,16 @@
       </div>
     </div>
     
+    <div class="modal" id="groupLinksModal">
+      <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+          <h2 class="modal-title" id="groupLinksModalTitle">Enlaces del Grupo</h2>
+          <button class="modal-close" id="closeGroupLinksModal">&times;</button>
+        </div>
+        <div class="channels-grid" id="groupLinksContainer">
+          </div>
+      </div>
+    </div>
     <div class="notification" id="notification"></div>
     
     <div class="scroll-to-top" id="scrollToTop">↑</div>
@@ -1230,10 +1236,10 @@
         {
           id: '1',
           link: 'https://example.com/stream1',
-          title: 'Canal 1',
-          webName: 'Movistar',
+          title: 'Canal de Prueba',
+          webName: 'Fuente Primaria',
           deporte: 'Fútbol',
-          type: 'web',
+          type: 'source', // Ajustado a 'source'
           idioma: 'ES',
           color: '#2563eb',
           openInPlayer: true,
@@ -1243,15 +1249,28 @@
         {
           id: '2',
           link: 'https://example.com/stream2',
-          title: 'Canal 2',
-          webName: 'DAZN',
-          deporte: 'F1',
-          type: 'web',
+          title: 'Canal de Prueba',
+          webName: 'Fuente Secundaria',
+          deporte: 'Fútbol',
+          type: 'source', // Ajustado a 'source'
           idioma: 'EN',
           color: '#dc2626',
           openInPlayer: false,
           puntuacion: 3,
           favorito: true
+        },
+        {
+          id: '3',
+          link: 'https://example.com/stream3',
+          title: 'Otro Canal',
+          webName: 'TV General',
+          deporte: 'TV',
+          type: 'source', // Ajustado a 'source'
+          idioma: 'ES',
+          color: '#16a34a',
+          openInPlayer: true,
+          puntuacion: 5,
+          favorito: false
         }
       ],
       settings: {
@@ -1265,7 +1284,7 @@
       },
       filters: {
         searchText: '',
-        type: 'web',
+        type: 'source', // Establecido por defecto a 'source'
         sport: null,
         language: null,
         favoritesOnly: false
@@ -1326,8 +1345,6 @@
       closePlayerBtn: document.getElementById('closePlayerBtn'),
       searchInput: document.getElementById('searchInput'),
       filterFavorites: document.getElementById('filterFavorites'),
-      filterWeb: document.getElementById('filterWeb'),
-      filterAcestream: document.getElementById('filterAcestream'),
       filterSources: document.getElementById('filterSources'),
       clearFilters: document.getElementById('clearFilters'),
       emojiFilters: document.getElementById('emojiFilters'),
@@ -1367,20 +1384,32 @@
       notification: document.getElementById('notification'),
       scrollToTop: document.getElementById('scrollToTop'),
       saveEditBtn: document.getElementById('saveEditBtn'),
-      playerSection: document.getElementById('playerSection')
+      playerSection: document.getElementById('playerSection'),
+      // NUEVOS ELEMENTOS DEL MODAL DE GRUPO
+      groupLinksModal: document.getElementById('groupLinksModal'),
+      groupLinksModalTitle: document.getElementById('groupLinksModalTitle'),
+      groupLinksContainer: document.getElementById('groupLinksContainer'),
+      closeGroupLinksModal: document.getElementById('closeGroupLinksModal')
+      // FIN NUEVOS ELEMENTOS
     };
 
     function init() {
       loadSettings();
+      loadFilters(); // Carga el estado de los filtros
       renderChannels();
       setupEventListeners();
       checkScrollPosition();
       window.addEventListener('storage', handleStorageEvent);
+      // Aplicar el estado de los filtros al iniciar
+      elements.searchInput.value = state.filters.searchText;
+      updateEmojiFilterButtons();
+      elements.filterFavorites.classList.toggle('filter-button--active', state.filters.favoritesOnly);
     }
 
     function handleStorageEvent(event) {
-      if (event.key === 'daddyLiveHDLinks' || event.key === 'daddyLiveHDSettings') {
+      if (event.key === 'daddyLiveHDLinks' || event.key === 'daddyLiveHDSettings' || event.key === 'daddyLiveHDFilters') {
         loadSettings();
+        loadFilters();
         renderChannels();
       }
     }
@@ -1393,7 +1422,8 @@
       
       const savedLinks = localStorage.getItem('daddyLiveHDLinks');
       if (savedLinks) {
-        state.links = JSON.parse(savedLinks);
+        // Solo cargar enlaces de tipo 'source' para mantener la coherencia
+        state.links = JSON.parse(savedLinks).filter(link => link.type === 'source');
       }
       
       if (state.settings.darkMode) {
@@ -1405,6 +1435,15 @@
       if (state.settings.primaryColor) {
         updatePrimaryColor(state.settings.primaryColor);
       }
+    }
+    
+    function loadFilters() {
+        const savedFilters = localStorage.getItem('daddyLiveHDFilters');
+        if (savedFilters) {
+            Object.assign(state.filters, JSON.parse(savedFilters));
+        }
+        // Forzar el filtro de tipo a 'source'
+        state.filters.type = 'source';
     }
 
     function updatePrimaryColor(color) {
@@ -1436,7 +1475,15 @@
 
     function saveSettings() {
       localStorage.setItem('daddyLiveHDSettings', JSON.stringify(state.settings));
-      localStorage.setItem('daddyLiveHDLinks', JSON.stringify(state.links));
+      // Solo guardar enlaces de tipo 'source'
+      localStorage.setItem('daddyLiveHDLinks', JSON.stringify(state.links.filter(link => link.type === 'source')));
+      saveFilters();
+    }
+    
+    function saveFilters() {
+        // Asegurar que el tipo de filtro sea siempre 'source' al guardar
+        state.filters.type = 'source';
+        localStorage.setItem('daddyLiveHDFilters', JSON.stringify(state.filters));
     }
 
     function clearAllData() {
@@ -1453,6 +1500,7 @@
       
       localStorage.removeItem('daddyLiveHDSettings');
       localStorage.removeItem('daddyLiveHDLinks');
+      localStorage.removeItem('daddyLiveHDFilters'); // Borra los filtros guardados
       
       document.body.classList.remove('dark-mode');
       elements.darkModeToggle.checked = false;
@@ -1460,14 +1508,13 @@
       
       state.filters = {
         searchText: '',
-        type: 'web',
+        type: 'source', // Fijo
         sport: null,
         language: null,
         favoritesOnly: false
       };
       
       elements.searchInput.value = '';
-      updateTypeFilterButtons();
       updateEmojiFilterButtons();
       elements.filterFavorites.classList.remove('filter-button--active');
       
@@ -1486,20 +1533,20 @@
 
     function renderChannels() {
       const filteredLinks = state.links.filter(link => {
+        // El filtro por tipo es implícito (solo 'source'), pero lo mantenemos explícito
+        if (link.type !== 'source') {
+             return false;
+        }
+
         if (state.filters.searchText) {
           const searchLower = state.filters.searchText.toLowerCase();
-          const searchableText = `${link.title} ${link.webName} ${link.deporte} ${link.idioma} ${link.type}`.toLowerCase();
+          const searchableText = `${link.title} ${link.webName} ${link.deporte} ${link.idioma}`.toLowerCase();
           
           if (!searchableText.includes(searchLower)) {
             return false;
           }
         }
         
-        if (state.filters.type && link.type !== state.filters.type) {
-          return false;
-        }
-        
-        // --- MODIFICACIÓN DEL FILTRO DE DEPORTE INICIA AQUÍ ---
         if (state.filters.sport) {
           // Permite que pasen:
           // 1. El deporte filtrado (ej: 'Fútbol')
@@ -1508,7 +1555,6 @@
             return false;
           }
         }
-        // --- MODIFICACIÓN DEL FILTRO DE DEPORTE TERMINA AQUÍ ---
         
         if (state.filters.language && link.idioma !== state.filters.language) {
           return false;
@@ -1539,36 +1585,35 @@
       
       elements.noResults.style.display = 'none';
       
+      // Usamos el grid para mostrar los grupos como tarjetas clickables
+      elements.channelsContent.className = 'channels-grid'; // Asignar la clase grid
+
       for (const [title, links] of Object.entries(linksByTitle)) {
         const groupId = `group-${title.replace(/\s+/g, '-').toLowerCase()}`;
-        const isExpanded = state.settings.expandedGroups[groupId] !== false;
+        const mainLink = links[0]; // Usar el primer enlace para mostrar información
+        const isFavorite = links.some(link => link.favorito);
+        const languageFlag = mainLink.idioma === 'ES' ? '🇪🇸' : mainLink.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
         
+        // El grupo ahora es la tarjeta clickable
         html += `
-          <div class="channel-group" id="${groupId}">
-            <div class="channel-group__header ${isExpanded ? '' : 'channel-group__header--collapsed'}">
-              <div class="channel-group__title">${title}</div>
+          <div class="channel-card ${isFavorite ? 'channel-card--favorite' : ''}" 
+               data-group-id="${groupId}" 
+               data-group-title="${title}"
+               data-links='${JSON.stringify(links)}'
+               style="${mainLink.color ? `border-color: ${mainLink.color}` : ''}">
+            <button class="delete-btn" data-id="${mainLink.id}" title="Borrar enlace principal">×</button>
+            <button class="edit-btn" data-id="${mainLink.id}" title="Editar enlace principal">✏️</button>
+            ${mainLink.idioma ? `<span class="channel-language">${languageFlag}</span>` : ''}
+            <div class="channel-header">
+              <div class="channel-name">${title} (${links.length})</div>
             </div>
-            <div class="channel-group__content ${isExpanded ? '' : 'channel-group__content--collapsed'}">
-              ${links.map(link => renderLinkCard(link)).join('')}
-            </div>
+            <div class="channel-sport">${getSportEmoji(mainLink.deporte)}</div>
+            ${mainLink.puntuacion ? `<div class="channel-rating">${'★'.repeat(mainLink.puntuacion)}${'☆'.repeat(5 - mainLink.puntuacion)}</div>` : ''}
           </div>
         `;
       }
       
       elements.channelsContent.innerHTML = html;
-      
-      document.querySelectorAll('.channel-group__header').forEach(header => {
-        header.addEventListener('click', function() {
-          const groupId = this.parentElement.id;
-          const content = this.nextElementSibling;
-          
-          content.classList.toggle('channel-group__content--collapsed');
-          this.classList.toggle('channel-group__header--collapsed');
-          
-          state.settings.expandedGroups[groupId] = !content.classList.contains('channel-group__content--collapsed');
-          saveSettings();
-        });
-      });
       
       if (state.settings.editMode) {
         setupEditMode();
@@ -1576,12 +1621,63 @@
       } else {
         elements.saveEditBtn.classList.remove('save-edit-btn--visible');
       }
+      
+      // Lógica para abrir el modal al hacer clic en la tarjeta del grupo
+      document.querySelectorAll('.channel-card[data-group-id]').forEach(groupCard => {
+          groupCard.removeEventListener('click', handleGroupCardClick); // Evitar duplicados
+          groupCard.addEventListener('click', handleGroupCardClick);
+      });
     }
 
-    function renderLinkCard(link) {
-      const editModeClass = state.settings.editMode ? 'channel-card--edit-mode' : '';
+    function handleGroupCardClick(e) {
+        const groupCard = e.target.closest('.channel-card[data-group-id]');
+        if (!groupCard) return;
+
+        // Si se hace clic en un botón de edición o borrado, se delega al listener global
+        if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn') || state.settings.editMode) {
+            return; 
+        }
+        
+        const title = groupCard.dataset.groupTitle;
+        const linksData = JSON.parse(groupCard.dataset.links);
+
+        elements.groupLinksModalTitle.textContent = `Enlaces de: ${title}`;
+        
+        // Renderizar todos los enlaces del grupo en el modal
+        elements.groupLinksContainer.innerHTML = linksData.map(link => 
+            renderLinkCard(link, true)
+        ).join('');
+
+        // Reasignar los listeners de clic para abrir los enlaces individuales dentro del modal
+        elements.groupLinksContainer.querySelectorAll('.channel-card[data-id]').forEach(linkCard => {
+            linkCard.addEventListener('click', function(e) {
+                // Previene que el clic dentro del modal se propague y cierre el modal
+                e.stopPropagation(); 
+                
+                // Si se hace clic en borrar/editar, se maneja en el listener global
+                if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
+                    return; 
+                }
+                
+                const linkId = this.dataset.id;
+                openLink(linkId);
+                elements.groupLinksModal.classList.remove('modal--active'); // Cerrar modal al abrir el enlace
+            });
+        });
+
+        // Mostrar el modal
+        elements.groupLinksModal.classList.add('modal--active');
+    }
+
+    function closeGroupLinksModal() {
+        elements.groupLinksModal.classList.remove('modal--active');
+    }
+
+    function renderLinkCard(link, isModal = false) { 
+      const editModeClass = (state.settings.editMode && isModal) ? 'channel-card--edit-mode' : '';
       const languageFlag = link.idioma === 'ES' ? '🇪🇸' : link.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
       
+      // La tarjeta de enlace individual que se muestra DENTRO DEL MODAL
       return `
         <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''} ${editModeClass}" 
              data-id="${link.id}"
@@ -1590,9 +1686,9 @@
           <button class="edit-btn" data-id="${link.id}" title="Editar enlace">✏️</button>
           ${link.idioma ? `<span class="channel-language">${languageFlag}</span>` : ''}
           <div class="channel-header">
-            <div class="channel-name">${link.webName || link.title}</div>
+            <div class="channel-name">${link.title}</div>
           </div>
-          <div class="channel-sport">${getSportEmoji(link.deporte)}</div>
+          <div class="channel-sport">${getSportEmoji(link.deporte)}<br/>${link.webName || 'Enlace'}</div>
           ${link.puntuacion ? `<div class="channel-rating">${'★'.repeat(link.puntuacion)}${'☆'.repeat(5 - link.puntuacion)}</div>` : ''}
         </div>
       `;
@@ -1602,42 +1698,48 @@
       const channelCards = document.querySelectorAll('.channel-card');
       
       channelCards.forEach(card => {
+        card.removeEventListener('click', handleGroupCardClick); // Desactiva el clic de grupo en modo edición
+        
         card.addEventListener('click', function(e) {
           if (!state.settings.editMode) return;
           
           const linkId = this.dataset.id;
           const link = state.links.find(l => l.id === linkId);
           
-          if (state.dragState.isDragging) {
-            state.dragState.isDragging = false;
-            const draggedCard = state.dragState.draggedItem;
-            
-            if (draggedCard && draggedCard !== this) {
-              const startIndex = state.links.findIndex(l => l.id === state.dragState.draggedItem.dataset.id);
-              const endIndex = state.links.findIndex(l => l.id === this.dataset.id);
+          // La lógica de arrastrar/reordenar se mantiene solo para enlaces individuales
+          if (linkId && link && !this.dataset.groupId) { 
+            if (state.dragState.isDragging) {
+              state.dragState.isDragging = false;
+              const draggedCard = state.dragState.draggedItem;
               
-              if (startIndex !== -1 && endIndex !== -1) {
-                const [movedLink] = state.links.splice(startIndex, 1);
-                state.links.splice(endIndex, 0, movedLink);
-                saveSettings();
-                renderChannels();
+              if (draggedCard && draggedCard !== this) {
+                const startIndex = state.links.findIndex(l => l.id === state.dragState.draggedItem.dataset.id);
+                const endIndex = state.links.findIndex(l => l.id === this.dataset.id);
+                
+                if (startIndex !== -1 && endIndex !== -1) {
+                  const [movedLink] = state.links.splice(startIndex, 1);
+                  state.links.splice(endIndex, 0, movedLink);
+                  saveSettings();
+                  renderChannels();
+                }
               }
+            } else {
+              state.dragState.isDragging = true;
+              state.dragState.draggedItem = this;
             }
-          } else {
-            state.dragState.isDragging = true;
-            state.dragState.draggedItem = this;
           }
         });
+      });
+      
+      // Asegurarse de que los botones de edición/borrado se muestren en el grid principal
+      document.querySelectorAll('.channel-card[data-group-id]').forEach(card => {
+        card.classList.add('channel-card--edit-mode');
       });
     }
 
     function getTypeDisplay(type) {
-      const types = {
-        'web': 'Vía Web',
-        'acestream': 'Acestream',
-        'source': 'Fuente'
-      };
-      return types[type] || type;
+      // Simplificado para solo mostrar 'Fuente'
+      return 'Fuente';
     }
 
     function getSportEmoji(sport) {
@@ -1723,13 +1825,20 @@
         link.favorito = !link.favorito;
         elements.favoriteBtn.classList.toggle('control-btn--active', link.favorito);
         
-        const linkCard = document.querySelector(`.channel-card[data-id="${link.id}"]`);
+        // Actualizar la tarjeta individual si está en el modal, o la tarjeta de grupo en el grid principal
+        const linkCard = document.querySelector(`.channel-card[data-id="${link.id}"]`) || 
+                         document.querySelector(`.channel-card[data-group-title="${link.title}"]`);
+        
         if (linkCard) {
+          // Si es una tarjeta de enlace individual (dentro del modal)
           linkCard.classList.toggle('channel-card--favorite', link.favorito);
         }
         
+        // Si la tarjeta de grupo se actualiza, la renderización completa se encarga de re-evaluar si tiene favoritos.
+        
         showNotification(link.favorito ? 'Añadido a favoritos' : 'Eliminado de favoritos');
         saveSettings();
+        renderChannels(); // Renderizar de nuevo para que los cambios se reflejen en el grid principal
       }
     }
 
@@ -1806,7 +1915,8 @@
       elements.editWebName.value = link.webName || '';
       elements.editLinkSport.value = link.deporte;
       elements.editLinkLanguage.value = link.idioma;
-      elements.editLinkType.value = link.type;
+      // El tipo de enlace es fijo ('source')
+      elements.editLinkType.value = 'source';
       elements.editLinkColor.value = link.color || '#2563eb';
       elements.editLinkColorHex.value = link.color || '';
       elements.editOpenInPlayer.checked = link.openInPlayer || false;
@@ -1852,7 +1962,8 @@
       link.webName = elements.editWebName.value || null;
       link.deporte = elements.editLinkSport.value;
       link.idioma = elements.editLinkLanguage.value;
-      link.type = elements.editLinkType.value;
+      // El tipo de enlace es fijo ('source')
+      link.type = 'source'; 
       link.color = newColor;
       link.openInPlayer = elements.editOpenInPlayer.checked;
       link.favorito = elements.editFavorito.checked;
@@ -1885,7 +1996,7 @@
         title: elements.editLinkTitle.value,
         webName: elements.editWebName.value || null,
         deporte: elements.editLinkSport.value,
-        type: elements.editLinkType.value,
+        type: 'source', // El tipo de enlace es fijo
         idioma: elements.editLinkLanguage.value,
         color: newColor,
         openInPlayer: elements.editOpenInPlayer.checked,
@@ -1917,17 +2028,17 @@
       } else {
         state.filters = {
           searchText: '',
-          type: 'web',
+          type: 'source', // Fijo
           sport: null,
           language: null,
           favoritesOnly: false
         };
         
         elements.searchInput.value = '';
-        updateTypeFilterButtons();
         updateEmojiFilterButtons();
         elements.filterFavorites.classList.remove('filter-button--active');
         
+        saveFilters(); // Guarda el estado de filtros limpio
         renderChannels();
       }
     }
@@ -1952,6 +2063,7 @@
         } else {
             state.filters.favoritesOnly = !state.filters.favoritesOnly;
             event.target.classList.toggle('filter-button--active', state.filters.favoritesOnly);
+            saveFilters(); // Guarda el estado de favoritos
             renderChannels();
         }
     }
@@ -1959,6 +2071,9 @@
     function handleFilterButtonClick(buttonId) {
       const now = Date.now();
       
+      // Solo el botón 'filterSources' tiene un comportamiento de triple click para añadir
+      if (buttonId !== 'filterSources') return; 
+
       if (now - state.filterButtonState.lastClickTime > 1000 || 
           state.filterButtonState.lastClickedButton !== buttonId) {
         state.filterButtonState.clickCount = 1;
@@ -1976,8 +2091,7 @@
         elements.editWebName.value = '';
         elements.editLinkSport.value = 'Fútbol';
         elements.editLinkLanguage.value = 'ES';
-        elements.editLinkType.value = buttonId === 'filterWeb' ? 'web' : 
-                                buttonId === 'filterAcestream' ? 'acestream' : 'source';
+        elements.editLinkType.value = 'source'; // Fijo
         elements.editLinkColor.value = '#2563eb';
         elements.editOpenInPlayer.checked = false;
         elements.editFavorito.checked = false;
@@ -1989,60 +2103,8 @@
         
         elements.editLinkModal.classList.add('modal--active');
         state.filterButtonState.clickCount = 0;
-      } else {
-        if (buttonId === 'filterWeb') {
-          state.filters.type = 'web';
-        } else if (buttonId === 'filterAcestream') {
-          state.filters.type = 'acestream';
-        } else if (buttonId === 'filterSources') {
-          state.filters.type = 'source';
-        }
-        
-        updateTypeFilterButtons();
-        renderChannels();
-      }
-    }
-
-    function handleSwipe(direction) {
-      const filterOrder = ['web', 'acestream', 'source'];
-      const currentIndex = filterOrder.indexOf(state.filters.type);
-      let newIndex;
-      
-      if (direction === 'left') {
-        newIndex = (currentIndex + 1) % filterOrder.length;
-      } else if (direction === 'right') {
-        newIndex = (currentIndex - 1 + filterOrder.length) % filterOrder.length;
-      } else {
-        return;
-      }
-      
-      state.filters.type = filterOrder[newIndex];
-      updateTypeFilterButtons();
-      renderChannels();
-    }
-
-    function setupTouchEvents() {
-      document.addEventListener('touchstart', function(e) {
-        state.touchState.startX = e.changedTouches[0].screenX;
-        state.touchState.startY = e.changedTouches[0].screenY;
-      }, { passive: true });
-      
-      document.addEventListener('touchend', function(e) {
-        const endX = e.changedTouches[0].screenX;
-        const endY = e.changedTouches[0].screenY;
-        const diffX = endX - state.touchState.startX;
-        const diffY = endY - state.touchState.startY;
-        
-        if (Math.abs(diffX) > Math.abs(diffY)) {
-          if (Math.abs(diffX) > 50) {
-            if (diffX > 0) {
-              handleSwipe('right');
-            } else {
-              handleSwipe('left');
-            }
-          }
-        }
-      }, { passive: true });
+      } 
+      // Si se hace menos de 3 clics, se mantiene el filtro en 'source' (no hace nada)
     }
 
     async function importFromGist() {
@@ -2066,16 +2128,16 @@
           title: item.title || item.name || 'Sin título',
           webName: item.webName || item.source || null,
           deporte: item.deporte || item.sport || 'Otros',
-          type: item.type || 'web',
+          type: 'source', // Fijo a 'source'
           idioma: item.idioma || item.language || 'ES',
           color: item.color || '#2563eb',
           openInPlayer: item.openInPlayer || false,
           puntuacion: item.puntuacion || item.rating || 3,
           favorito: item.favorito || false
-        })).filter(item => item.link);
+        })).filter(item => item.link && item.type === 'source'); // Filtrar para solo permitir 'source'
         
         if (normalizedData.length === 0) {
-          showNotification('El Gist no contiene enlaces válidos', 'error');
+          showNotification('El Gist no contiene enlaces válidos de tipo "Fuente"', 'error');
           return;
         }
         
@@ -2167,9 +2229,9 @@
     }
 
     function setupEventListeners() {
-      setupTouchEvents();
       setupPlayerDrag();
       
+      // Listener global para botones de borrar/editar (funciona en el grid principal y en el modal)
       document.addEventListener('click', function(e) {
         const deleteBtn = e.target.closest('.delete-btn');
         if (deleteBtn) {
@@ -2186,19 +2248,10 @@
           return;
         }
         
-        const linkCard = e.target.closest('.channel-card');
-        if (linkCard && !state.settings.editMode) {
-          const linkId = linkCard.dataset.id;
-          const link = state.links.find(l => l.id === linkId);
-          
-          if (link.openInPlayer) {
-            e.preventDefault();
-            openLink(linkId);
-          } else {
-            window.open(link.link, '_blank');
-          }
-        }
+        // Se elimina el antiguo listener de clic de tarjeta individual
       });
+      
+      elements.closeGroupLinksModal.addEventListener('click', closeGroupLinksModal); // Nuevo listener
       
       elements.cancelDeleteBtn.addEventListener('click', function() {
         elements.confirmDeleteModal.classList.remove('modal--active');
@@ -2208,6 +2261,7 @@
         elements.confirmDeleteModal.classList.remove('modal--active');
         if (state.deleteState.linkId) {
           deleteLink(state.deleteState.linkId);
+          closeGroupLinksModal(); // Cerramos el modal de grupo si se borró un enlace desde allí
         }
       });
       
@@ -2219,20 +2273,14 @@
       
       elements.searchInput.addEventListener('input', function() {
         state.filters.searchText = this.value;
+        saveFilters(); // Guarda el texto de búsqueda
         renderChannels();
       });
       
       elements.filterFavorites.addEventListener('click', handleFavoriteButtonClick);
       
-      elements.filterWeb.addEventListener('click', function() {
-        handleFilterButtonClick('filterWeb');
-      });
-      
-      elements.filterAcestream.addEventListener('click', function() {
-        handleFilterButtonClick('filterAcestream');
-      });
-      
       elements.filterSources.addEventListener('click', function() {
+        // Se llama a la función para habilitar el triple-click para añadir
         handleFilterButtonClick('filterSources');
       });
       
@@ -2258,6 +2306,7 @@
           }
           
           updateEmojiFilterButtons();
+          saveFilters(); // Guarda el deporte/idioma
           renderChannels();
         }
       });
@@ -2325,7 +2374,7 @@
             title: item.title || 'Sin título',
             webName: item.webName || null,
             deporte: item.deporte || 'Otros',
-            type: item.type || 'web',
+            type: item.type || 'source', // Fijo o usar 'source' si falta
             idioma: item.idioma || 'ES',
             color: item.color || '#2563eb',
             openInPlayer: item.openInPlayer || false,
@@ -2333,8 +2382,9 @@
             favorito: item.favorito || false
           }));
           
+          // Solo permitir la importación de enlaces de tipo 'source'
           const newLinks = normalizedData.filter(newLink => 
-            !state.links.some(existingLink => existingLink.link === newLink.link)
+            newLink.type === 'source' && !state.links.some(existingLink => existingLink.link === newLink.link)
           );
           
           if (newLinks.length > 0) {
@@ -2344,7 +2394,7 @@
             closeSettingsModal();
             showNotification(`Se añadieron ${newLinks.length} nuevos enlaces`);
           } else {
-            showNotification('No se encontraron enlaces nuevos para importar', 'info');
+            showNotification('No se encontraron enlaces nuevos para importar o no son de tipo "Fuente"', 'info');
           }
         } catch (e) {
           showNotification('Error al importar datos: JSON inválido', 'error');
@@ -2416,12 +2466,6 @@
       });
     }
 
-    function updateTypeFilterButtons() {
-      elements.filterWeb.classList.toggle('filter-button--active', state.filters.type === 'web');
-      elements.filterAcestream.classList.toggle('filter-button--active', state.filters.type === 'acestream');
-      elements.filterSources.classList.toggle('filter-button--active', state.filters.type === 'source');
-    }
-
     function updateEmojiFilterButtons() {
       document.querySelectorAll('.emoji-filter-btn').forEach(btn => {
         const filterType = btn.dataset.filter;
@@ -2439,11 +2483,19 @@
 
     function closeEditLinkModal() {
       elements.editLinkModal.classList.remove('modal--active');
+      if (elements.groupLinksModal.classList.contains('modal--active')) {
+          // Si cerramos el modal de edición y el modal de grupo está abierto, 
+          // necesitamos re-renderizar los enlaces en el modal de grupo para ver los cambios
+          const currentGroupCard = document.querySelector(`.channel-card[data-group-title="${elements.groupLinksModalTitle.textContent.replace('Enlaces de: ', '')}"]`);
+          if (currentGroupCard) {
+              // Simular el clic en el grupo para reabrir y actualizar el contenido
+              handleGroupCardClick({ target: currentGroupCard });
+          }
+      }
     }
 
     function cancelEditLinkModal() {
       closeEditLinkModal();
-      editLink(state.editState.linkId);
     }
 
     function shadeColor(color, percent) {
