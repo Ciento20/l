@@ -1634,18 +1634,20 @@
         if (!groupCard) return;
 
         // Si se hace clic en un botón de edición o borrado, se delega al listener global
-        if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn') || state.settings.editMode) {
+        if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
             return; 
         }
         
         const title = groupCard.dataset.groupTitle;
-        const linksData = JSON.parse(groupCard.dataset.links);
+        // Obtenemos los enlaces DE NUEVO de 'state.links' para tener la info más fresca
+        const linksData = state.links.filter(link => link.title === title);
 
         elements.groupLinksModalTitle.textContent = `Enlaces de: ${title}`;
         
         // Renderizar todos los enlaces del grupo en el modal
         elements.groupLinksContainer.innerHTML = linksData.map(link => 
-            renderLinkCard(link, true)
+            // Modificación: Pasamos el estado de editMode para que renderLinkCard aplique la clase si es necesario
+            renderLinkCard(link, true, state.settings.editMode)
         ).join('');
 
         // Reasignar los listeners de clic para abrir los enlaces individuales dentro del modal
@@ -1654,7 +1656,10 @@
                 // Previene que el clic dentro del modal se propague y cierre el modal
                 e.stopPropagation(); 
                 
-                // Si se hace clic en borrar/editar, se maneja en el listener global
+                // Si estás en modo edición, no abrimos el reproductor
+                if (state.settings.editMode) return;
+                
+                // Si se hace clic en borrar/editar, se maneja en el listener local que añadiremos
                 if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
                     return; 
                 }
@@ -1664,17 +1669,51 @@
                 elements.groupLinksModal.classList.remove('modal--active'); // Cerrar modal al abrir el enlace
             });
         });
+        
+        // **********************************************
+        // ➡️ SOLUCIÓN: Asignar listeners a los botones de editar/borrar dentro del modal
+        // **********************************************
+        elements.groupLinksContainer.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Evitar que el clic en el botón active el listener de la tarjeta
+                state.deleteState.linkId = this.dataset.id;
+                elements.confirmDeleteModal.classList.add('modal--active');
+            });
+        });
+
+        elements.groupLinksContainer.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Evitar que el clic en el botón active el listener de la tarjeta
+                editLink(this.dataset.id);
+            });
+        });
+        // **********************************************
+        // ⬅️ FIN SOLUCIÓN
+        // **********************************************
 
         // Mostrar el modal
         elements.groupLinksModal.classList.add('modal--active');
+        
+        // Nuevo: Si estamos en modo edición, aplicamos las clases a las tarjetas dentro del modal
+        if (state.settings.editMode) {
+            setupEditModeInModal();
+        }
     }
 
     function closeGroupLinksModal() {
         elements.groupLinksModal.classList.remove('modal--active');
     }
+    
+    // Nueva Función: Aplica la clase de modo edición a las tarjetas dentro del modal
+    function setupEditModeInModal() {
+        elements.groupLinksContainer.querySelectorAll('.channel-card[data-id]').forEach(card => {
+            card.classList.add('channel-card--edit-mode');
+        });
+    }
 
-    function renderLinkCard(link, isModal = false) { 
-      const editModeClass = (state.settings.editMode && isModal) ? 'channel-card--edit-mode' : '';
+    function renderLinkCard(link, isModal = false, isEditMode = false) { 
+      // Modificación: Usamos isEditMode para decidir si mostrar la clase de edición
+      const editModeClass = (isEditMode || (state.settings.editMode && isModal)) ? 'channel-card--edit-mode' : '';
       const languageFlag = link.idioma === 'ES' ? '🇪🇸' : link.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
       
       // La tarjeta de enlace individual que se muestra DENTRO DEL MODAL
@@ -1698,8 +1737,16 @@
       const channelCards = document.querySelectorAll('.channel-card');
       
       channelCards.forEach(card => {
-        card.removeEventListener('click', handleGroupCardClick); // Desactiva el clic de grupo en modo edición
+        // En el modo edición, el clic en el grupo AHORA ABRE EL MODAL,
+        // por lo que solo necesitamos deshabilitar el arrastre si es un grupo.
+        if (card.dataset.groupId) {
+             // Si es una tarjeta de grupo, no hacemos nada especial aquí, el handleGroupCardClick se encarga
+             // de abrir el modal, pero aseguramos la clase de edición.
+             card.classList.add('channel-card--edit-mode');
+             return;
+        }
         
+        // Lógica de arrastrar solo para enlaces individuales (si existieran sin agrupar)
         card.addEventListener('click', function(e) {
           if (!state.settings.editMode) return;
           
@@ -2232,6 +2279,7 @@
       setupPlayerDrag();
       
       // Listener global para botones de borrar/editar (funciona en el grid principal y en el modal)
+      // Nota: El manejo de los botones dentro del modal de grupo se hace en handleGroupCardClick
       document.addEventListener('click', function(e) {
         const deleteBtn = e.target.closest('.delete-btn');
         if (deleteBtn) {
