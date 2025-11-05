@@ -274,7 +274,7 @@
         position: absolute;
         top: 0.5rem;
         left: 0.5rem;
-        font-size: 0.75rem;
+        font-size: 0.9rem; /* Un poco más grande para los emojis */
         font-weight: 600;
         /* Se convierte en un chip visual */
         background: rgba(var(--primary-rgb), 0.15); 
@@ -285,6 +285,8 @@
         align-items: center;
         gap: 5px;
         line-height: 1;
+        /* Permitir múltiples idiomas dentro, usando display flex */
+        flex-wrap: wrap; 
     }
     
     /* 3. Etiqueta de Recuento de Enlaces */
@@ -300,11 +302,9 @@
         border-radius: var(--radius-sm);
     }
 
-    /* 4. Idioma (ajustado en tamaño/posición) */
+    /* 4. Idioma (ajustado en tamaño/posición - AHORA DENTRO DE .channel-sport) */
     .channel-language {
-        position: absolute;
-        top: 0.5rem;
-        right: 3.8rem; /* Ajustado para dejar espacio al Recuento */
+        /* No más posición absoluta aquí, se maneja con el flex de .channel-sport */
         font-size: 0.75rem;
         background: var(--info); /* Color de Info para distinción */
         color: var(--white);
@@ -1621,6 +1621,30 @@
       showNotification('Enlace eliminado');
     }
 
+    function getSportEmoji(sport) {
+      const emojis = {
+        'F1': '🏎️',
+        'Baloncesto': '🏀',
+        'Fútbol': '⚽',
+        'Motorsport': '🏁',
+        'Tenis': '🎾',
+        'TV': '📺',
+        'Otros': '🏅'
+      };
+      return emojis[sport] || '';
+    }
+
+    /**
+     * Calcula la puntuación media de una lista de enlaces.
+     * @param {Array} links - Lista de objetos de enlace.
+     * @returns {number} Puntuación media redondeada.
+     */
+    function getAverageRating(links) {
+        if (!links || links.length === 0) return 0;
+        const totalScore = links.reduce((sum, link) => sum + (link.puntuacion || 0), 0);
+        return Math.round(totalScore / links.length);
+    }
+
     function renderChannels() {
       const filteredLinks = state.links.filter(link => {
         if (link.type !== 'source') {
@@ -1675,14 +1699,30 @@
 
       for (const [title, links] of Object.entries(linksByTitle)) {
         const groupId = `group-${title.replace(/\s+/g, '-').toLowerCase()}`;
-        const mainLink = links[0];
+        const mainLink = links[0]; // Usamos el primer enlace como referencia principal
         const isFavorite = links.some(link => link.favorito);
         
+        // 1. Calcular idiomas únicos
+        const uniqueLanguages = [...new Set(links.map(link => link.idioma))];
         let languageTag = '';
-        if (mainLink.idioma) {
-            const languageFlag = mainLink.idioma === 'ES' ? '🇪🇸' : mainLink.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
-            languageTag = `<span class="channel-language">${languageFlag}</span>`;
+        if (uniqueLanguages.length > 0) {
+            languageTag = uniqueLanguages.map(lang => {
+                const flag = lang === 'ES' ? '🇪🇸' : lang === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
+                // Añadimos un pequeño margen para separarlos
+                return `<span class="channel-language" style="margin-left: 5px;">${flag}</span>`;
+            }).join('');
         }
+        
+        // 2. Calcular deportes únicos
+        const uniqueSports = [...new Set(links.map(link => link.deporte))];
+        const sportEmojis = uniqueSports.map(sport => getSportEmoji(sport)).join(' ');
+        
+        // 3. Calcular la puntuación media
+        const averageRating = getAverageRating(links);
+
+        // 4. Determinar el nombre de las fuentes
+        const uniqueWebNames = [...new Set(links.map(link => link.webName).filter(Boolean))];
+        const webNameDisplay = uniqueWebNames.join(', ');
         
         let editModeClass = '';
         if (state.settings.editMode) {
@@ -1702,19 +1742,20 @@
             <button class="delete-btn" data-id="${mainLink.id}" title="Borrar enlace principal">×</button>
             <button class="edit-btn" data-id="${mainLink.id}" title="Editar enlace principal">✏️</button>
             
-            <div class="channel-sport">${getSportEmoji(mainLink.deporte)}</div>
+            <div class="channel-sport">
+                ${sportEmojis}
+                ${languageTag}
+            </div>
             
             <span class="channel-number">#${links.length}</span>
-            
-            ${languageTag}
             
             <div class="channel-header">
               <div class="channel-name">${title}</div>
             </div>
             
-            ${mainLink.puntuacion ? `<div class="channel-rating">${'★'.repeat(mainLink.puntuacion)}${'☆'.repeat(5 - mainLink.puntuacion)}</div>` : ''}
+            ${averageRating ? `<div class="channel-rating">${'★'.repeat(averageRating)}${'☆'.repeat(5 - averageRating)}</div>` : ''}
 
-            ${mainLink.webName ? `<div class="channel-event">Fuente: ${mainLink.webName}</div>` : `<div class="channel-event">Ver Enlaces</div>`}
+            ${webNameDisplay ? `<div class="channel-event">Fuente(s): ${webNameDisplay}</div>` : `<div class="channel-event">Ver Enlaces</div>`}
 
           </div>
         `;
@@ -1818,6 +1859,7 @@
             if (mainLink) {
                 const groupLinks = state.links.filter(link => link.title === mainLink.title);
                 groupLinks.forEach(link => {
+                    // Prevenir duplicados si un enlace se encuentra en dos grupos (aunque esto no debería pasar con el agrupamiento por título)
                     if (!newLinks.includes(link)) {
                         newLinks.push(link);
                     }
@@ -1969,19 +2011,6 @@
 
     function getTypeDisplay(type) {
       return 'Fuente';
-    }
-
-    function getSportEmoji(sport) {
-      const emojis = {
-        'F1': '🏎️',
-        'Baloncesto': '🏀',
-        'Fútbol': '⚽',
-        'Motorsport': '🏁',
-        'Tenis': '🎾',
-        'TV': '📺',
-        'Otros': '🏅'
-      };
-      return emojis[sport] || '';
     }
 
     function openLink(linkId) {
