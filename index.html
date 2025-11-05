@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=no">
-  <title>🗒️ Fuentes</title>
+  <title>🗒️</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -21,6 +21,8 @@
       --success: #16a34a;
       --warning: #d97706;
       --info: #0284c7;
+      /* Nuevo color para el modo Mover */
+      --move-color: #d97706; 
     }
     
     body.dark-mode {
@@ -166,6 +168,7 @@
       font-size: 0.8rem;
       font-weight: 500;
       transition: all 0.2s;
+      white-space: nowrap; /* Evita que el texto se rompa */
     }
     
     .filter-button:hover {
@@ -178,6 +181,13 @@
       border-color: var(--primary);
     }
     
+    /* Nuevo estilo para el botón de Mover */
+    .filter-button--move-active {
+        background: var(--move-color);
+        color: white;
+        border-color: var(--move-color);
+    }
+    
     .filter-button--favorites, .filter-button--clear {
       flex: 0 0 auto;
       width: 36px;
@@ -185,6 +195,23 @@
       padding: 0.5rem 0;
     }
     
+    /* Estilo para los botones de texto (Editar, Añadir) */
+    .filter-button--text {
+        flex: 1;
+        width: auto;
+        min-width: unset;
+        font-size: 0.9rem; /* Un poco más grandes */
+    }
+
+    /* Ajustar los botones de acción para que tengan un tamaño similar */
+    .filter-buttons > .filter-button {
+        flex: 1;
+    }
+    .filter-buttons > .filter-button--favorites, 
+    .filter-buttons > .filter-button--clear {
+        flex: 0 0 36px;
+    }
+
     .emoji-filters {
       display: flex;
       justify-content: center;
@@ -835,8 +862,28 @@
     
     .channel-card--edit-mode {
       cursor: pointer;
-      border: 2px dashed var(--warning);
+      border: 2px dashed var(--primary); /* Estilo de edición */
+      background: rgba(var(--primary-rgb), 0.05); /* Fondo sutil de edición */
+    }
+
+    /* Estilo para el modo Mover/Drag */
+    .channel-card--move-mode {
+      cursor: grab !important;
+      border: 2px dashed var(--move-color) !important; 
       background: rgba(255, 193, 7, 0.05); /* Fondo sutil de advertencia */
+    }
+    .channel-card--move-mode .delete-btn,
+    .channel-card--move-mode .edit-btn {
+      display: none; /* Ocultar botones de acción en modo mover */
+    }
+    .channel-card--move-mode:hover {
+        transform: scale(1.02); 
+    }
+    .channel-card--dragging {
+        opacity: 0.5;
+        border: 2px solid var(--move-color) !important;
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
     
     .import-gist-btn {
@@ -1043,9 +1090,11 @@
         <input type="text" id="searchInput" placeholder="Buscar canales, número (ej: #123) o hora (ej: 15:30)">
       </div>
       <div class="filter-buttons">
-        <button class="filter-button filter-button--favorites" id="filterFavorites">★</button>
-        <button class="filter-button filter-button--active" id="filterSources">Fuentes</button>
-        <button class="filter-button filter-button--clear" id="clearFilters">x</button>
+        <button class="filter-button filter-button--favorites" id="filterFavorites" title="Mostrar solo favoritos">★</button>
+        <button class="filter-button filter-button--text" id="editLinksBtn" title="Activar modo edición">Editar</button>
+        <button class="filter-button filter-button--text" id="moveLinksBtn" title="Activar modo mover/reordenar">Mover</button>
+        <button class="filter-button filter-button--text" id="addLinkBtn" title="Añadir nuevo enlace">Añadir</button>
+        <button class="filter-button filter-button--clear" id="clearFilters" title="Limpiar filtros (Triple clic para Configuración)">x</button>
       </div>
       <div class="emoji-filters" id="emojiFilters">
         <button class="emoji-filter-btn" data-filter="F1" title="F1">🏎️</button>
@@ -1141,7 +1190,7 @@
     <div class="modal" id="editLinkModal">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="modal-title">✏️ Editar Enlace</h2>
+          <h2 class="modal-title">✏️ <span id="editModalTitleText">Editar Enlace</span></h2>
           <button class="modal-close" id="closeEditLinkModal">&times;</button>
         </div>
         
@@ -1320,7 +1369,8 @@
         minimizedPlayerHeight: 180,
         minimizedPlayerWidth: 320,
         expandedGroups: {},
-        editMode: false
+        editMode: false, /* Modo Edición (borrar/modificar) */
+        moveMode: false  /* Modo Mover (reordenar) */
       },
       filters: {
         searchText: '',
@@ -1339,7 +1389,8 @@
         linkId: null
       },
       editState: {
-        linkId: null
+        linkId: null,
+        isAdding: false /* Nuevo para diferenciar Añadir/Editar */
       },
       clearButtonState: {
         clickCount: 0,
@@ -1385,7 +1436,9 @@
       closePlayerBtn: document.getElementById('closePlayerBtn'),
       searchInput: document.getElementById('searchInput'),
       filterFavorites: document.getElementById('filterFavorites'),
-      filterSources: document.getElementById('filterSources'),
+      editLinksBtn: document.getElementById('editLinksBtn'), /* NUEVO */
+      moveLinksBtn: document.getElementById('moveLinksBtn'), /* NUEVO */
+      addLinkBtn: document.getElementById('addLinkBtn'),   /* NUEVO */
       clearFilters: document.getElementById('clearFilters'),
       emojiFilters: document.getElementById('emojiFilters'),
       settingsModal: document.getElementById('settingsModal'),
@@ -1428,7 +1481,8 @@
       groupLinksModal: document.getElementById('groupLinksModal'),
       groupLinksModalTitle: document.getElementById('groupLinksModalTitle'),
       groupLinksContainer: document.getElementById('groupLinksContainer'),
-      closeGroupLinksModal: document.getElementById('closeGroupLinksModal')
+      closeGroupLinksModal: document.getElementById('closeGroupLinksModal'),
+      editModalTitleText: document.getElementById('editModalTitleText') /* NUEVO */
     };
 
     function init() {
@@ -1441,6 +1495,7 @@
       elements.searchInput.value = state.filters.searchText;
       updateEmojiFilterButtons();
       elements.filterFavorites.classList.toggle('filter-button--active', state.filters.favoritesOnly);
+      updateEditModeButtons(); /* NUEVO */
     }
 
     function handleStorageEvent(event) {
@@ -1528,7 +1583,8 @@
         minimizedPlayerHeight: 180,
         minimizedPlayerWidth: 320,
         expandedGroups: {},
-        editMode: false
+        editMode: false,
+        moveMode: false
       };
       
       localStorage.removeItem('daddyLiveHDSettings');
@@ -1553,6 +1609,7 @@
       
       closePlayer();
       renderChannels();
+      updateEditModeButtons(); /* NUEVO */
       
       showNotification('Todos los datos han sido borrados');
     }
@@ -1626,12 +1683,21 @@
             const languageFlag = mainLink.idioma === 'ES' ? '🇪🇸' : mainLink.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
             languageTag = `<span class="channel-language">${languageFlag}</span>`;
         }
+        
+        let editModeClass = '';
+        if (state.settings.editMode) {
+            editModeClass = 'channel-card--edit-mode';
+        } else if (state.settings.moveMode) {
+            editModeClass = 'channel-card--move-mode';
+        }
 
         html += `
-          <div class="channel-card ${isFavorite ? 'channel-card--favorite' : ''}" 
+          <div class="channel-card ${isFavorite ? 'channel-card--favorite' : ''} ${editModeClass}" 
                data-group-id="${groupId}" 
                data-group-title="${title}"
                data-links='${JSON.stringify(links)}'
+               data-id="${mainLink.id}"
+               draggable="${state.settings.moveMode ? 'true' : 'false'}"
                style="${mainLink.color ? `border-color: ${mainLink.color}` : ''}">
             <button class="delete-btn" data-id="${mainLink.id}" title="Borrar enlace principal">×</button>
             <button class="edit-btn" data-id="${mainLink.id}" title="Editar enlace principal">✏️</button>
@@ -1656,7 +1722,7 @@
       
       elements.channelsContent.innerHTML = html;
       
-      if (state.settings.editMode) {
+      if (state.settings.editMode || state.settings.moveMode) {
         setupEditMode();
         elements.saveEditBtn.classList.add('save-edit-btn--visible');
       } else {
@@ -1666,17 +1732,136 @@
       document.querySelectorAll('.channel-card[data-group-id]').forEach(groupCard => {
           groupCard.removeEventListener('click', handleGroupCardClick);
           groupCard.addEventListener('click', handleGroupCardClick);
+
+          // Lógica de Drag & Drop para modo Mover
+          if (state.settings.moveMode) {
+              groupCard.addEventListener('dragstart', handleDragStart);
+              groupCard.addEventListener('dragover', handleDragOver);
+              groupCard.addEventListener('dragleave', handleDragLeave);
+              groupCard.addEventListener('drop', handleDrop);
+              groupCard.addEventListener('dragend', handleDragEnd);
+          } else {
+              groupCard.removeEventListener('dragstart', handleDragStart);
+              groupCard.removeEventListener('dragover', handleDragOver);
+              groupCard.removeEventListener('dragleave', handleDragLeave);
+              groupCard.removeEventListener('drop', handleDrop);
+              groupCard.removeEventListener('dragend', handleDragEnd);
+          }
       });
+    }
+
+    function handleDragStart(e) {
+        if (!state.settings.moveMode) return;
+        
+        const draggedCard = e.target.closest('.channel-card[data-group-id]');
+        if (!draggedCard) return;
+
+        state.dragState.draggedItem = draggedCard;
+        state.dragState.startIndex = Array.from(elements.channelsContent.children).indexOf(draggedCard);
+        
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedCard.dataset.id);
+        
+        setTimeout(() => {
+            draggedCard.classList.add('channel-card--dragging');
+        }, 0);
+    }
+
+    function handleDragOver(e) {
+        if (!state.settings.moveMode) return;
+        e.preventDefault(); 
+        e.dataTransfer.dropEffect = 'move';
+
+        const dropTarget = e.target.closest('.channel-card[data-group-id]');
+        const draggedCard = state.dragState.draggedItem;
+
+        if (dropTarget && draggedCard && dropTarget !== draggedCard) {
+            const rect = dropTarget.getBoundingClientRect();
+            const center = (rect.top + rect.bottom) / 2;
+            const channelsContent = elements.channelsContent;
+
+            if (e.clientY < center) {
+                channelsContent.insertBefore(draggedCard, dropTarget);
+            } else {
+                channelsContent.insertBefore(draggedCard, dropTarget.nextSibling);
+            }
+        }
+    }
+
+    function handleDragLeave(e) {
+        if (!state.settings.moveMode) return;
+        e.target.closest('.channel-card[data-group-id]')?.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        if (!state.settings.moveMode) return;
+        e.preventDefault();
+        
+        const dropTarget = e.target.closest('.channel-card[data-group-id]');
+        if (dropTarget) {
+            dropTarget.classList.remove('drag-over');
+        }
+        
+        // La reordenación visual ya se hizo en handleDragOver. 
+        // Ahora actualizamos el array state.links
+        const newOrderIds = Array.from(elements.channelsContent.children)
+            .map(card => card.dataset.id)
+            .filter(id => id); // Filtrar solo los IDs de las tarjetas de grupo
+        
+        const newLinks = [];
+        const linksMap = new Map(state.links.map(link => [link.id, link]));
+        
+        // Reconstruir el array de enlaces en el nuevo orden
+        newOrderIds.forEach(id => {
+            // Encontrar todos los enlaces que pertenecen a este grupo principal (usando el ID del enlace principal como referencia)
+            const mainLink = linksMap.get(id);
+            if (mainLink) {
+                const groupLinks = state.links.filter(link => link.title === mainLink.title);
+                groupLinks.forEach(link => {
+                    if (!newLinks.includes(link)) {
+                        newLinks.push(link);
+                    }
+                });
+            }
+        });
+        
+        // Agregar cualquier enlace que no esté en los grupos principales (aunque en el renderChannels actual todos lo están)
+        state.links.forEach(link => {
+            if (!newLinks.includes(link)) {
+                newLinks.push(link);
+            }
+        });
+
+        state.links = newLinks;
+    }
+
+    function handleDragEnd(e) {
+        if (!state.settings.moveMode) return;
+        state.dragState.draggedItem?.classList.remove('channel-card--dragging');
+        state.dragState.draggedItem = null;
+        state.dragState.startIndex = null;
+        
+        saveSettings();
+        renderChannels();
+        showNotification('Orden de canales actualizado');
     }
 
     function handleGroupCardClick(e) {
         const groupCard = e.target.closest('.channel-card[data-group-id]');
         if (!groupCard) return;
 
-        if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
-            return; 
+        if (state.settings.editMode || state.settings.moveMode) {
+            // Permitir que el clic pase a los botones delete/edit/drag
+            if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
+                return; 
+            }
+            if (state.settings.moveMode) {
+                 // Bloquear la apertura del modal en modo mover
+                 return;
+            }
+            
         }
-        
+
         const title = groupCard.dataset.groupTitle;
         const linksData = state.links.filter(link => link.title === title);
 
@@ -1690,7 +1875,7 @@
             linkCard.addEventListener('click', function(e) {
                 e.stopPropagation(); 
                 
-                if (state.settings.editMode) return;
+                if (state.settings.editMode) return; // Permitir que los botones delete/edit manejen el click
                 
                 if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
                     return; 
@@ -1731,6 +1916,8 @@
     function setupEditModeInModal() {
         elements.groupLinksContainer.querySelectorAll('.channel-card[data-id]').forEach(card => {
             card.classList.add('channel-card--edit-mode');
+            card.classList.remove('channel-card--move-mode');
+            card.setAttribute('draggable', 'false');
         });
     }
 
@@ -1767,43 +1954,16 @@
       const channelCards = document.querySelectorAll('.channel-card');
       
       channelCards.forEach(card => {
-        if (card.dataset.groupId) {
+        card.classList.remove('channel-card--edit-mode');
+        card.classList.remove('channel-card--move-mode');
+        card.setAttribute('draggable', 'false');
+
+        if (state.settings.editMode) {
              card.classList.add('channel-card--edit-mode');
-             return;
+        } else if (state.settings.moveMode) {
+             card.classList.add('channel-card--move-mode');
+             card.setAttribute('draggable', 'true');
         }
-        
-        card.addEventListener('click', function(e) {
-          if (!state.settings.editMode) return;
-          
-          const linkId = this.dataset.id;
-          const link = state.links.find(l => l.id === linkId);
-          
-          if (linkId && link && !this.dataset.groupId) { 
-            if (state.dragState.isDragging) {
-              state.dragState.isDragging = false;
-              const draggedCard = state.dragState.draggedItem;
-              
-              if (draggedCard && draggedCard !== this) {
-                const startIndex = state.links.findIndex(l => l.id === state.dragState.draggedItem.dataset.id);
-                const endIndex = state.links.findIndex(l => l.id === this.dataset.id);
-                
-                if (startIndex !== -1 && endIndex !== -1) {
-                  const [movedLink] = state.links.splice(startIndex, 1);
-                  state.links.splice(endIndex, 0, movedLink);
-                  saveSettings();
-                  renderChannels();
-                }
-              }
-            } else {
-              state.dragState.isDragging = true;
-              state.dragState.draggedItem = this;
-            }
-          }
-        });
-      });
-      
-      document.querySelectorAll('.channel-card[data-group-id]').forEach(card => {
-        card.classList.add('channel-card--edit-mode');
       });
     }
 
@@ -1825,7 +1985,7 @@
     }
 
     function openLink(linkId) {
-      if (state.settings.editMode) return;
+      if (state.settings.editMode || state.settings.moveMode) return;
       
       const link = state.links.find(l => l.id === linkId);
       if (!link) return;
@@ -1972,6 +2132,9 @@
       if (!link) return;
       
       state.editState.linkId = linkId;
+      state.editState.isAdding = false;
+      
+      elements.editModalTitleText.textContent = 'Editar Enlace';
       
       elements.editLinkUrl.value = link.link;
       elements.editLinkTitle.value = link.title;
@@ -1999,16 +2162,18 @@
     }
 
     function saveEditedLink() {
-      const link = state.links.find(l => l.id === state.editState.linkId);
-      if (!link) {
-        addNewLink();
-        return;
-      }
-      
       if (!elements.editLinkUrl.value || !elements.editLinkTitle.value) {
         showNotification('URL y título son obligatorios', 'error');
         return;
       }
+      
+      if (state.editState.isAdding) {
+          addNewLink();
+          return;
+      }
+      
+      const link = state.links.find(l => l.id === state.editState.linkId);
+      if (!link) return;
       
       const activeStars = elements.editRatingStars.querySelectorAll('.star.active');
       const rating = activeStars.length;
@@ -2106,46 +2271,65 @@
     
     function handleFavoriteButtonClick(event) {
         event.stopPropagation();
-        const now = Date.now();
         
-        if (now - state.favoriteButtonState.lastClickTime > 500) {
-            state.favoriteButtonState.clickCount = 0;
-        }
+        // El botón Favoritos ahora solo maneja los filtros de favoritos.
         
-        state.favoriteButtonState.clickCount++;
-        state.favoriteButtonState.lastClickTime = now;
+        state.filters.favoritesOnly = !state.filters.favoritesOnly;
+        event.target.classList.toggle('filter-button--active', state.filters.favoritesOnly);
+        saveFilters();
+        renderChannels();
+    }
+    
+    /* FUNCIONES NUEVAS */
+    function updateEditModeButtons() {
+        // Modo Edición
+        elements.editLinksBtn.classList.toggle('filter-button--active', state.settings.editMode);
         
-        if (state.favoriteButtonState.clickCount >= 3) {
-            state.settings.editMode = !state.settings.editMode;
-            saveSettings();
-            renderChannels();
-            showNotification('Modo edición ' + (state.settings.editMode ? 'activado' : 'desactivado'));
-            state.favoriteButtonState.clickCount = 0; 
-        } else {
-            state.filters.favoritesOnly = !state.filters.favoritesOnly;
-            event.target.classList.toggle('filter-button--active', state.filters.favoritesOnly);
-            saveFilters();
-            renderChannels();
+        // Modo Mover
+        elements.moveLinksBtn.classList.toggle('filter-button--move-active', state.settings.moveMode);
+
+        // Si algún modo de edición está activo, desactiva el filtro de favoritos
+        if (state.settings.editMode || state.settings.moveMode) {
+             state.filters.favoritesOnly = false;
+             elements.filterFavorites.classList.remove('filter-button--active');
         }
     }
 
-    function handleFilterButtonClick(buttonId) {
-      const now = Date.now();
-      
-      if (buttonId !== 'filterSources') return; 
+    function handleEditClick(event) {
+        event.stopPropagation();
+        
+        state.settings.editMode = !state.settings.editMode;
+        state.settings.moveMode = false; // Desactivar modo mover
+        
+        updateEditModeButtons();
+        saveSettings();
+        renderChannels();
+        
+        showNotification('Modo edición ' + (state.settings.editMode ? 'activado' : 'desactivado'));
+    }
 
-      if (now - state.filterButtonState.lastClickTime > 1000 || 
-          state.filterButtonState.lastClickedButton !== buttonId) {
-        state.filterButtonState.clickCount = 1;
-        state.filterButtonState.lastClickedButton = buttonId;
-      } else {
-        state.filterButtonState.clickCount++;
-      }
-      
-      state.filterButtonState.lastClickTime = now;
-      
-      if (state.filterButtonState.clickCount >= 3) {
+    function handleMoveClick(event) {
+        event.stopPropagation();
+        
+        state.settings.moveMode = !state.settings.moveMode;
+        state.settings.editMode = false; // Desactivar modo edición
+        
+        updateEditModeButtons();
+        saveSettings();
+        renderChannels();
+        
+        showNotification('Modo mover ' + (state.settings.moveMode ? 'activado' : 'desactivado'));
+    }
+
+    function handleAddClick(event) {
+        event.stopPropagation();
+        
         state.editState.linkId = null;
+        state.editState.isAdding = true;
+        
+        elements.editModalTitleText.textContent = 'Añadir Nuevo Enlace';
+        
+        // Limpiar formulario para un nuevo enlace
         elements.editLinkUrl.value = '';
         elements.editLinkTitle.value = '';
         elements.editWebName.value = '';
@@ -2162,9 +2346,9 @@
         });
         
         elements.editLinkModal.classList.add('modal--active');
-        state.filterButtonState.clickCount = 0;
-      }
     }
+    /* FIN FUNCIONES NUEVAS */
+
 
     async function importFromGist() {
       try {
@@ -2335,9 +2519,9 @@
       
       elements.filterFavorites.addEventListener('click', handleFavoriteButtonClick);
       
-      elements.filterSources.addEventListener('click', function() {
-        handleFilterButtonClick('filterSources');
-      });
+      elements.editLinksBtn.addEventListener('click', handleEditClick); /* NUEVO */
+      elements.moveLinksBtn.addEventListener('click', handleMoveClick); /* NUEVO */
+      elements.addLinkBtn.addEventListener('click', handleAddClick);   /* NUEVO */
       
       elements.clearFilters.addEventListener('click', handleClearFiltersClick);
       
@@ -2463,8 +2647,10 @@
       
       elements.saveEditBtn.addEventListener('click', function() {
         state.settings.editMode = false;
+        state.settings.moveMode = false; // Guardar también deshabilita el modo mover
         saveSettings();
         renderChannels();
+        updateEditModeButtons();
         showNotification('Cambios guardados');
       });
       
@@ -2537,9 +2723,13 @@
 
     function closeEditLinkModal() {
       elements.editLinkModal.classList.remove('modal--active');
+      state.editState.isAdding = false; // Resetear el estado
+      
+      // Si estamos en el modal de grupos, re-renderizarlo para actualizar los enlaces
       if (elements.groupLinksModal.classList.contains('modal--active')) {
           const currentGroupCard = document.querySelector(`.channel-card[data-group-title="${elements.groupLinksModalTitle.textContent.replace('Enlaces de: ', '')}"]`);
           if (currentGroupCard) {
+              // Llamar a la función con un objeto que simula el evento de clic
               handleGroupCardClick({ target: currentGroupCard });
           }
       }
