@@ -50,7 +50,7 @@
     .channels-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
+      gap: 1.2rem; /* Más espacio entre tarjetas */
       width: 100%;
     }
     
@@ -67,7 +67,7 @@
     .channel-group__content {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 0.8rem;
+      gap: 1.2rem; /* Más espacio entre tarjetas */
       padding: 0.8rem;
       width: 100%;
       box-sizing: border-box;
@@ -77,15 +77,21 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 0.8rem;
+      padding: 1rem; /* Más padding interno */
       cursor: pointer;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Nueva sombra sutil */
       transition: all 0.2s;
       position: relative;
       user-select: none;
-      min-height: 100px;
+      min-height: 120px; /* Asegurar una altura mínima elegante */
       width: 100%;
       box-sizing: border-box;
+    }
+    
+    .channel-card:hover {
+      transform: scale(1.02); /* Efecto de 'pop-up' sutil */
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      border-color: var(--primary);
     }
     
     .app-header {
@@ -211,36 +217,97 @@
       border-color: var(--primary);
     }
     
-    .channel-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      border-color: var(--primary);
-    }
-    
     .channel-card--favorite {
       border: 2px solid var(--primary);
     }
     
+    /* 1. Encabezado de la Tarjeta REORGANIZADO */
     .channel-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
+        display: block; 
+        text-align: center;
+        margin-bottom: 0.2rem;
+        padding-top: 1rem; /* Espacio para los nuevos tags superiores */
+    }
+
+    .channel-name {
+        font-weight: 700; /* Más negrita */
+        font-size: 1rem; /* Título más grande */
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: block; 
+        gap: 0;
+        margin-bottom: 5px;
+        color: var(--text);
+        padding: 0 0.5rem;
+    }
+
+    /* 2. Nuevo Tag de Deporte (en esquina superior izquierda) */
+    .channel-sport {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        /* Se convierte en un chip visual */
+        background: rgba(var(--primary-rgb), 0.15); 
+        color: var(--primary);
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        line-height: 1;
     }
     
-    .channel-name {
-      font-weight: 600;
-      flex-grow: 1;
-      padding: 0 0.5rem;
-      text-align: center;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
+    /* 3. Etiqueta de Recuento de Enlaces */
+    .channel-number {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: var(--primary); 
+        color: var(--white);
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--radius-sm);
+    }
+
+    /* 4. Idioma (ajustado en tamaño/posición) */
+    .channel-language {
+        position: absolute;
+        top: 0.5rem;
+        right: 3.8rem; /* Ajustado para dejar espacio al Recuento */
+        font-size: 0.75rem;
+        background: var(--info); /* Color de Info para distinción */
+        color: var(--white);
+        padding: 0.2rem 0.4rem;
+        border-radius: var(--radius-sm);
+    }
+    
+    /* 5. Puntuación (Rating) */
+    .channel-rating {
+        position: static; /* Ya no está en la esquina inferior */
+        text-align: center;
+        margin: 0.5rem 0;
+        font-size: 1rem; /* Estrellas más grandes */
+        color: var(--warning);
+    }
+    
+    /* 6. Nuevo campo: Web de Origen */
+    .channel-event {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        text-align: center;
+        color: var(--text);
+        opacity: 0.8;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     
     .channel-number {
-      color: var(--primary);
+      color: var(--white);
       font-weight: 600;
       font-size: 0.75rem;
     }
@@ -260,34 +327,6 @@
       border-radius: 50%;
       background-color: #dc2626;
       animation: pulse 1.5s infinite;
-    }
-    
-    .channel-event {
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
-    }
-    
-    .channel-sport {
-      font-size: 1.2rem;
-      margin-top: 0.2rem;
-    }
-    
-    .channel-language {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      font-size: 0.7rem;
-      background: rgba(37, 99, 235, 0.1);
-      padding: 0.2rem 0.4rem;
-      border-radius: var(--radius-sm);
-    }
-    
-    .channel-rating {
-      position: absolute;
-      bottom: 0.5rem;
-      right: 0.5rem;
-      font-size: 0.7rem;
-      color: var(--warning);
     }
     
     .player-section {
@@ -797,6 +836,7 @@
     .channel-card--edit-mode {
       cursor: pointer;
       border: 2px dashed var(--warning);
+      background: rgba(255, 193, 7, 0.05); /* Fondo sutil de advertencia */
     }
     
     .import-gist-btn {
@@ -967,7 +1007,7 @@
     
     @media (min-width: 768px) {
       .channel-name {
-        font-size: 0.9rem;
+        font-size: 1rem;
       }
       
       .channel-event {
@@ -975,7 +1015,7 @@
       }
       
       .channel-sport {
-        font-size: 1.2rem;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -1154,7 +1194,7 @@
         
         <div class="form-group">
           <label class="form-label">Tipo de enlace</label>
-          <select class="form-select" id="editLinkType">
+          <select class="form-select" id="editLinkType" disabled>
             <option value="source">Fuente</option>
           </select>
         </div>
@@ -1239,7 +1279,7 @@
           title: 'Canal de Prueba',
           webName: 'Fuente Primaria',
           deporte: 'Fútbol',
-          type: 'source', // Ajustado a 'source'
+          type: 'source',
           idioma: 'ES',
           color: '#2563eb',
           openInPlayer: true,
@@ -1252,7 +1292,7 @@
           title: 'Canal de Prueba',
           webName: 'Fuente Secundaria',
           deporte: 'Fútbol',
-          type: 'source', // Ajustado a 'source'
+          type: 'source',
           idioma: 'EN',
           color: '#dc2626',
           openInPlayer: false,
@@ -1265,7 +1305,7 @@
           title: 'Otro Canal',
           webName: 'TV General',
           deporte: 'TV',
-          type: 'source', // Ajustado a 'source'
+          type: 'source',
           idioma: 'ES',
           color: '#16a34a',
           openInPlayer: true,
@@ -1284,7 +1324,7 @@
       },
       filters: {
         searchText: '',
-        type: 'source', // Establecido por defecto a 'source'
+        type: 'source',
         sport: null,
         language: null,
         favoritesOnly: false
@@ -1385,22 +1425,19 @@
       scrollToTop: document.getElementById('scrollToTop'),
       saveEditBtn: document.getElementById('saveEditBtn'),
       playerSection: document.getElementById('playerSection'),
-      // NUEVOS ELEMENTOS DEL MODAL DE GRUPO
       groupLinksModal: document.getElementById('groupLinksModal'),
       groupLinksModalTitle: document.getElementById('groupLinksModalTitle'),
       groupLinksContainer: document.getElementById('groupLinksContainer'),
       closeGroupLinksModal: document.getElementById('closeGroupLinksModal')
-      // FIN NUEVOS ELEMENTOS
     };
 
     function init() {
       loadSettings();
-      loadFilters(); // Carga el estado de los filtros
+      loadFilters();
       renderChannels();
       setupEventListeners();
       checkScrollPosition();
       window.addEventListener('storage', handleStorageEvent);
-      // Aplicar el estado de los filtros al iniciar
       elements.searchInput.value = state.filters.searchText;
       updateEmojiFilterButtons();
       elements.filterFavorites.classList.toggle('filter-button--active', state.filters.favoritesOnly);
@@ -1422,7 +1459,6 @@
       
       const savedLinks = localStorage.getItem('daddyLiveHDLinks');
       if (savedLinks) {
-        // Solo cargar enlaces de tipo 'source' para mantener la coherencia
         state.links = JSON.parse(savedLinks).filter(link => link.type === 'source');
       }
       
@@ -1442,7 +1478,6 @@
         if (savedFilters) {
             Object.assign(state.filters, JSON.parse(savedFilters));
         }
-        // Forzar el filtro de tipo a 'source'
         state.filters.type = 'source';
     }
 
@@ -1475,13 +1510,11 @@
 
     function saveSettings() {
       localStorage.setItem('daddyLiveHDSettings', JSON.stringify(state.settings));
-      // Solo guardar enlaces de tipo 'source'
       localStorage.setItem('daddyLiveHDLinks', JSON.stringify(state.links.filter(link => link.type === 'source')));
       saveFilters();
     }
     
     function saveFilters() {
-        // Asegurar que el tipo de filtro sea siempre 'source' al guardar
         state.filters.type = 'source';
         localStorage.setItem('daddyLiveHDFilters', JSON.stringify(state.filters));
     }
@@ -1500,7 +1533,7 @@
       
       localStorage.removeItem('daddyLiveHDSettings');
       localStorage.removeItem('daddyLiveHDLinks');
-      localStorage.removeItem('daddyLiveHDFilters'); // Borra los filtros guardados
+      localStorage.removeItem('daddyLiveHDFilters');
       
       document.body.classList.remove('dark-mode');
       elements.darkModeToggle.checked = false;
@@ -1508,7 +1541,7 @@
       
       state.filters = {
         searchText: '',
-        type: 'source', // Fijo
+        type: 'source',
         sport: null,
         language: null,
         favoritesOnly: false
@@ -1533,7 +1566,6 @@
 
     function renderChannels() {
       const filteredLinks = state.links.filter(link => {
-        // El filtro por tipo es implícito (solo 'source'), pero lo mantenemos explícito
         if (link.type !== 'source') {
              return false;
         }
@@ -1548,9 +1580,6 @@
         }
         
         if (state.filters.sport) {
-          // Permite que pasen:
-          // 1. El deporte filtrado (ej: 'Fútbol')
-          // 2. Si el deporte es 'Otros' (🏅)
           if (link.deporte !== state.filters.sport && link.deporte !== 'Otros') {
             return false;
           }
@@ -1585,16 +1614,19 @@
       
       elements.noResults.style.display = 'none';
       
-      // Usamos el grid para mostrar los grupos como tarjetas clickables
-      elements.channelsContent.className = 'channels-grid'; // Asignar la clase grid
+      elements.channelsContent.className = 'channels-grid';
 
       for (const [title, links] of Object.entries(linksByTitle)) {
         const groupId = `group-${title.replace(/\s+/g, '-').toLowerCase()}`;
-        const mainLink = links[0]; // Usar el primer enlace para mostrar información
+        const mainLink = links[0];
         const isFavorite = links.some(link => link.favorito);
-        const languageFlag = mainLink.idioma === 'ES' ? '🇪🇸' : mainLink.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
         
-        // El grupo ahora es la tarjeta clickable
+        let languageTag = '';
+        if (mainLink.idioma) {
+            const languageFlag = mainLink.idioma === 'ES' ? '🇪🇸' : mainLink.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
+            languageTag = `<span class="channel-language">${languageFlag}</span>`;
+        }
+
         html += `
           <div class="channel-card ${isFavorite ? 'channel-card--favorite' : ''}" 
                data-group-id="${groupId}" 
@@ -1603,12 +1635,21 @@
                style="${mainLink.color ? `border-color: ${mainLink.color}` : ''}">
             <button class="delete-btn" data-id="${mainLink.id}" title="Borrar enlace principal">×</button>
             <button class="edit-btn" data-id="${mainLink.id}" title="Editar enlace principal">✏️</button>
-            ${mainLink.idioma ? `<span class="channel-language">${languageFlag}</span>` : ''}
-            <div class="channel-header">
-              <div class="channel-name">${title} (${links.length})</div>
-            </div>
+            
             <div class="channel-sport">${getSportEmoji(mainLink.deporte)}</div>
+            
+            <span class="channel-number">#${links.length}</span>
+            
+            ${languageTag}
+            
+            <div class="channel-header">
+              <div class="channel-name">${title}</div>
+            </div>
+            
             ${mainLink.puntuacion ? `<div class="channel-rating">${'★'.repeat(mainLink.puntuacion)}${'☆'.repeat(5 - mainLink.puntuacion)}</div>` : ''}
+
+            ${mainLink.webName ? `<div class="channel-event">Fuente: ${mainLink.webName}</div>` : `<div class="channel-event">Ver Enlaces</div>`}
+
           </div>
         `;
       }
@@ -1622,9 +1663,8 @@
         elements.saveEditBtn.classList.remove('save-edit-btn--visible');
       }
       
-      // Lógica para abrir el modal al hacer clic en la tarjeta del grupo
       document.querySelectorAll('.channel-card[data-group-id]').forEach(groupCard => {
-          groupCard.removeEventListener('click', handleGroupCardClick); // Evitar duplicados
+          groupCard.removeEventListener('click', handleGroupCardClick);
           groupCard.addEventListener('click', handleGroupCardClick);
       });
     }
@@ -1633,49 +1673,38 @@
         const groupCard = e.target.closest('.channel-card[data-group-id]');
         if (!groupCard) return;
 
-        // Si se hace clic en un botón de edición o borrado, se delega al listener global
         if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
             return; 
         }
         
         const title = groupCard.dataset.groupTitle;
-        // Obtenemos los enlaces DE NUEVO de 'state.links' para tener la info más fresca
         const linksData = state.links.filter(link => link.title === title);
 
         elements.groupLinksModalTitle.textContent = `Enlaces de: ${title}`;
         
-        // Renderizar todos los enlaces del grupo en el modal
         elements.groupLinksContainer.innerHTML = linksData.map(link => 
-            // Modificación: Pasamos el estado de editMode para que renderLinkCard aplique la clase si es necesario
             renderLinkCard(link, true, state.settings.editMode)
         ).join('');
 
-        // Reasignar los listeners de clic para abrir los enlaces individuales dentro del modal
         elements.groupLinksContainer.querySelectorAll('.channel-card[data-id]').forEach(linkCard => {
             linkCard.addEventListener('click', function(e) {
-                // Previene que el clic dentro del modal se propague y cierre el modal
                 e.stopPropagation(); 
                 
-                // Si estás en modo edición, no abrimos el reproductor
                 if (state.settings.editMode) return;
                 
-                // Si se hace clic en borrar/editar, se maneja en el listener local que añadiremos
                 if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) {
                     return; 
                 }
                 
                 const linkId = this.dataset.id;
                 openLink(linkId);
-                elements.groupLinksModal.classList.remove('modal--active'); // Cerrar modal al abrir el enlace
+                elements.groupLinksModal.classList.remove('modal--active');
             });
         });
         
-        // **********************************************
-        // ➡️ SOLUCIÓN: Asignar listeners a los botones de editar/borrar dentro del modal
-        // **********************************************
         elements.groupLinksContainer.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Evitar que el clic en el botón active el listener de la tarjeta
+                e.stopPropagation();
                 state.deleteState.linkId = this.dataset.id;
                 elements.confirmDeleteModal.classList.add('modal--active');
             });
@@ -1683,18 +1712,13 @@
 
         elements.groupLinksContainer.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Evitar que el clic en el botón active el listener de la tarjeta
+                e.stopPropagation();
                 editLink(this.dataset.id);
             });
         });
-        // **********************************************
-        // ⬅️ FIN SOLUCIÓN
-        // **********************************************
 
-        // Mostrar el modal
         elements.groupLinksModal.classList.add('modal--active');
         
-        // Nuevo: Si estamos en modo edición, aplicamos las clases a las tarjetas dentro del modal
         if (state.settings.editMode) {
             setupEditModeInModal();
         }
@@ -1704,7 +1728,6 @@
         elements.groupLinksModal.classList.remove('modal--active');
     }
     
-    // Nueva Función: Aplica la clase de modo edición a las tarjetas dentro del modal
     function setupEditModeInModal() {
         elements.groupLinksContainer.querySelectorAll('.channel-card[data-id]').forEach(card => {
             card.classList.add('channel-card--edit-mode');
@@ -1712,23 +1735,30 @@
     }
 
     function renderLinkCard(link, isModal = false, isEditMode = false) { 
-      // Modificación: Usamos isEditMode para decidir si mostrar la clase de edición
       const editModeClass = (isEditMode || (state.settings.editMode && isModal)) ? 'channel-card--edit-mode' : '';
       const languageFlag = link.idioma === 'ES' ? '🇪🇸' : link.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
       
-      // La tarjeta de enlace individual que se muestra DENTRO DEL MODAL
       return `
         <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''} ${editModeClass}" 
              data-id="${link.id}"
              style="${link.color ? `border-color: ${link.color}` : ''}">
           <button class="delete-btn" data-id="${link.id}" title="Borrar enlace">×</button>
           <button class="edit-btn" data-id="${link.id}" title="Editar enlace">✏️</button>
+          
+          <div class="channel-sport">${getSportEmoji(link.deporte)} ${link.webName || 'Enlace'}</div> 
+          
           ${link.idioma ? `<span class="channel-language">${languageFlag}</span>` : ''}
+
           <div class="channel-header">
-            <div class="channel-name">${link.title}</div>
+            <div class="channel-name">${link.title}</div> 
           </div>
-          <div class="channel-sport">${getSportEmoji(link.deporte)}<br/>${link.webName || 'Enlace'}</div>
+          
           ${link.puntuacion ? `<div class="channel-rating">${'★'.repeat(link.puntuacion)}${'☆'.repeat(5 - link.puntuacion)}</div>` : ''}
+          
+          <div class="channel-event">
+            ${link.openInPlayer ? 'Reproductor interno 🎬' : 'Abrir en nueva pestaña ↗️'}
+          </div>
+
         </div>
       `;
     }
@@ -1737,23 +1767,17 @@
       const channelCards = document.querySelectorAll('.channel-card');
       
       channelCards.forEach(card => {
-        // En el modo edición, el clic en el grupo AHORA ABRE EL MODAL,
-        // por lo que solo necesitamos deshabilitar el arrastre si es un grupo.
         if (card.dataset.groupId) {
-             // Si es una tarjeta de grupo, no hacemos nada especial aquí, el handleGroupCardClick se encarga
-             // de abrir el modal, pero aseguramos la clase de edición.
              card.classList.add('channel-card--edit-mode');
              return;
         }
         
-        // Lógica de arrastrar solo para enlaces individuales (si existieran sin agrupar)
         card.addEventListener('click', function(e) {
           if (!state.settings.editMode) return;
           
           const linkId = this.dataset.id;
           const link = state.links.find(l => l.id === linkId);
           
-          // La lógica de arrastrar/reordenar se mantiene solo para enlaces individuales
           if (linkId && link && !this.dataset.groupId) { 
             if (state.dragState.isDragging) {
               state.dragState.isDragging = false;
@@ -1778,14 +1802,12 @@
         });
       });
       
-      // Asegurarse de que los botones de edición/borrado se muestren en el grid principal
       document.querySelectorAll('.channel-card[data-group-id]').forEach(card => {
         card.classList.add('channel-card--edit-mode');
       });
     }
 
     function getTypeDisplay(type) {
-      // Simplificado para solo mostrar 'Fuente'
       return 'Fuente';
     }
 
@@ -1872,20 +1894,16 @@
         link.favorito = !link.favorito;
         elements.favoriteBtn.classList.toggle('control-btn--active', link.favorito);
         
-        // Actualizar la tarjeta individual si está en el modal, o la tarjeta de grupo en el grid principal
         const linkCard = document.querySelector(`.channel-card[data-id="${link.id}"]`) || 
                          document.querySelector(`.channel-card[data-group-title="${link.title}"]`);
         
         if (linkCard) {
-          // Si es una tarjeta de enlace individual (dentro del modal)
           linkCard.classList.toggle('channel-card--favorite', link.favorito);
         }
         
-        // Si la tarjeta de grupo se actualiza, la renderización completa se encarga de re-evaluar si tiene favoritos.
-        
         showNotification(link.favorito ? 'Añadido a favoritos' : 'Eliminado de favoritos');
         saveSettings();
-        renderChannels(); // Renderizar de nuevo para que los cambios se reflejen en el grid principal
+        renderChannels();
       }
     }
 
@@ -1897,8 +1915,6 @@
         const currentWidth = elements.playerContainer.offsetWidth;
         const minHeight = 120;
         const maxHeight = 300;
-        const minWidth = 213;
-        const maxWidth = 533;
         const step = 20;
         
         let newHeight, newWidth;
@@ -1962,10 +1978,9 @@
       elements.editWebName.value = link.webName || '';
       elements.editLinkSport.value = link.deporte;
       elements.editLinkLanguage.value = link.idioma;
-      // El tipo de enlace es fijo ('source')
       elements.editLinkType.value = 'source';
       elements.editLinkColor.value = link.color || '#2563eb';
-      elements.editLinkColorHex.value = link.color || '';
+      elements.editLinkColorHex.value = (link.color || '').toUpperCase();
       elements.editOpenInPlayer.checked = link.openInPlayer || false;
       elements.editFavorito.checked = link.favorito || false;
       
@@ -2009,9 +2024,8 @@
       link.webName = elements.editWebName.value || null;
       link.deporte = elements.editLinkSport.value;
       link.idioma = elements.editLinkLanguage.value;
-      // El tipo de enlace es fijo ('source')
       link.type = 'source'; 
-      link.color = newColor;
+      link.color = newColor.toUpperCase();
       link.openInPlayer = elements.editOpenInPlayer.checked;
       link.favorito = elements.editFavorito.checked;
       link.puntuacion = rating;
@@ -2043,9 +2057,9 @@
         title: elements.editLinkTitle.value,
         webName: elements.editWebName.value || null,
         deporte: elements.editLinkSport.value,
-        type: 'source', // El tipo de enlace es fijo
+        type: 'source',
         idioma: elements.editLinkLanguage.value,
-        color: newColor,
+        color: newColor.toUpperCase(),
         openInPlayer: elements.editOpenInPlayer.checked,
         puntuacion: rating,
         favorito: elements.editFavorito.checked
@@ -2075,7 +2089,7 @@
       } else {
         state.filters = {
           searchText: '',
-          type: 'source', // Fijo
+          type: 'source',
           sport: null,
           language: null,
           favoritesOnly: false
@@ -2085,7 +2099,7 @@
         updateEmojiFilterButtons();
         elements.filterFavorites.classList.remove('filter-button--active');
         
-        saveFilters(); // Guarda el estado de filtros limpio
+        saveFilters();
         renderChannels();
       }
     }
@@ -2110,7 +2124,7 @@
         } else {
             state.filters.favoritesOnly = !state.filters.favoritesOnly;
             event.target.classList.toggle('filter-button--active', state.filters.favoritesOnly);
-            saveFilters(); // Guarda el estado de favoritos
+            saveFilters();
             renderChannels();
         }
     }
@@ -2118,7 +2132,6 @@
     function handleFilterButtonClick(buttonId) {
       const now = Date.now();
       
-      // Solo el botón 'filterSources' tiene un comportamiento de triple click para añadir
       if (buttonId !== 'filterSources') return; 
 
       if (now - state.filterButtonState.lastClickTime > 1000 || 
@@ -2138,7 +2151,7 @@
         elements.editWebName.value = '';
         elements.editLinkSport.value = 'Fútbol';
         elements.editLinkLanguage.value = 'ES';
-        elements.editLinkType.value = 'source'; // Fijo
+        elements.editLinkType.value = 'source';
         elements.editLinkColor.value = '#2563eb';
         elements.editOpenInPlayer.checked = false;
         elements.editFavorito.checked = false;
@@ -2150,8 +2163,7 @@
         
         elements.editLinkModal.classList.add('modal--active');
         state.filterButtonState.clickCount = 0;
-      } 
-      // Si se hace menos de 3 clics, se mantiene el filtro en 'source' (no hace nada)
+      }
     }
 
     async function importFromGist() {
@@ -2175,13 +2187,13 @@
           title: item.title || item.name || 'Sin título',
           webName: item.webName || item.source || null,
           deporte: item.deporte || item.sport || 'Otros',
-          type: 'source', // Fijo a 'source'
+          type: 'source',
           idioma: item.idioma || item.language || 'ES',
-          color: item.color || '#2563eb',
+          color: (item.color || '#2563eb').toUpperCase(),
           openInPlayer: item.openInPlayer || false,
           puntuacion: item.puntuacion || item.rating || 3,
           favorito: item.favorito || false
-        })).filter(item => item.link && item.type === 'source'); // Filtrar para solo permitir 'source'
+        })).filter(item => item.link && item.type === 'source');
         
         if (normalizedData.length === 0) {
           showNotification('El Gist no contiene enlaces válidos de tipo "Fuente"', 'error');
@@ -2278,8 +2290,6 @@
     function setupEventListeners() {
       setupPlayerDrag();
       
-      // Listener global para botones de borrar/editar (funciona en el grid principal y en el modal)
-      // Nota: El manejo de los botones dentro del modal de grupo se hace en handleGroupCardClick
       document.addEventListener('click', function(e) {
         const deleteBtn = e.target.closest('.delete-btn');
         if (deleteBtn) {
@@ -2295,11 +2305,9 @@
           editLink(editBtn.dataset.id);
           return;
         }
-        
-        // Se elimina el antiguo listener de clic de tarjeta individual
       });
       
-      elements.closeGroupLinksModal.addEventListener('click', closeGroupLinksModal); // Nuevo listener
+      elements.closeGroupLinksModal.addEventListener('click', closeGroupLinksModal);
       
       elements.cancelDeleteBtn.addEventListener('click', function() {
         elements.confirmDeleteModal.classList.remove('modal--active');
@@ -2309,7 +2317,7 @@
         elements.confirmDeleteModal.classList.remove('modal--active');
         if (state.deleteState.linkId) {
           deleteLink(state.deleteState.linkId);
-          closeGroupLinksModal(); // Cerramos el modal de grupo si se borró un enlace desde allí
+          closeGroupLinksModal();
         }
       });
       
@@ -2321,14 +2329,13 @@
       
       elements.searchInput.addEventListener('input', function() {
         state.filters.searchText = this.value;
-        saveFilters(); // Guarda el texto de búsqueda
+        saveFilters();
         renderChannels();
       });
       
       elements.filterFavorites.addEventListener('click', handleFavoriteButtonClick);
       
       elements.filterSources.addEventListener('click', function() {
-        // Se llama a la función para habilitar el triple-click para añadir
         handleFilterButtonClick('filterSources');
       });
       
@@ -2354,7 +2361,7 @@
           }
           
           updateEmojiFilterButtons();
-          saveFilters(); // Guarda el deporte/idioma
+          saveFilters();
           renderChannels();
         }
       });
@@ -2422,15 +2429,14 @@
             title: item.title || 'Sin título',
             webName: item.webName || null,
             deporte: item.deporte || 'Otros',
-            type: item.type || 'source', // Fijo o usar 'source' si falta
+            type: item.type || 'source',
             idioma: item.idioma || 'ES',
-            color: item.color || '#2563eb',
+            color: (item.color || '#2563eb').toUpperCase(),
             openInPlayer: item.openInPlayer || false,
             puntuacion: item.puntuacion || 3,
             favorito: item.favorito || false
           }));
           
-          // Solo permitir la importación de enlaces de tipo 'source'
           const newLinks = normalizedData.filter(newLink => 
             newLink.type === 'source' && !state.links.some(existingLink => existingLink.link === newLink.link)
           );
@@ -2504,7 +2510,7 @@
       });
       
       elements.editLinkColor.addEventListener('input', function() {
-        elements.editLinkColorHex.value = this.value;
+        elements.editLinkColorHex.value = this.value.toUpperCase();
       });
       
       window.addEventListener('scroll', checkScrollPosition);
@@ -2532,11 +2538,8 @@
     function closeEditLinkModal() {
       elements.editLinkModal.classList.remove('modal--active');
       if (elements.groupLinksModal.classList.contains('modal--active')) {
-          // Si cerramos el modal de edición y el modal de grupo está abierto, 
-          // necesitamos re-renderizar los enlaces en el modal de grupo para ver los cambios
           const currentGroupCard = document.querySelector(`.channel-card[data-group-title="${elements.groupLinksModalTitle.textContent.replace('Enlaces de: ', '')}"]`);
           if (currentGroupCard) {
-              // Simular el clic en el grupo para reabrir y actualizar el contenido
               handleGroupCardClick({ target: currentGroupCard });
           }
       }
