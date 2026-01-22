@@ -1,1866 +1,549 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.8">
-  <title>🔗 Gestor de Enlaces - Refactorizado</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1e50c7;
-      --primary-rgb: 37, 99, 235;
-      --bg-light: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --border-color: #e2e8f0;
-      --white: #ffffff;
-      --radius-md: 12px; /* Más moderno */
-      --radius-sm: 8px;
-      --shadow-sm: 0 4px 12px rgba(0,0,0,0.08); /* Sombra suave */
-      --error: #dc2626;
-      --success: #16a34a;
-      --warning: #d97706;
-      --info: #0284c7;
-      --move-color: #d97706; 
-      --input-bg: var(--bg-light);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shickat Wiki - OTT Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    body.dark-mode {
-      --bg-light: #18181b;
-      --card-bg: #27272a;
-      --text: #f4f4f5;
-      --border-color: #3f3f46;
-      --shadow-sm: 0 4px 12px rgba(0,0,0,0.3);
-      --input-bg: #333436;
-    }
-    
-    body {
-      background: var(--bg-light);
-      color: var(--text);
-      font-family: system-ui, -apple-system, sans-serif;
-      line-height: 1.6;
-      margin: 0;
-      padding: 0;
-      transition: all 0.3s;
-    }
-    
-    .main-container {
-      max-width: 1400px;
-      margin: 1.5rem auto;
-      padding: 0 1rem;
-    }
-    
-    /* Grid de Canales */
-    .channels-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Tarjetas un poco más grandes */
-      gap: 1rem; 
-      width: 100%;
-    }
-    
-    /* Tarjeta de Canal (Grupo) */
-    .channel-card {
-      background: var(--card-bg);
-      border: 2px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 1rem; 
-      cursor: pointer;
-      box-shadow: var(--shadow-sm); 
-      transition: all 0.2s;
-      position: relative;
-      user-select: none;
-      min-height: 150px; 
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    
-    .channel-card:hover {
-      transform: translateY(-2px); /* Efecto 3D sutil */
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      border-color: var(--primary);
-    }
-    
-    /* Encabezado (Información superior) */
-    .channel-info-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
+    <style>
+        :root {
+            --bg-black: #050505;
+            --card-bg: #111111;
+            --accent: #38bdf8;
+            --text: #ffffff;
+            --gray: #808080;
+            --surface: #1a1a1a;
+        }
 
-    /* Tags */
-    .channel-sport, .channel-language {
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.3rem 0.6rem;
-        border-radius: 9999px; /* Chip completo */
-        line-height: 1;
-        white-space: nowrap;
-    }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text);
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-    .channel-sport {
-        background: rgba(var(--primary-rgb), 0.15); 
-        color: var(--primary);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
+        /* --- HEADER & NAVEGACIÓN --- */
+        header {
+            padding: 20px 4%;
+            background: linear-gradient(to bottom, rgba(5,5,5,1) 60%, rgba(5,5,5,0) 100%);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    .channel-language {
-        background: var(--info); 
-        color: var(--white);
-    }
-    
-    .channel-number {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--text);
-        opacity: 0.7;
-    }
+        .nav-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    /* Contenido Principal */
-    .channel-name {
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 0.2rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: var(--text);
-    }
-    
-    .channel-rating {
-        text-align: left;
-        margin: 0.5rem 0;
-        font-size: 1.1rem; 
-        color: var(--warning);
-    }
-    
-    .channel-event {
-        font-size: 0.8rem;
-        color: var(--text);
-        opacity: 0.7;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-    /* Modo Edición / Mover */
-    .channel-card--edit-mode {
-      border: 2px dashed var(--error) !important;
-      background: rgba(var(--primary-rgb), 0.05); 
-      cursor: default !important;
-    }
-    
-    .channel-card--move-mode {
-      border: 2px dashed var(--move-color) !important; 
-      background: rgba(255, 193, 7, 0.05);
-      cursor: grab !important;
-    }
-    
-    .delete-btn, .edit-btn {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s, background 0.2s;
-      z-index: 10;
-      border: none;
-      color: white;
-      font-size: 1rem;
-    }
+        .search-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            width: 250px;
+            transition: 0.3s;
+            outline: none;
+        }
 
-    .delete-btn {
-        top: -10px;
-        right: -10px;
-        background: var(--error);
-    }
+        .search-box:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.1);
+        }
 
-    .edit-btn {
-        top: -10px;
-        right: 25px; /* Separar del botón de borrar */
-        background: var(--primary);
-    }
+        .btn-export {
+            background: var(--surface);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
 
-    .channel-card--edit-mode:hover .delete-btn,
-    .channel-card--edit-mode:hover .edit-btn {
-      opacity: 1;
-    }
+        .btn-export:hover {
+            background: var(--accent);
+            color: #000;
+        }
 
-    .channel-card--edit-mode .delete-btn,
-    .channel-card--edit-mode .edit-btn {
-      opacity: 1; /* Mantener visibles en modo edición */
-    }
-    .channel-card--move-mode .delete-btn,
-    .channel-card--move-mode .edit-btn {
-        display: none;
-    }
-    
-    .channel-card--dragging {
-        opacity: 0.5;
-        border: 2px solid var(--move-color) !important;
-        transform: scale(1.02);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 15px 0;
+            scrollbar-width: none;
+        }
 
-    /* Seccion de Busqueda y Acciones */
-    .search-actions {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .search-box input {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      background-color: var(--input-bg);
-      color: var(--text);
-      box-sizing: border-box;
-      transition: border-color 0.2s;
-    }
-    
-    .search-box input:focus {
-        border-color: var(--primary);
-        outline: none;
-    }
+        .filter-group::-webkit-scrollbar { display: none; }
 
-    .action-buttons {
-      display: flex;
-      gap: 0.6rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
+        .cat-chip {
+            padding: 6px 18px;
+            border-radius: 6px;
+            background: var(--surface);
+            border: 1px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--gray);
+        }
 
-    /* Estilos de Botones */
-    .action-button {
-      flex: 1;
-      padding: 0.6rem 0.8rem;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      background: var(--card-bg);
-      color: var(--text);
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
+        .cat-chip.active {
+            background: var(--accent);
+            color: #000;
+            font-weight: 500;
+        }
 
-    .action-button:hover:not(.filter-button--active, .filter-button--move-active) {
-        border-color: var(--primary);
-    }
+        /* --- CONTENIDO ESTILO OTT --- */
+        .category-row {
+            padding: 10px 0 30px 4%;
+        }
 
-    .action-button--icon {
-        flex: 0 0 auto;
-        width: 40px;
-        min-width: 40px;
-        padding: 0.6rem 0;
-    }
-    
-    .filter-button--active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-    
-    .filter-button--move-active {
-        background: var(--move-color);
-        color: white;
-        border-color: var(--move-color);
-    }
+        .category-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: var(--text);
+            letter-spacing: 0.5px;
+        }
 
-    /* Filtros Emoji */
-    .emoji-filters {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .emoji-filter-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid var(--border-color);
-      background: var(--card-bg);
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    
-    .emoji-filter-btn:hover {
-      border-color: var(--primary);
-    }
-    
-    .emoji-filter-btn--active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-    
-    /* Reproductor (Player) */
-    .player-section {
-      margin-bottom: 1.5rem;
-    }
-    
-    .player-container {
-      background: black;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      width: 100%;
-      height: 400px;
-      display: none;
-      position: relative;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    
-    .player-container--active {
-      display: block;
-    }
-    
-    .player-container--minimized {
-      width: 320px;
-      height: 180px;
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      z-index: 100;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      cursor: move;
-    }
-    
-    #videoFrame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      object-fit: cover;
-    }
-    
-    .player-controls {
-      display: none;
-      gap: 10px;
-      justify-content: center;
-      padding: 10px;
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      position: relative;
-      margin-top: 0.5rem;
-    }
-    
-    .player-controls--active {
-      display: flex;
-    }
-    
-    .player-controls--minimized {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 320px;
-      z-index: 100;
-      cursor: move;
-      margin-top: 0;
-    }
-    
-    .control-btn {
-      background: var(--primary);
-      border: none;
-      color: white;
-      cursor: pointer;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      font-size: 1rem;
-    }
-    
-    .control-btn:hover {
-      background: var(--primary-dark);
-    }
-    
-    .channel-info {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.9rem;
-      font-weight: 600;
-      max-width: 150px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      cursor: move;
-      user-select: none;
-    }
-    
-    /* Modales */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6); /* Fondo más oscuro */
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      backdrop-filter: blur(4px); /* Efecto de desenfoque */
-    }
-    
-    .modal--active {
-      display: flex;
-    }
-    
-    .modal-content {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 1.5rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      animation: modalFadeIn 0.3s ease;
-      border: 1px solid var(--border-color);
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 1rem;
-    }
-    
-    .modal-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      cursor: pointer;
-      color: var(--text);
-      opacity: 0.7;
-    }
-    
-    /* Formularios y Botones de Acción */
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    
-    .form-label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-    
-    .form-input, .form-select, .json-textarea {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      background: var(--input-bg);
-      color: var(--text);
-      box-sizing: border-box;
-      transition: all 0.2s;
-    }
+        .ott-slider {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px 0 20px 0;
+            scrollbar-width: none;
+        }
 
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.8rem;
-      margin-top: 1.5rem;
-    }
-    
-    .btn {
-      padding: 0.7rem 1.4rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-      font-size: 0.95rem;
-    }
-    
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-    }
-    
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
-    
-    .btn-secondary {
-      background: var(--card-bg);
-      color: var(--text);
-      border: 1px solid var(--border-color);
-    }
-    
-    .btn-secondary:hover {
-      border-color: var(--primary);
-    }
-    
-    .btn-danger {
-      background: var(--error);
-      color: white;
-      border: none;
-    }
-    
-    .btn-danger:hover {
-      background: #b91c1c;
-    }
-    
-    /* Configuración */
-    .settings-section-title {
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--primary);
-    }
-    
-    .settings-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.8rem 0;
-      border-bottom: 1px dashed var(--border-color);
-    }
-    
-    .settings-option:last-child {
-      border-bottom: none;
-    }
-    
-    .color-picker {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-    
-    .color-option {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid transparent;
-      transition: transform 0.2s;
-    }
-    
-    .color-option--active {
-      border-color: var(--text);
-      transform: scale(1.1);
-    }
+        .ott-slider::-webkit-scrollbar { display: none; }
 
-    /* Rating */
-    .rating-stars {
-        display: flex;
-        gap: 0.2rem;
-    }
-    .star {
-      cursor: pointer;
-      font-size: 1.8rem;
-      color: #ccc;
-      transition: color 0.2s;
-    }
-    
-    .star.active {
-      color: var(--warning);
-    }
+        .ott-card {
+            min-width: 210px;
+            max-width: 210px;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
 
-    /* Switch */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
+        .card-visual {
+            width: 100%;
+            height: 118px;
+            background: linear-gradient(135deg, #1e293b, #000000);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-    .slider {
-        border-radius: 24px;
-    }
+        .card-visual::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            z-index: 1;
+        }
 
-    .slider:before {
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-    }
+        .ott-card:hover .card-visual {
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(56, 189, 248, 0.2);
+            background: linear-gradient(135deg, #2563eb, #0f172a);
+        }
 
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
-    
-    /* Otros */
-    .save-edit-btn {
-      position: fixed;
-      bottom: 70px; /* Separado del scroll-to-top */
-      right: 20px;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--success);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      z-index: 999;
-      border: none;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
-      font-size: 1.5rem;
-    }
-    
-    .save-edit-btn--visible {
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    @keyframes modalFadeIn {
-      0% { opacity: 0; transform: translateY(-20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    
-    @media (max-width: 768px) {
-      .channels-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      }
-      .action-buttons {
-        flex-wrap: wrap;
-      }
-      .channel-card {
-        min-height: 140px;
-      }
-      .modal-content {
-          padding: 1rem;
-      }
-    }
-  </style>
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            z-index: 2;
+            text-align: left;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-meta {
+            font-size: 0.7rem;
+            color: var(--accent);
+            margin-top: 2px;
+            display: block;
+            opacity: 0.9;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.65rem;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--text);
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 3;
+        }
+
+        /* --- REPRODUCTOR --- */
+        #player-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-header {
+            height: 60px;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+        }
+
+        .btn-close {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-close:hover { background: #ff4444; }
+
+        #main-iframe {
+            flex-grow: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- MODALES --- */
+        #onboarding-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.98);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--surface); padding: 3rem; border-radius: 24px; text-align: center; max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .lang-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 25px 0;
+        }
+
+        .lang-option {
+            padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .lang-option.selected { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
+
+        .btn-main {
+            background: var(--accent); color: #000; border: none; padding: 14px 30px; 
+            font-weight: bold; cursor: pointer; border-radius: 10px; width: 100%; margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-main:hover { opacity: 0.9; transform: scale(1.02); }
+
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
-  <div class="main-container">
-    
-    <div class="player-section" id="playerSection">
-      <div class="player-container" id="playerContainer">
-        <iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
-      </div>
-      <div class="player-controls" id="playerControls">
-        <span class="channel-info" id="channelInfo"><i class="fas fa-video"></i> Sin Reproductor</span>
-        <button class="control-btn" id="prevChannelBtn" title="Reducir tamaño"><i class="fas fa-minus"></i></button>
-        <button class="control-btn" id="nextChannelBtn" title="Aumentar tamaño"><i class="fas fa-plus"></i></button>
-        <button class="control-btn" id="toggleStickyBtn" title="Fijar reproductor"><i class="fas fa-thumbtack"></i></button>
-        <button class="control-btn" id="favoriteBtn" title="Guardar favorito"><i class="fas fa-star"></i></button>
-        <button class="control-btn" id="closePlayerBtn" title="Cerrar"><i class="fas fa-times"></i></button>
-      </div>
-    </div>
-    
-    <div class="search-actions">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Buscar canal o fuente...">
-      </div>
-      <div class="action-buttons">
-        <button class="action-button action-button--icon" id="filterFavorites" title="Mostrar solo favoritos">
-            <i class="fas fa-star"></i>
-        </button>
-        <button class="action-button" id="editLinksBtn" title="Activar modo edición">
-            <i class="fas fa-pen-to-square"></i> Editar
-        </button>
-        <button class="action-button" id="moveLinksBtn" title="Activar modo mover/reordenar">
-            <i class="fas fa-arrows-up-down-left-right"></i> Mover
-        </button>
-        <button class="action-button" id="addLinkBtn" title="Añadir nuevo enlace">
-            <i class="fas fa-plus"></i> Añadir
-        </button>
-        <button class="action-button action-button--icon" id="clearFilters" title="Limpiar filtros (Triple clic para Configuración)">
-            <i class="fas fa-filter"></i>
-        </button>
-      </div>
-      <div class="emoji-filters" id="emojiFilters">
-        <button class="emoji-filter-btn" data-filter="F1" title="F1">🏎️</button>
-        <button class="emoji-filter-btn" data-filter="Fútbol" title="Fútbol">⚽</button>
-        <button class="emoji-filter-btn" data-filter="Baloncesto" title="Baloncesto">🏀</button>
-        <button class="emoji-filter-btn" data-filter="Motorsport" title="Motorsport">🏁</button>
-        <button class="emoji-filter-btn" data-filter="ES" title="Español">🇪🇸</button>
-        <button class="emoji-filter-btn" data-filter="EN" title="Inglés">🇬🇧</button>
-      </div>
-    </div>
-    
-    <div id="channelsContent"></div>
-    
-    <div class="no-results" id="noResults" style="display: none;">
-      No se encontraron resultados. Prueba con otros filtros.
-    </div>
-    
-    <button class="save-edit-btn" id="saveEditBtn" title="Guardar cambios"><i class="fas fa-check"></i></button>
-    
-    <div class="modal" id="settingsModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title"><i class="fas fa-cog"></i> Configuración</h2>
-          <button class="modal-close" id="closeSettingsModal"><i class="fas fa-times"></i></button>
+
+    <div id="player-container" class="hidden">
+        <div class="player-header">
+            <div id="player-title" style="font-weight: 500; color: var(--accent);">Cargando canal...</div>
+            <button class="btn-close" onclick="closePlayer()"><i class="fas fa-times"></i> CERRAR</button>
         </div>
-        
-        <div class="settings-section">
-          <h3 class="settings-section-title"><i class="fas fa-paint-brush"></i> Personalización</h3>
-          <div class="settings-option">
-            <div class="settings-option-label">Modo oscuro</div>
-            <label class="switch"><input type="checkbox" id="darkModeToggle"><span class="slider round"></span></label>
-          </div>
-          <div class="settings-option" style="border-bottom: none;">
-            <div class="settings-option-label">Color principal</div>
-            <div class="color-picker">
-              <div class="color-option color-option--active" style="background: #2563eb;" data-color="#2563eb"></div>
-              <div class="color-option" style="background: #dc2626;" data-color="#dc2626"></div>
-              <div class="color-option" style="background: #16a34a;" data-color="#16a34a"></div>
-              <div class="color-option" style="background: #d97706;" data-color="#d97706"></div>
-              <div class="color-option" style="background: #7c3aed;" data-color="#7c3aed"></div>
-              <div class="color-option" style="background: #db2777;" data-color="#db2777"></div>
+        <iframe id="main-iframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+
+    <div id="onboarding-modal" class="hidden">
+        <div class="modal-content">
+            <h2 style="color: var(--accent); margin-top:0;">Configuración</h2>
+            <p style="color: var(--gray); font-size: 0.9rem;">Selecciona idiomas para tu feed:</p>
+            <div class="lang-grid" id="lang-selector">
+                <span class="lang-option" data-lang="es">Español</span>
+                <span class="lang-option" data-lang="en">Inglés</span>
+                <span class="lang-option" data-lang="fr">Francés</span>
+                <span class="lang-option" data-lang="de">Alemán</span>
+                <span class="lang-option" data-lang="it">Italiano</span>
+                <span class="lang-option" data-lang="pt">Portugués</span>
             </div>
-          </div>
+            <button class="btn-main" onclick="saveLanguages()">EMPEZAR A VER</button>
         </div>
-        
-        <div class="settings-section">
-          <h3 class="settings-section-title"><i class="fas fa-file-export"></i> Gestión de Datos</h3>
-          <div class="import-export-tabs">
-            <div class="import-export-tab import-export-tab--active" data-tab="export">Exportar</div>
-            <div class="import-export-tab" data-tab="import">Importar</div>
-            <div class="import-export-tab" data-tab="github">GitHub</div>
-          </div>
-          
-          <div class="import-export-content import-export-content--active" id="exportTab">
-            <textarea class="json-textarea" id="exportLinksData" readonly></textarea>
-            <button class="btn btn-primary" id="copyExportLinksBtn"><i class="fas fa-copy"></i> Copiar JSON</button>
-          </div>
-          
-          <div class="import-export-content" id="importTab">
-            <textarea class="json-textarea" id="importLinksData" placeholder="Pega aquí el JSON de exportación"></textarea>
-            <div class="form-actions">
-              <button class="btn btn-secondary" id="cancelImportBtn">Cancelar</button>
-              <button class="btn btn-primary" id="importLinksBtn"><i class="fas fa-upload"></i> Importar Datos</button>
-            </div>
-          </div>
-          
-          <div class="import-export-content" id="githubTab">
-            <div class="form-group">
-              <p>Importar lista de canales desde un Gist de GitHub (reemplaza la lista actual):</p>
-              <button class="btn btn-primary" id="importGistBtn"><i class="fab fa-github"></i> Importar desde Gist</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="settings-section" style="border-bottom: none;">
-          <h3 class="settings-section-title"><i class="fas fa-trash-alt"></i> Borrar</h3>
-          <div class="form-actions" style="justify-content: flex-start;">
-            <button class="btn btn-danger" id="clearAllBtn">Borrar Todos los Datos</button>
-          </div>
-        </div>
-      </div>
     </div>
-    
-    <div class="modal" id="editLinkModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title" id="editModalTitleText">✏️ Editar Enlace</h2>
-          <button class="modal-close" id="closeEditLinkModal"><i class="fas fa-times"></i></button>
-        </div>
-        
-        <div class="form-group"><label class="form-label">URL del enlace</label><input type="text" class="form-input" id="editLinkUrl"></div>
-        <div class="form-group"><label class="form-label">Título</label><input type="text" class="form-input" id="editLinkTitle"></div>
-        <div class="form-group"><label class="form-label">Web de origen (opcional)</label><input type="text" class="form-input" id="editWebName"></div>
-        
-        <div class="form-group">
-          <label class="form-label">Deporte</label>
-          <select class="form-select" id="editLinkSport">
-            <option value="F1">🏎️ F1</option>
-            <option value="Baloncesto">🏀 Baloncesto</option>
-            <option value="Fútbol">⚽ Fútbol</option>
-            <option value="Motorsport">🏁 Motorsport</option>
-            <option value="Tenis">🎾 Tenis</option>
-            <option value="TV">📺 TV</option>
-            <option value="Otros">🏅 Otros</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Idioma</label>
-          <select class="form-select" id="editLinkLanguage">
-            <option value="ES">Español 🇪🇸</option>
-            <option value="EN">Inglés 🇬🇧</option>
-            <option value="OT">Otro 🏳️‍⚧️</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label">Color de Borde</label>
-            <div style="display: flex; gap: 1rem;">
-                <input type="color" class="form-input" id="editLinkColor" value="#2563eb" style="width: 50px; height: 40px; padding: 0; border: none;">
-                <input type="text" class="form-input" id="editLinkColorHex" placeholder="Ej: #FF5733">
+
+    <header id="header-main" class="hidden">
+        <div class="nav-tools">
+            <h1 style="color: var(--accent); margin:0; font-size: 1.4rem; font-weight: 700;">SHICKAT <span style="font-weight:300; color:white; opacity:0.8;">WIKI</span></h1>
+            <div class="search-container">
+                <input type="text" id="main-search" class="search-box" placeholder="Buscar canales..." oninput="filterEverything()">
+                <button class="btn-export" onclick="exportDataBackup()" title="Respaldar Enlaces">
+                    <i class="fas fa-file-export"></i> EXPORTAR
+                </button>
             </div>
         </div>
+        <div class="filter-group" id="category-filters">
+            <div class="cat-chip active" onclick="selectCategory('all', this)">Todo</div>
+        </div>
+    </header>
+
+    <div id="loading" style="text-align:center; margin-top:150px;">
+        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--accent)"></i>
+        <p id="loading-text" style="color: var(--gray); margin-top:15px; font-size: 0.9rem;">Sincronizando contenido...</p>
+    </div>
+
+    <main id="app-content" class="hidden"></main>
+
+    <script>
+        const BASE_URL = 'https://shickat.me/';
+        const PROXY_URL = 'https://api.allorigins.win/get?url=';
+        // URL RAW de tu Gist para usar como respaldo directo
+        const GIST_URL = 'https://gist.githubusercontent.com/Ciento20/be82cec2fed5b9886b07fc171f2d9744/raw/';
         
-        <div class="form-group">
-          <label class="form-label">Opciones</label>
-          <div class="settings-option"><div class="settings-option-label">Abrir en reproductor</div><label class="switch"><input type="checkbox" id="editOpenInPlayer"><span class="slider round"></span></label></div>
-          <div class="settings-option" style="border-bottom: none;"><div class="settings-option-label">Favorito</div><label class="switch"><input type="checkbox" id="editFavorito"><span class="slider round"></span></label></div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Puntuación (1-5)</label>
-          <div class="rating-stars" id="editRatingStars">
-            <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span><span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-          </div>
-        </div>
-        
-        <div class="form-actions">
-          <button class="btn btn-secondary" id="cancelEditLinkBtn">Cancelar</button>
-          <button class="btn btn-primary" id="saveEditLinkBtn"><i class="fas fa-save"></i> Guardar Cambios</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="modal" id="confirmClearModal">
-      <div class="modal-content" style="max-width: 400px; text-align: center;">
-        <h3><i class="fas fa-exclamation-triangle"></i> ¿Estás seguro?</h3>
-        <p>Esta acción borrará **todos** los enlaces y la configuración. Es irreversible.</p>
-        <div class="form-actions" style="justify-content: center;">
-          <button class="btn btn-secondary" id="cancelClearBtn">Cancelar</button>
-          <button class="btn btn-danger" id="confirmClearBtn"><i class="fas fa-trash-alt"></i> Borrar Todo</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="modal" id="confirmDeleteModal">
-      <div class="modal-content" style="max-width: 400px; text-align: center;">
-        <h3><i class="fas fa-trash"></i> ¿Borrar este enlace?</h3>
-        <p>El enlace seleccionado se eliminará de forma permanente.</p>
-        <div class="form-actions" style="justify-content: center;">
-          <button class="btn btn-secondary" id="cancelDeleteBtn">Cancelar</button>
-          <button class="btn btn-danger" id="confirmDeleteBtn">Borrar</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="modal" id="groupLinksModal">
-      <div class="modal-content" style="max-width: 800px;">
-        <div class="modal-header">
-          <h2 class="modal-title" id="groupLinksModalTitle"><i class="fas fa-list"></i> Enlaces del Grupo</h2>
-          <button class="modal-close" id="closeGroupLinksModal"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="channels-grid" id="groupLinksContainer"></div>
-      </div>
-    </div>
-    
-    <div class="notification" id="notification"></div>
-    
-    <div class="scroll-to-top" id="scrollToTop"><i class="fas fa-arrow-up"></i></div>
-  </div>
+        let rawData = [];
+        let selectedLangs = JSON.parse(localStorage.getItem('myLangs')) || [];
+        let currentCategory = 'all';
 
-  <script>
-    const state = {
-      links: [
-        // Datos de ejemplo
-        { id: '1', link: 'https://example.com/stream1', title: 'Canal de Prueba', webName: 'Fuente Primaria', deporte: 'Fútbol', type: 'source', idioma: 'ES', color: '#2563eb', openInPlayer: true, puntuacion: 4, favorito: false },
-        { id: '2', link: 'https://example.com/stream2', title: 'Canal de Prueba', webName: 'Fuente Secundaria', deporte: 'Fútbol', type: 'source', idioma: 'EN', color: '#dc2626', openInPlayer: false, puntuacion: 3, favorito: true },
-        { id: '3', link: 'https://example.com/stream3', title: 'Otro Canal', webName: 'TV General', deporte: 'TV', type: 'source', idioma: 'ES', color: '#16a34a', openInPlayer: true, puntuacion: 5, favorito: false },
-        { id: '4', link: 'https://example.com/stream4', title: 'Otro Canal', webName: 'Deportes', deporte: 'Motorsport', type: 'source', idioma: 'OT', color: '#7c3aed', openInPlayer: true, puntuacion: 2, favorito: false }
-      ],
-      settings: {
-        darkMode: false,
-        primaryColor: '#2563eb',
-        playerHeight: 400,
-        minimizedPlayerHeight: 180,
-        minimizedPlayerWidth: 320,
-        editMode: false, 
-        moveMode: false  
-      },
-      filters: {
-        searchText: '',
-        type: 'source',
-        sport: null,
-        language: null,
-        favoritesOnly: false
-      },
-      currentPlayer: {
-        channelId: null,
-        isMinimized: false
-      },
-      deleteState: { linkId: null },
-      editState: { linkId: null, isAdding: false },
-      clearButtonState: { clickCount: 0, lastClickTime: 0 },
-      dragState: { isDragging: false, draggedItem: null, startIndex: null },
-      playerDragState: { isDragging: false, offsetX: 0, offsetY: 0 }
-    };
+        if (selectedLangs.length === 0) {
+            document.getElementById('onboarding-modal').classList.remove('hidden');
+        } else {
+            initApp();
+        }
 
-    const elements = {
-      // ... (Mapeo de elementos DOM, conservado del código original)
-      channelsContent: document.getElementById('channelsContent'),
-      noResults: document.getElementById('noResults'),
-      playerContainer: document.getElementById('playerContainer'),
-      playerControls: document.getElementById('playerControls'),
-      videoFrame: document.getElementById('videoFrame'),
-      channelInfo: document.getElementById('channelInfo'),
-      prevChannelBtn: document.getElementById('prevChannelBtn'),
-      nextChannelBtn: document.getElementById('nextChannelBtn'),
-      toggleStickyBtn: document.getElementById('toggleStickyBtn'),
-      favoriteBtn: document.getElementById('favoriteBtn'),
-      closePlayerBtn: document.getElementById('closePlayerBtn'),
-      searchInput: document.getElementById('searchInput'),
-      filterFavorites: document.getElementById('filterFavorites'),
-      editLinksBtn: document.getElementById('editLinksBtn'),
-      moveLinksBtn: document.getElementById('moveLinksBtn'),
-      addLinkBtn: document.getElementById('addLinkBtn'),
-      clearFilters: document.getElementById('clearFilters'),
-      emojiFilters: document.getElementById('emojiFilters'),
-      settingsModal: document.getElementById('settingsModal'),
-      editLinkModal: document.getElementById('editLinkModal'),
-      confirmClearModal: document.getElementById('confirmClearModal'),
-      confirmDeleteModal: document.getElementById('confirmDeleteModal'),
-      cancelClearBtn: document.getElementById('cancelClearBtn'),
-      confirmClearBtn: document.getElementById('confirmClearBtn'),
-      cancelDeleteBtn: document.getElementById('cancelDeleteBtn'),
-      confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
-      clearAllBtn: document.getElementById('clearAllBtn'),
-      darkModeToggle: document.getElementById('darkModeToggle'),
-      exportLinksData: document.getElementById('exportLinksData'),
-      importLinksData: document.getElementById('importLinksData'),
-      copyExportLinksBtn: document.getElementById('copyExportLinksBtn'),
-      importLinksBtn: document.getElementById('importLinksBtn'),
-      importGistBtn: document.getElementById('importGistBtn'),
-      cancelImportBtn: document.getElementById('cancelImportBtn'),
-      closeSettingsModal: document.getElementById('closeSettingsModal'),
-      editLinkUrl: document.getElementById('editLinkUrl'),
-      editLinkTitle: document.getElementById('editLinkTitle'),
-      editWebName: document.getElementById('editWebName'),
-      editLinkSport: document.getElementById('editLinkSport'),
-      editLinkLanguage: document.getElementById('editLinkLanguage'),
-      editLinkColor: document.getElementById('editLinkColor'),
-      editLinkColorHex: document.getElementById('editLinkColorHex'),
-      editOpenInPlayer: document.getElementById('editOpenInPlayer'),
-      editFavorito: document.getElementById('editFavorito'),
-      editRatingStars: document.getElementById('editRatingStars'),
-      saveEditLinkBtn: document.getElementById('saveEditLinkBtn'),
-      cancelEditLinkBtn: document.getElementById('cancelEditLinkBtn'),
-      closeEditLinkModal: document.getElementById('closeEditLinkModal'),
-      importExportTabs: document.querySelectorAll('.import-export-tab'),
-      importExportContents: document.querySelectorAll('.import-export-content'),
-      notification: document.getElementById('notification'),
-      scrollToTop: document.getElementById('scrollToTop'),
-      saveEditBtn: document.getElementById('saveEditBtn'),
-      groupLinksModal: document.getElementById('groupLinksModal'),
-      groupLinksModalTitle: document.getElementById('groupLinksModalTitle'),
-      groupLinksContainer: document.getElementById('groupLinksContainer'),
-      closeGroupLinksModal: document.getElementById('closeGroupLinksModal'),
-      editModalTitleText: document.getElementById('editModalTitleText')
-    };
-
-    /**
-     * Alterna la visibilidad de un modal específico.
-     * Cierra todos los demás modales activos si se está abriendo uno nuevo.
-     * @param {HTMLElement} modalElement - El elemento del modal.
-     */
-    function toggleModal(modalElement) {
-        if (!modalElement) return;
-
-        const isCurrentlyActive = modalElement.classList.contains('modal--active');
-
-        // 1. Cierra todos los modales (excepto la notificación)
-        document.querySelectorAll('.modal').forEach(m => {
-            m.classList.remove('modal--active');
+        document.querySelectorAll('.lang-option').forEach(opt => {
+            opt.addEventListener('click', () => opt.classList.toggle('selected'));
         });
 
-        // 2. Abre el modal si no estaba activo
-        if (!isCurrentlyActive) {
-            modalElement.classList.add('modal--active');
-        }
-    }
-
-    /* --- GESTIÓN DE DATOS --- */
-
-    function init() {
-      loadSettings();
-      loadFilters();
-      renderChannels();
-      setupEventListeners();
-      checkScrollPosition();
-      elements.searchInput.value = state.filters.searchText;
-      updateEmojiFilterButtons();
-      elements.filterFavorites.classList.toggle('filter-button--active', state.filters.favoritesOnly);
-      updateEditModeButtons();
-    }
-
-    function loadSettings() {
-      const savedSettings = localStorage.getItem('daddyLiveHDSettings');
-      if (savedSettings) Object.assign(state.settings, JSON.parse(savedSettings));
-      
-      const savedLinks = localStorage.getItem('daddyLiveHDLinks');
-      if (savedLinks) state.links = JSON.parse(savedLinks).filter(link => link.type === 'source');
-      
-      if (state.settings.darkMode) document.body.classList.add('dark-mode');
-      elements.darkModeToggle.checked = state.settings.darkMode;
-      if (state.settings.primaryColor) updatePrimaryColor(state.settings.primaryColor);
-    }
-    
-    function loadFilters() {
-        const savedFilters = localStorage.getItem('daddyLiveHDFilters');
-        if (savedFilters) Object.assign(state.filters, JSON.parse(savedFilters));
-        state.filters.type = 'source';
-    }
-
-    function saveSettings() {
-      localStorage.setItem('daddyLiveHDSettings', JSON.stringify(state.settings));
-      localStorage.setItem('daddyLiveHDLinks', JSON.stringify(state.links.filter(link => link.type === 'source')));
-      saveFilters();
-    }
-    
-    function saveFilters() {
-        state.filters.type = 'source';
-        localStorage.setItem('daddyLiveHDFilters', JSON.stringify(state.filters));
-    }
-
-    function clearAllData() {
-      state.links = [];
-      state.settings = { ...state.settings, editMode: false, moveMode: false }; // Restablecer solo modos
-      
-      localStorage.removeItem('daddyLiveHDSettings');
-      localStorage.removeItem('daddyLiveHDLinks');
-      localStorage.removeItem('daddyLiveHDFilters');
-      
-      document.body.classList.remove('dark-mode');
-      elements.darkModeToggle.checked = false;
-      updatePrimaryColor('#2563eb');
-      
-      state.filters = { searchText: '', type: 'source', sport: null, language: null, favoritesOnly: false };
-      
-      elements.searchInput.value = '';
-      updateEmojiFilterButtons();
-      elements.filterFavorites.classList.remove('filter-button--active');
-      
-      closePlayer();
-      renderChannels();
-      updateEditModeButtons();
-      showNotification('Todos los datos han sido borrados');
-    }
-
-    function deleteLink(linkId) {
-      state.links = state.links.filter(link => link.id !== linkId);
-      saveSettings();
-      renderChannels();
-      showNotification('Enlace eliminado');
-    }
-
-    /* --- RENDERING Y LÓGICA DE CANALES --- */
-
-    function getSportEmoji(sport) {
-      const emojis = { 'F1': '🏎️', 'Baloncesto': '🏀', 'Fútbol': '⚽', 'Motorsport': '🏁', 'Tenis': '🎾', 'TV': '📺', 'Otros': '🏅' };
-      return emojis[sport] || '';
-    }
-    
-    function getAverageRating(links) {
-        if (!links || links.length === 0) return 0;
-        const totalScore = links.reduce((sum, link) => sum + (link.puntuacion || 0), 0);
-        return Math.round(totalScore / links.length);
-    }
-
-    function renderChannels() {
-      const filteredLinks = state.links.filter(link => {
-        if (link.type !== 'source') return false;
-        if (state.filters.searchText && !`${link.title} ${link.webName} ${link.deporte} ${link.idioma}`.toLowerCase().includes(state.filters.searchText.toLowerCase())) return false;
-        if (state.filters.sport && link.deporte !== state.filters.sport) return false;
-        if (state.filters.language && link.idioma !== state.filters.language) return false;
-        if (state.filters.favoritesOnly && !link.favorito) return false;
-        return true;
-      });
-      
-      const linksByTitle = {};
-      filteredLinks.forEach(link => {
-        if (!linksByTitle[link.title]) linksByTitle[link.title] = [];
-        linksByTitle[link.title].push(link);
-      });
-      
-      let html = '';
-      
-      if (Object.keys(linksByTitle).length === 0) {
-        elements.noResults.style.display = 'block';
-        elements.channelsContent.innerHTML = '';
-        return;
-      }
-      
-      elements.noResults.style.display = 'none';
-      elements.channelsContent.className = 'channels-grid';
-
-      for (const [title, links] of Object.entries(linksByTitle)) {
-        const mainLink = links[0];
-        const isFavorite = links.some(link => link.favorito);
-        const uniqueLanguages = [...new Set(links.map(link => link.idioma))];
-        const languageTag = uniqueLanguages.map(lang => `<span class="channel-language">${lang === 'ES' ? '🇪🇸' : lang === 'EN' ? '🇬🇧' : '🏳️‍⚧️'}</span>`).join('');
-        const uniqueSports = [...new Set(links.map(link => link.deporte))];
-        const sportEmojis = uniqueSports.map(sport => getSportEmoji(sport)).join(' ');
-        const averageRating = getAverageRating(links);
-        const uniqueWebNames = [...new Set(links.map(link => link.webName).filter(Boolean))];
-        const webNameDisplay = uniqueWebNames.join(', ');
-        
-        let editModeClass = state.settings.editMode ? 'channel-card--edit-mode' : state.settings.moveMode ? 'channel-card--move-mode' : '';
-
-        html += `
-          <div class="channel-card ${isFavorite ? 'channel-card--favorite' : ''} ${editModeClass}" 
-               data-group-title="${title}"
-               data-id="${mainLink.id}"
-               draggable="${state.settings.moveMode ? 'true' : 'false'}"
-               style="${mainLink.color ? `border-color: ${mainLink.color}` : ''}">
-            
-            <button class="delete-btn" data-id="${mainLink.id}" title="Borrar enlace principal"><i class="fas fa-times"></i></button>
-            <button class="edit-btn" data-id="${mainLink.id}" title="Editar enlace principal"><i class="fas fa-pen"></i></button>
-            
-            <div>
-                <div class="channel-info-top">
-                    <div class="channel-sport">${sportEmojis}</div>
-                    <span class="channel-number">#${links.length} ${languageTag}</span>
-                </div>
-                <div class="channel-name">${title}</div>
-            </div>
-            
-            <div>
-                ${averageRating ? `<div class="channel-rating">${'★'.repeat(averageRating)}${'☆'.repeat(5 - averageRating)}</div>` : ''}
-                <div class="channel-event">Fuente(s): ${webNameDisplay || 'Ver Enlaces'}</div>
-            </div>
-          </div>
-        `;
-      }
-      
-      elements.channelsContent.innerHTML = html;
-      
-      elements.saveEditBtn.classList.toggle('save-edit-btn--visible', state.settings.editMode || state.settings.moveMode);
-      
-      document.querySelectorAll('.channel-card[data-group-title]').forEach(groupCard => {
-          groupCard.addEventListener('click', handleGroupCardClick);
-          // Lógica de Drag & Drop para modo Mover
-          if (state.settings.moveMode) {
-              groupCard.addEventListener('dragstart', handleDragStart);
-              groupCard.addEventListener('dragover', handleDragOver);
-              groupCard.addEventListener('dragleave', handleDragLeave);
-              groupCard.addEventListener('drop', handleDrop);
-              groupCard.addEventListener('dragend', handleDragEnd);
-          } else {
-              groupCard.removeEventListener('dragstart', handleDragStart);
-              groupCard.removeEventListener('dragover', handleDragOver);
-              groupCard.removeEventListener('dragleave', handleDragLeave);
-              groupCard.removeEventListener('drop', handleDrop);
-              groupCard.removeEventListener('dragend', handleDragEnd);
-          }
-      });
-    }
-
-    function handleGroupCardClick(e) {
-        const groupCard = e.target.closest('.channel-card[data-group-title]');
-        if (!groupCard) return;
-
-        // Si estamos en modo edición o mover, no abrimos el modal de grupo (dejar pasar el click a los botones edit/delete/drag)
-        if (state.settings.editMode || state.settings.moveMode) {
-            if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn') || state.settings.moveMode) return;
+        function saveLanguages() {
+            const selected = Array.from(document.querySelectorAll('.lang-option.selected'))
+                                  .map(el => el.dataset.lang);
+            if (selected.length === 0) return alert("Selecciona al menos un idioma");
+            localStorage.setItem('myLangs', JSON.stringify(selected));
+            selectedLangs = selected;
+            document.getElementById('onboarding-modal').classList.add('hidden');
+            initApp();
         }
 
-        const title = groupCard.dataset.groupTitle;
-        const linksData = state.links.filter(link => link.title === title);
+        async function initApp() {
+            document.getElementById('header-main').classList.remove('hidden');
+            const loadingText = document.getElementById('loading-text');
 
-        elements.groupLinksModalTitle.textContent = `Enlaces de: ${title}`;
-        
-        elements.groupLinksContainer.innerHTML = linksData.map(link => 
-            renderLinkCard(link, true, state.settings.editMode)
-        ).join('');
-
-        // Añadir listeners para los enlaces individuales en el modal
-        elements.groupLinksContainer.querySelectorAll('.channel-card[data-id]').forEach(linkCard => {
-            linkCard.addEventListener('click', function(ev) {
-                ev.stopPropagation(); 
-                if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) return;
+            try {
+                // Intento 1: Carga desde la web original mediante Proxy
+                loadingText.innerText = "Conectando con la fuente original...";
+                const response = await fetch(PROXY_URL + encodeURIComponent(BASE_URL));
+                const data = await response.json();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, 'text/html');
                 
-                openLink(this.dataset.id);
-                toggleModal(elements.groupLinksModal);
-            });
-        });
-        
-        elements.groupLinksContainer.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function(ev) {
-                ev.stopPropagation();
-                state.deleteState.linkId = this.dataset.id;
-                toggleModal(elements.confirmDeleteModal);
-            });
-        });
-
-        elements.groupLinksContainer.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function(ev) {
-                ev.stopPropagation();
-                editLink(this.dataset.id);
-            });
-        });
-
-        toggleModal(elements.groupLinksModal);
-        
-        if (state.settings.editMode) {
-            elements.groupLinksContainer.querySelectorAll('.channel-card').forEach(card => card.classList.add('channel-card--edit-mode'));
-        }
-    }
-
-    function renderLinkCard(link, isModal = false, isEditMode = false) { 
-      const editModeClass = (isEditMode || (state.settings.editMode && isModal)) ? 'channel-card--edit-mode' : '';
-      const languageFlag = link.idioma === 'ES' ? '🇪🇸' : link.idioma === 'EN' ? '🇬🇧' : '🏳️‍⚧️';
-      
-      return `
-        <div class="channel-card ${link.favorito ? 'channel-card--favorite' : ''} ${editModeClass}" 
-             data-id="${link.id}"
-             style="${link.color ? `border-color: ${link.color}` : ''}; min-height: 100px; padding: 0.8rem;">
-          <button class="delete-btn" data-id="${link.id}" title="Borrar enlace" style="top: 0; right: 0;"><i class="fas fa-times"></i></button>
-          <button class="edit-btn" data-id="${link.id}" title="Editar enlace" style="top: 0; right: 30px;"><i class="fas fa-pen"></i></button>
-          
-          <div class="channel-info-top" style="margin-bottom: 0;">
-             <div class="channel-sport" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${getSportEmoji(link.deporte)} ${link.webName || 'Enlace'}</div> 
-             ${link.idioma ? `<span class="channel-language">${languageFlag}</span>` : ''}
-          </div>
-
-          <div class="channel-name" style="font-size: 0.9rem; text-align: left; margin-top: 0.5rem;">${link.title}</div> 
-          
-          <div class="channel-event" style="margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-            ${link.puntuacion ? `<div class="channel-rating" style="font-size: 0.9rem;">${'★'.repeat(link.puntuacion)}${'☆'.repeat(5 - link.puntuacion)}</div>` : ''}
-            <span style="font-size: 0.75rem;">${link.openInPlayer ? 'Reproductor 🎬' : 'Pestaña ↗️'}</span>
-          </div>
-
-        </div>
-      `;
-    }
-
-    /* --- GESTIÓN DE MODOS Y DRAG & DROP --- */
-    
-    function updateEditModeButtons() {
-        elements.editLinksBtn.classList.toggle('filter-button--active', state.settings.editMode);
-        elements.moveLinksBtn.classList.toggle('filter-button--move-active', state.settings.moveMode);
-
-        if (state.settings.editMode || state.settings.moveMode) {
-             state.filters.favoritesOnly = false;
-             elements.filterFavorites.classList.remove('filter-button--active');
-             saveFilters(); // Guardar filtros
-        }
-    }
-
-    function handleEditClick(event) {
-        state.settings.editMode = !state.settings.editMode;
-        state.settings.moveMode = false;
-        updateEditModeButtons();
-        saveSettings();
-        renderChannels();
-        showNotification('Modo edición ' + (state.settings.editMode ? 'activado' : 'desactivado'));
-    }
-
-    function handleMoveClick(event) {
-        state.settings.moveMode = !state.settings.moveMode;
-        state.settings.editMode = false;
-        updateEditModeButtons();
-        saveSettings();
-        renderChannels();
-        showNotification('Modo mover ' + (state.settings.moveMode ? 'activado' : 'desactivado'));
-    }
-
-    // Drag & Drop (Lógica del código original para reordenar grupos)
-    function handleDragStart(e) {
-        if (!state.settings.moveMode) return;
-        const draggedCard = e.target.closest('.channel-card[data-group-title]');
-        if (!draggedCard) return;
-        state.dragState.draggedItem = draggedCard;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', draggedCard.dataset.id);
-        setTimeout(() => { draggedCard.classList.add('channel-card--dragging'); }, 0);
-    }
-
-    function handleDragOver(e) {
-        if (!state.settings.moveMode) return;
-        e.preventDefault(); 
-        e.dataTransfer.dropEffect = 'move';
-        const dropTarget = e.target.closest('.channel-card[data-group-title]');
-        const draggedCard = state.dragState.draggedItem;
-        if (dropTarget && draggedCard && dropTarget !== draggedCard) {
-            const rect = dropTarget.getBoundingClientRect();
-            const center = (rect.top + rect.bottom) / 2;
-            const channelsContent = elements.channelsContent;
-            if (e.clientY < center) {
-                channelsContent.insertBefore(draggedCard, dropTarget);
-            } else {
-                channelsContent.insertBefore(draggedCard, dropTarget.nextSibling);
+                extractData(doc);
+                renderApp();
+            } catch (error) {
+                console.warn("Fallo carga original, intentando cargar desde el Respaldo Gist...");
+                loadFromGist();
             }
         }
-    }
 
-    function handleDragLeave(e) {
-        if (!state.settings.moveMode) return;
-        e.target.closest('.channel-card[data-group-title]')?.classList.remove('drag-over');
-    }
+        async function loadFromGist() {
+            const loadingText = document.getElementById('loading-text');
+            loadingText.innerText = "Cargando desde respaldo (Gist)...";
+            
+            try {
+                const response = await fetch(GIST_URL);
+                const backupData = await response.json();
+                
+                // Si el JSON del Gist tiene la estructura { channels: [...] }
+                rawData = backupData.channels || backupData; 
+                
+                // Generar chips de categorías basados en el respaldo
+                const categories = [...new Set(rawData.map(item => item.category))];
+                categories.forEach(cat => {
+                    if (cat === "FAVORITOS") return;
+                    addCategoryChip(cat);
+                });
 
-    function handleDrop(e) {
-        if (!state.settings.moveMode) return;
-        e.preventDefault();
-        
-        // Reconstruir el array de enlaces en el nuevo orden
-        const newOrderTitles = Array.from(elements.channelsContent.children)
-            .map(card => card.dataset.groupTitle)
-            .filter(title => title);
-        
-        const newLinks = [];
-        const linksByTitleMap = new Map();
-        state.links.forEach(link => {
-            if (!linksByTitleMap.has(link.title)) linksByTitleMap.set(link.title, []);
-            linksByTitleMap.get(link.title).push(link);
-        });
-        
-        newOrderTitles.forEach(title => {
-            const groupLinks = linksByTitleMap.get(title);
-            if (groupLinks) newLinks.push(...groupLinks);
-        });
-
-        // Asegurar que no se pierdan enlaces
-        state.links.forEach(link => {
-            if (!newLinks.includes(link)) newLinks.push(link);
-        });
-
-        state.links = newLinks;
-    }
-
-    function handleDragEnd(e) {
-        if (!state.settings.moveMode) return;
-        state.dragState.draggedItem?.classList.remove('channel-card--dragging');
-        state.dragState.draggedItem = null;
-        saveSettings();
-        renderChannels(); // Renderizar para asegurar el orden
-        showNotification('Orden de canales actualizado');
-    }
-
-    /* --- REPRODUCTOR --- */
-
-    function openLink(linkId) {
-      if (state.settings.editMode || state.settings.moveMode) return;
-      
-      const link = state.links.find(l => l.id === linkId);
-      if (!link) return;
-      
-      if (link.openInPlayer) {
-        state.currentPlayer.channelId = linkId;
-        
-        elements.channelInfo.innerHTML = `<i class="fas fa-video"></i> ${link.title}`;
-        elements.favoriteBtn.classList.toggle('control-btn--active', link.favorito);
-        
-        elements.videoFrame.src = link.link;
-        
-        elements.playerContainer.classList.add('player-container--active');
-        elements.playerControls.classList.add('player-controls--active');
-        elements.playerSection.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        window.open(link.link, '_blank');
-      }
-    }
-
-    function closePlayer() {
-      elements.playerContainer.classList.remove('player-container--active');
-      elements.playerControls.classList.remove('player-controls--active');
-      state.currentPlayer.channelId = null;
-      elements.channelInfo.innerHTML = '<i class="fas fa-video"></i> Sin Reproductor';
-      
-      if (state.currentPlayer.isMinimized) toggleMinimizePlayer();
-    }
-
-    function toggleMinimizePlayer() {
-      state.currentPlayer.isMinimized = !state.currentPlayer.isMinimized;
-      
-      elements.playerContainer.classList.toggle('player-container--minimized', state.currentPlayer.isMinimized);
-      elements.playerControls.classList.toggle('player-controls--minimized', state.currentPlayer.isMinimized);
-      elements.toggleStickyBtn.classList.toggle('control-btn--active', state.currentPlayer.isMinimized);
-      
-      saveSettings();
-    }
-    
-    // El resto de funciones (resizePlayer, toggleFavorite, setupPlayerDrag) se mantienen sin cambios mayores.
-    // ... (El resto de funciones del reproductor del código original)
-
-    /* --- FORMULARIOS Y EDICIÓN --- */
-
-    function editLink(linkId) {
-      const link = state.links.find(l => l.id === linkId);
-      if (!link) return;
-      
-      state.editState.linkId = linkId;
-      state.editState.isAdding = false;
-      
-      elements.editModalTitleText.textContent = '✏️ Editar Enlace';
-      
-      elements.editLinkUrl.value = link.link;
-      elements.editLinkTitle.value = link.title;
-      elements.editWebName.value = link.webName || '';
-      elements.editLinkSport.value = link.deporte;
-      elements.editLinkLanguage.value = link.idioma;
-      elements.editLinkColor.value = link.color || '#2563eb';
-      elements.editLinkColorHex.value = (link.color || '').toUpperCase();
-      elements.editOpenInPlayer.checked = link.openInPlayer || false;
-      elements.editFavorito.checked = link.favorito || false;
-      
-      const stars = elements.editRatingStars.querySelectorAll('.star');
-      stars.forEach((star, index) => { star.classList.toggle('active', index < (link.puntuacion || 0)); });
-      
-      toggleModal(elements.editLinkModal);
-    }
-
-    function handleAddClick() {
-        state.editState.linkId = null;
-        state.editState.isAdding = true;
-        
-        elements.editModalTitleText.textContent = '➕ Añadir Nuevo Enlace';
-        
-        // Limpiar/Establecer valores por defecto
-        elements.editLinkUrl.value = elements.editLinkTitle.value = elements.editWebName.value = elements.editLinkColorHex.value = '';
-        elements.editLinkSport.value = 'Fútbol';
-        elements.editLinkLanguage.value = 'ES';
-        elements.editLinkColor.value = '#2563eb';
-        elements.editOpenInPlayer.checked = elements.editFavorito.checked = false;
-        elements.editRatingStars.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
-        
-        toggleModal(elements.editLinkModal);
-    }
-
-    function saveEditedLink() {
-      if (!elements.editLinkUrl.value || !elements.editLinkTitle.value) {
-        showNotification('URL y título son obligatorios', 'error');
-        return;
-      }
-      
-      const activeStars = elements.editRatingStars.querySelectorAll('.star.active');
-      const rating = activeStars.length;
-
-      const newColor = elements.editLinkColorHex.value || elements.editLinkColor.value;
-      if (!isValidHexColor(newColor)) {
-          showNotification('Código de color HEX no válido', 'error');
-          return;
-      }
-      
-      let link;
-      if (state.editState.isAdding) {
-          link = { id: generateShortId(), type: 'source' };
-          state.links.push(link);
-      } else {
-          link = state.links.find(l => l.id === state.editState.linkId);
-          if (!link) return;
-      }
-      
-      link.link = elements.editLinkUrl.value;
-      link.title = elements.editLinkTitle.value;
-      link.webName = elements.editWebName.value || null;
-      link.deporte = elements.editLinkSport.value;
-      link.idioma = elements.editLinkLanguage.value;
-      link.color = newColor.toUpperCase();
-      link.openInPlayer = elements.editOpenInPlayer.checked;
-      link.favorito = elements.editFavorito.checked;
-      link.puntuacion = rating;
-      
-      saveSettings();
-      renderChannels();
-      toggleModal(elements.editLinkModal); // Usar toggleModal
-      showNotification('Enlace ' + (state.editState.isAdding ? 'añadido' : 'actualizado') + ' correctamente');
-      
-      // Si el modal de grupo está abierto, re-renderizarlo para actualizar el enlace modificado
-      if (elements.groupLinksModal.classList.contains('modal--active')) {
-          const title = link.title;
-          const currentGroupCard = document.querySelector(`.channel-card[data-group-title="${title}"]`);
-          if (currentGroupCard) handleGroupCardClick({ target: currentGroupCard });
-      }
-    }
-
-    // El resto de funciones (handleClearFiltersClick, importFromGist, etc.) se mantienen...
-    // ... (El resto de funciones del código original, ligeramente adaptadas)
-    
-    function handleClearFiltersClick() {
-      const now = Date.now();
-      
-      if (now - state.clearButtonState.lastClickTime > 1000) state.clearButtonState.clickCount = 0;
-      
-      state.clearButtonState.clickCount++;
-      state.clearButtonState.lastClickTime = now;
-      
-      if (state.clearButtonState.clickCount >= 3) {
-        elements.exportLinksData.value = JSON.stringify(state.links, null, 2);
-        toggleModal(elements.settingsModal);
-        state.clearButtonState.clickCount = 0;
-      } else {
-        state.filters = { searchText: '', type: 'source', sport: null, language: null, favoritesOnly: false };
-        
-        elements.searchInput.value = '';
-        updateEmojiFilterButtons();
-        elements.filterFavorites.classList.remove('filter-button--active');
-        
-        saveFilters();
-        renderChannels();
-      }
-    }
-
-    function handleFavoriteButtonClick(event) {
-        state.filters.favoritesOnly = !state.filters.favoritesOnly;
-        event.target.classList.toggle('filter-button--active', state.filters.favoritesOnly);
-        saveFilters();
-        renderChannels();
-    }
-
-    async function importFromGist() {
-      try {
-        const gistId = 'be82cec2fed5b9886b07fc171f2d9744';
-        const rawUrl = `https://gist.githubusercontent.com/Ciento20/${gistId}/raw`;
-        
-        const response = await fetch(rawUrl);
-        if (!response.ok) throw new Error('Error al obtener los datos del Gist');
-        
-        const data = await response.json();
-        if (!Array.isArray(data)) throw new Error('Los datos del Gist no son válidos');
-        
-        const normalizedData = data.map(item => ({
-          id: generateShortId(),
-          link: item.link || item.url || '',
-          title: item.title || item.name || 'Sin título',
-          webName: item.webName || item.source || null,
-          deporte: item.deporte || item.sport || 'Otros',
-          type: 'source',
-          idioma: item.idioma || item.language || 'ES',
-          color: (item.color || '#2563eb').toUpperCase(),
-          openInPlayer: item.openInPlayer || false,
-          puntuacion: item.puntuacion || item.rating || 3,
-          favorito: item.favorito || false
-        })).filter(item => item.link && item.type === 'source');
-        
-        if (normalizedData.length === 0) {
-          showNotification('El Gist no contiene enlaces válidos de tipo "Fuente"', 'error');
-          return;
+                renderApp();
+            } catch (e) {
+                document.getElementById('loading').innerHTML = "Error crítico: No se pudo cargar ninguna fuente de datos.";
+            }
         }
-        
-        state.links = normalizedData;
-        saveSettings();
-        renderChannels();
-        toggleModal(elements.settingsModal);
-        showNotification(`Se importaron ${normalizedData.length} enlaces desde el Gist`);
-      } catch (error) {
-        showNotification(`Error al importar desde Gist: ${error.message}`, 'error');
-        console.error('Error al importar desde Gist:', error);
-      }
-    }
 
-    function generateShortId() {
-      return Math.random().toString(36).substr(2, 9);
-    }
-    
-    function isValidHexColor(hex) {
-        return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
-    }
-    
-    function updatePrimaryColor(color) {
-      // (Función para actualizar el color principal, conservada del original)
-      document.documentElement.style.setProperty('--primary', color);
-      const darkerColor = shadeColor(color, -20);
-      document.documentElement.style.setProperty('--primary-dark', darkerColor);
-      
-      const rgb = hexToRgb(color);
-      if (rgb) {
-        document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-      }
-      
-      document.querySelectorAll('.color-option').forEach(opt => {
-        opt.classList.remove('color-option--active');
-        if (opt.dataset.color === color) {
-          opt.classList.add('color-option--active');
+        function extractData(doc) {
+            const sections = doc.querySelectorAll('.category-section');
+            const categoriasAExcluir = ["PROGRAMACION", "MYLINKPASTE CODIGOS", "REPETICIONES"];
+
+            sections.forEach(sec => {
+                const titleElement = sec.querySelector('.category-title');
+                if (!titleElement) return;
+
+                let catName = titleElement.innerText.trim();
+                if (categoriasAExcluir.includes(catName)) return;
+                if (catName === "BUSCADORES ACESTREAM") catName = "ACESTREAM";
+
+                const cards = sec.querySelectorAll('.canal-card');
+                cards.forEach(card => {
+                    rawData.push({
+                        category: catName,
+                        title: card.getAttribute('data-titulo') || card.querySelector('.canal-nombre').innerText,
+                        langs: (card.getAttribute('data-lang') || "").split(','),
+                        link: card.querySelector('.site-link')?.href || '#',
+                        info: card.querySelector('.has-tooltip')?.dataset.tooltip || "Ver ahora"
+                    });
+                });
+
+                if (catName !== "FAVORITOS") {
+                    addCategoryChip(catName);
+                }
+            });
         }
-      });
-    }
 
-    function hexToRgb(hex) {
-      // (Función para convertir HEX a RGB, conservada del original)
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
-    }
-
-    function shadeColor(color, percent) {
-      // (Función para oscurecer/aclarar color, conservada del original)
-      let R = parseInt(color.substring(1,3), 16);
-      let G = parseInt(color.substring(3,5), 16);
-      let B = parseInt(color.substring(5,7), 16);
-
-      R = parseInt(R * (100 + percent) / 100);
-      G = parseInt(G * (100 + percent) / 100);
-      B = parseInt(B * (100 + percent) / 100);
-
-      R = (R<255)?R:255;  
-      G = (G<255)?G:255;  
-      B = (B<255)?B:255;  
-
-      const RR = ((R.toString(16).length===1)?"0"+R.toString(16):R.toString(16));
-      const GG = ((G.toString(16).length===1)?"0"+G.toString(16):G.toString(16));
-      const BB = ((B.toString(16).length===1)?"0"+B.toString(16):B.toString(16));
-
-      return "#"+RR+GG+BB;
-    }
-
-    // ... (El resto de funciones auxiliares del código original)
-
-    function showNotification(message, type = 'success') {
-      elements.notification.textContent = message;
-      elements.notification.className = `notification notification--${type}`;
-      elements.notification.classList.add('notification--active');
-      
-      setTimeout(() => {
-        elements.notification.classList.remove('notification--active');
-      }, 3000);
-    }
-
-    function checkScrollPosition() {
-      if (window.scrollY > 300) {
-        elements.scrollToTop.classList.add('scroll-to-top--visible');
-      } else {
-        elements.scrollToTop.classList.remove('scroll-to-top--visible');
-      }
-    }
-    
-    function updateEmojiFilterButtons() {
-      document.querySelectorAll('.emoji-filter-btn').forEach(btn => {
-        const filterType = btn.dataset.filter;
-        btn.classList.toggle('emoji-filter-btn--active', state.filters.language === filterType || state.filters.sport === filterType);
-      });
-    }
-
-    function setupEventListeners() {
-      // (Función de configuración de eventos, adaptada para usar toggleModal)
-      
-      // Reproductor
-      elements.prevChannelBtn.addEventListener('click', () => resizePlayer('decrease'));
-      elements.nextChannelBtn.addEventListener('click', () => resizePlayer('increase'));
-      elements.toggleStickyBtn.addEventListener('click', toggleMinimizePlayer);
-      elements.favoriteBtn.addEventListener('click', toggleFavorite);
-      elements.closePlayerBtn.addEventListener('click', closePlayer);
-      
-      // Búsqueda y Filtros
-      elements.searchInput.addEventListener('input', function() { state.filters.searchText = this.value; saveFilters(); renderChannels(); });
-      elements.filterFavorites.addEventListener('click', handleFavoriteButtonClick);
-      elements.editLinksBtn.addEventListener('click', handleEditClick);
-      elements.moveLinksBtn.addEventListener('click', handleMoveClick);
-      elements.addLinkBtn.addEventListener('click', handleAddClick);
-      elements.clearFilters.addEventListener('click', handleClearFiltersClick);
-      
-      elements.emojiFilters.addEventListener('click', function(e) {
-        const emojiBtn = e.target.closest('.emoji-filter-btn');
-        if (emojiBtn) {
-          const filterType = emojiBtn.dataset.filter;
-          if (filterType === 'ES' || filterType === 'EN') {
-            state.filters.language = state.filters.language === filterType ? null : filterType;
-          } else {
-            state.filters.sport = state.filters.sport === filterType ? null : filterType;
-          }
-          updateEmojiFilterButtons();
-          saveFilters();
-          renderChannels();
+        function addCategoryChip(catName) {
+            const existingChips = Array.from(document.querySelectorAll('.cat-chip')).map(c => c.innerText);
+            if (!existingChips.includes(catName)) {
+                const chip = document.createElement('div');
+                chip.className = 'cat-chip';
+                chip.innerText = catName;
+                chip.onclick = () => selectCategory(catName, chip);
+                document.getElementById('category-filters').appendChild(chip);
+            }
         }
-      });
-      
-      // Botones de Tarjeta (Delete/Edit)
-      document.addEventListener('click', function(e) {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-          e.stopPropagation();
-          state.deleteState.linkId = deleteBtn.dataset.id;
-          toggleModal(elements.confirmDeleteModal);
-          return;
+
+        function selectCategory(cat, el) {
+            document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            currentCategory = cat;
+            filterEverything();
         }
-        
-        const editBtn = e.target.closest('.edit-btn');
-        if (editBtn) {
-          e.stopPropagation();
-          editLink(editBtn.dataset.id);
-          return;
+
+        function filterEverything() {
+            const query = document.getElementById('main-search').value.toLowerCase();
+            renderApp(query);
         }
-      });
-      
-      // Modales de Confirmación
-      elements.closeGroupLinksModal.addEventListener('click', () => toggleModal(elements.groupLinksModal));
-      elements.cancelDeleteBtn.addEventListener('click', () => toggleModal(elements.confirmDeleteModal));
-      elements.confirmDeleteBtn.addEventListener('click', function() { 
-          toggleModal(elements.confirmDeleteModal);
-          if (state.deleteState.linkId) {
-              deleteLink(state.deleteState.linkId);
-              if (elements.groupLinksModal.classList.contains('modal--active')) {
-                  // Re-renderizar el modal de grupo si está abierto para reflejar el borrado
-                  const link = state.links.find(l => l.id === state.deleteState.linkId);
-                  if (link) {
-                      const currentGroupCard = document.querySelector(`.channel-card[data-group-title="${link.title}"]`);
-                      if (currentGroupCard) handleGroupCardClick({ target: currentGroupCard });
-                  }
-              }
-          }
-      });
-      
-      // Configuración
-      elements.closeSettingsModal.addEventListener('click', () => toggleModal(elements.settingsModal));
-      elements.darkModeToggle.addEventListener('change', function() { state.settings.darkMode = this.checked; document.body.classList.toggle('dark-mode', this.checked); saveSettings(); showNotification('Modo oscuro ' + (this.checked ? 'activado' : 'desactivado')); });
-      document.querySelectorAll('.color-option').forEach(option => { option.addEventListener('click', function() { updatePrimaryColor(this.dataset.color); state.settings.primaryColor = this.dataset.color; saveSettings(); showNotification('Color principal actualizado'); }); });
-      elements.importExportTabs.forEach(tab => { tab.addEventListener('click', function() { elements.importExportTabs.forEach(t => t.classList.remove('import-export-tab--active')); this.classList.add('import-export-tab--active'); elements.importExportContents.forEach(content => content.classList.remove('import-export-content--active')); document.getElementById(`${this.dataset.tab}Tab`).classList.add('import-export-content--active'); }); });
-      elements.copyExportLinksBtn.addEventListener('click', function() { elements.exportLinksData.select(); document.execCommand('copy'); showNotification('JSON copiado al portapapeles'); });
-      elements.importLinksBtn.addEventListener('click', function() { try { const data = JSON.parse(elements.importLinksData.value); /* Lógica de importación... */ saveSettings(); renderChannels(); toggleModal(elements.settingsModal); showNotification('Enlaces importados'); } catch (e) { showNotification('Error al importar datos: JSON inválido', 'error'); } });
-      elements.importGistBtn.addEventListener('click', importFromGist);
-      elements.clearAllBtn.addEventListener('click', () => toggleModal(elements.confirmClearModal));
-      elements.cancelClearBtn.addEventListener('click', () => toggleModal(elements.confirmClearModal));
-      elements.confirmClearBtn.addEventListener('click', function() { toggleModal(elements.confirmClearModal); clearAllData(); });
-      
-      // Edición/Añadir
-      elements.closeEditLinkModal.addEventListener('click', () => toggleModal(elements.editLinkModal));
-      elements.cancelEditLinkBtn.addEventListener('click', () => toggleModal(elements.editLinkModal));
-      elements.saveEditLinkBtn.addEventListener('click', saveEditedLink);
-      elements.editRatingStars.addEventListener('click', function(e) { const star = e.target.closest('.star'); if (star) { const value = parseInt(star.dataset.value); elements.editRatingStars.querySelectorAll('.star').forEach((s, index) => s.classList.toggle('active', index < value)); } });
-      elements.editLinkColorHex.addEventListener('input', function() { if (isValidHexColor(this.value)) elements.editLinkColor.value = this.value; });
-      elements.editLinkColor.addEventListener('input', function() { elements.editLinkColorHex.value = this.value.toUpperCase(); });
-      
-      // General
-      elements.saveEditBtn.addEventListener('click', function() { state.settings.editMode = false; state.settings.moveMode = false; saveSettings(); renderChannels(); updateEditModeButtons(); showNotification('Cambios guardados'); });
-      window.addEventListener('scroll', checkScrollPosition);
-      elements.scrollToTop.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    }
 
-    // Inicialización al cargar el DOM
-    document.addEventListener('DOMContentLoaded', init);
-    
-    // (Añadir aquí las funciones faltantes del original, como resizePlayer, setupPlayerDrag, toggleFavorite si es necesario mantener la autoría 100% original, aunque por espacio no las incluyo aquí, asumiendo que ya las tienes en tu editor.)
-    
-    function resizePlayer(direction) {
-      if (!elements.playerContainer.classList.contains('player-container--active')) return;
-      // Lógica de redimensionado, conservada del original
-      const isMinimized = state.currentPlayer.isMinimized;
-      const currentHeight = elements.playerContainer.offsetHeight;
-      const minHeight = isMinimized ? 120 : 311;
-      const maxHeight = isMinimized ? 300 : window.innerHeight * 0.85;
-      const step = isMinimized ? 20 : 50;
-      let newHeight, newWidth;
+        function openPlayer(link, title) {
+            const player = document.getElementById('player-container');
+            const iframe = document.getElementById('main-iframe');
+            const titleEl = document.getElementById('player-title');
+            
+            titleEl.innerText = "Viendo: " + title;
+            iframe.src = link;
+            player.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; 
+        }
 
-      if (direction === 'increase') {
-        newHeight = Math.min(currentHeight + step, maxHeight);
-      } else {
-        newHeight = Math.max(currentHeight - step, minHeight);
-      }
-      
-      if (isMinimized) {
-        newWidth = Math.round(newHeight * 16/9);
-        elements.playerContainer.style.width = `${newWidth}px`;
-      }
+        function closePlayer() {
+            const player = document.getElementById('player-container');
+            const iframe = document.getElementById('main-iframe');
+            iframe.src = ""; 
+            player.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
 
-      elements.playerContainer.style.height = `${newHeight}px`;
-      saveSettings();
-    }
-    
-    function toggleFavorite() {
-      if (!state.currentPlayer.channelId) return;
-      const link = state.links.find(l => l.id === state.currentPlayer.channelId);
-      if (link) {
-        link.favorito = !link.favorito;
-        elements.favoriteBtn.classList.toggle('control-btn--active', link.favorito);
-        saveSettings();
-        renderChannels();
-        showNotification(link.favorito ? 'Añadido a favoritos' : 'Eliminado de favoritos');
-      }
-    }
-    
-    function setupPlayerDrag() {
-      const playerContainer = elements.playerContainer;
-      const playerControls = elements.playerControls;
-      const channelInfo = elements.channelInfo;
-      
-      function startDrag(e) {
-        if (!state.currentPlayer.isMinimized) return;
-        state.playerDragState.isDragging = true;
-        const rect = playerContainer.getBoundingClientRect();
-        state.playerDragState.offsetX = (e.clientX || e.touches[0].clientX) - rect.left;
-        state.playerDragState.offsetY = (e.clientY || e.touches[0].clientY) - rect.top;
-        playerContainer.style.cursor = 'grabbing';
-        playerControls.style.cursor = 'grabbing';
-        channelInfo.style.cursor = 'grabbing';
-        e.preventDefault();
-      }
-      
-      function drag(e) {
-        if (!state.playerDragState.isDragging) return;
-        e.preventDefault();
-        let clientX = e.clientX || e.touches[0].clientX;
-        let clientY = e.clientY || e.touches[0].clientY;
-        let x = clientX - state.playerDragState.offsetX;
-        let y = clientY - state.playerDragState.offsetY;
-        const maxX = window.innerWidth - playerContainer.offsetWidth;
-        const maxY = window.innerHeight - playerContainer.offsetHeight;
-        x = Math.max(0, Math.min(x, maxX));
-        y = Math.max(0, Math.min(y, maxY));
-        
-        // La posición del reproductor en modo minimizado es controlada por 'fixed', así que modificamos 'left' y 'top' directamente.
-        playerContainer.style.left = `${x}px`;
-        playerContainer.style.top = `${y}px`;
-        
-        // Modificar la posición de los controles para que sigan al reproductor.
-        playerControls.style.left = `${x}px`;
-        playerControls.style.bottom = `${window.innerHeight - y - playerContainer.offsetHeight - 60}px`; // Asumiendo que los controles están 60px debajo del reproductor
-      }
-      
-      function endDrag() {
-        if (!state.playerDragState.isDragging) return;
-        state.playerDragState.isDragging = false;
-        playerContainer.style.cursor = 'move';
-        playerControls.style.cursor = 'move';
-        channelInfo.style.cursor = 'move';
-      }
-      
-      channelInfo.addEventListener('mousedown', startDrag);
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('mouseup', endDrag);
-      
-      channelInfo.addEventListener('touchstart', function(e) { startDrag(e.touches[0]); }, { passive: false });
-      document.addEventListener('touchmove', function(e) { drag(e); }, { passive: false });
-      document.addEventListener('touchend', endDrag);
-    }
-    
-    setupPlayerDrag();
+        function exportDataBackup() {
+            if (rawData.length === 0) return alert("No hay datos.");
+            const backup = {
+                totalChannels: rawData.length,
+                exportDate: new Date().toLocaleString(),
+                channels: rawData
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 4));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "shickat_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
 
-  </script>
+        function renderApp(query = "") {
+            const main = document.getElementById('app-content');
+            const loading = document.getElementById('loading');
+            main.innerHTML = "";
+            loading.classList.add('hidden');
+            main.classList.remove('hidden');
+
+            const categories = [...new Set(rawData.map(item => item.category))];
+
+            categories.forEach(cat => {
+                if (currentCategory !== 'all' && currentCategory !== cat) return;
+
+                const filtered = rawData.filter(item => {
+                    const matchesLang = item.langs.some(l => selectedLangs.includes(l)) || item.langs.includes("");
+                    const matchesSearch = item.title.toLowerCase().includes(query);
+                    return item.category === cat && matchesLang && matchesSearch;
+                });
+
+                if (filtered.length > 0) {
+                    const row = document.createElement('section');
+                    row.className = 'category-row';
+                    row.innerHTML = `<h2 class="category-title">${cat}</h2><div class="ott-slider"></div>`;
+                    main.appendChild(row);
+
+                    const slider = row.querySelector('.ott-slider');
+                    filtered.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'ott-card';
+                        card.onclick = () => openPlayer(item.link, item.title);
+                        const initial = item.title.charAt(0).toUpperCase();
+                        card.innerHTML = `
+                            <div class="card-visual">
+                                <span style="font-size: 2.2rem; font-weight: 700; opacity: 0.1;">${initial}</span>
+                                <div class="card-badge">${item.langs[0] || 'TV'}</div>
+                                <div class="card-info">
+                                    <span class="card-title">${item.title}</span>
+                                    <span class="card-meta">${item.info.substring(0, 30)}</span>
+                                </div>
+                            </div>
+                        `;
+                        slider.appendChild(card);
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 </html>
