@@ -3,547 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shickat Wiki - OTT Experience</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <title>AceStream Pro Player + Live Stats</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root {
-            --bg-black: #050505;
-            --card-bg: #111111;
-            --accent: #38bdf8;
-            --text: #ffffff;
-            --gray: #808080;
-            --surface: #1a1a1a;
-        }
+        :root { --primary: #00e676; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .player-container { width: 95%; max-width: 900px; background: var(--panel); padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        h2 { text-align: center; color: var(--primary); margin-top: 0; letter-spacing: 1px; font-size: 1.2rem; text-transform: uppercase; }
+        
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #444; background: #2c2c2c; color: white; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 5px rgba(0,230,118,0.3); }
+        button { background: var(--primary); color: #000; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #00c853; transform: translateY(-1px); }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-black);
-            color: var(--text);
-            margin: 0;
-            overflow-x: hidden;
-        }
+        .stats-bar { display: flex; justify-content: space-around; background: #111; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #333; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; }
+        .stat-item { color: var(--primary); font-weight: bold; }
+        .stat-label { color: #888; margin-right: 5px; }
 
-        /* --- HEADER & NAVEGACIÓN --- */
-        header {
-            padding: 20px 4%;
-            background: linear-gradient(to bottom, rgba(5,5,5,1) 60%, rgba(5,5,5,0) 100%);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-tools {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .search-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .search-box {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 15px;
-            border-radius: 8px;
-            color: white;
-            width: 250px;
-            transition: 0.3s;
-            outline: none;
-        }
-
-        .search-box:focus {
-            border-color: var(--accent);
-            background: rgba(255,255,255,0.1);
-        }
-
-        .btn-export {
-            background: var(--surface);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .btn-export:hover {
-            background: var(--accent);
-            color: #000;
-        }
-
-        .filter-group {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 15px 0;
-            scrollbar-width: none;
-        }
-
-        .filter-group::-webkit-scrollbar { display: none; }
-
-        .cat-chip {
-            padding: 6px 18px;
-            border-radius: 6px;
-            background: var(--surface);
-            border: 1px solid transparent;
-            cursor: pointer;
-            white-space: nowrap;
-            font-size: 0.85rem;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: var(--gray);
-        }
-
-        .cat-chip.active {
-            background: var(--accent);
-            color: #000;
-            font-weight: 500;
-        }
-
-        /* --- CONTENIDO ESTILO OTT --- */
-        .category-row {
-            padding: 10px 0 30px 4%;
-        }
-
-        .category-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            font-weight: 500;
-            color: var(--text);
-            letter-spacing: 0.5px;
-        }
-
-        .ott-slider {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 10px 0 20px 0;
-            scrollbar-width: none;
-        }
-
-        .ott-slider::-webkit-scrollbar { display: none; }
-
-        .ott-card {
-            min-width: 210px;
-            max-width: 210px;
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-
-        .card-visual {
-            width: 100%;
-            height: 118px;
-            background: linear-gradient(135deg, #1e293b, #000000);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .card-visual::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 75%;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-            z-index: 1;
-        }
-
-        .ott-card:hover .card-visual {
-            transform: scale(1.05);
-            box-shadow: 0 12px 24px rgba(56, 189, 248, 0.2);
-            background: linear-gradient(135deg, #2563eb, #0f172a);
-        }
-
-        .card-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 12px;
-            z-index: 2;
-            text-align: left;
-        }
-
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text);
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-meta {
-            font-size: 0.7rem;
-            color: var(--accent);
-            margin-top: 2px;
-            display: block;
-            opacity: 0.9;
-        }
-
-        .card-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 0.65rem;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            padding: 2px 8px;
-            border-radius: 4px;
-            color: var(--text);
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.1);
-            z-index: 3;
-        }
-
-        /* --- REPRODUCTOR --- */
-        #player-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .player-header {
-            height: 60px;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
-        }
-
-        .btn-close {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-close:hover { background: #ff4444; }
-
-        #main-iframe {
-            flex-grow: 1;
-            border: none;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* --- MODALES --- */
-        #onboarding-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.98);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-        }
-
-        .modal-content {
-            background: var(--surface); padding: 3rem; border-radius: 24px; text-align: center; max-width: 400px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .lang-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 25px 0;
-        }
-
-        .lang-option {
-            padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; transition: 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .lang-option.selected { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
-
-        .btn-main {
-            background: var(--accent); color: #000; border: none; padding: 14px 30px; 
-            font-weight: bold; cursor: pointer; border-radius: 10px; width: 100%; margin-top: 10px;
-            transition: 0.2s;
-        }
-
-        .btn-main:hover { opacity: 0.9; transform: scale(1.02); }
-
-        .hidden { display: none !important; }
+        .video-wrapper { position: relative; background: #000; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; border: 1px solid #444; box-shadow: inset 0 0 20px #000; }
+        video { width: 100%; height: 100%; display: block; }
+        
+        #status { margin-top: 15px; font-size: 13px; text-align: center; padding: 10px; border-radius: 4px; display: none; font-weight: 500; }
+        .error { background: rgba(183, 28, 28, 0.2); color: #ff5252; border: 1px solid #b71c1c; }
+        .success { background: rgba(27, 94, 32, 0.2); color: var(--primary); border: 1px solid #1b5e20; }
     </style>
 </head>
 <body>
 
-    <div id="player-container" class="hidden">
-        <div class="player-header">
-            <div id="player-title" style="font-weight: 500; color: var(--accent);">Cargando canal...</div>
-            <button class="btn-close" onclick="closePlayer()"><i class="fas fa-times"></i> CERRAR</button>
-        </div>
-        <iframe id="main-iframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+<div class="player-container">
+    <h2>AceStream Pro Player</h2>
+    
+    <div class="input-group">
+        <input type="text" id="hash" placeholder="Pega el Content ID o enlace acestream://">
+        <button onclick="checkAndPlay()">REPRODUCIR</button>
     </div>
 
-    <div id="onboarding-modal" class="hidden">
-        <div class="modal-content">
-            <h2 style="color: var(--accent); margin-top:0;">Configuración</h2>
-            <p style="color: var(--gray); font-size: 0.9rem;">Selecciona idiomas para tu feed:</p>
-            <div class="lang-grid" id="lang-selector">
-                <span class="lang-option" data-lang="es">Español</span>
-                <span class="lang-option" data-lang="en">Inglés</span>
-                <span class="lang-option" data-lang="fr">Francés</span>
-                <span class="lang-option" data-lang="de">Alemán</span>
-                <span class="lang-option" data-lang="it">Italiano</span>
-                <span class="lang-option" data-lang="pt">Portugués</span>
-            </div>
-            <button class="btn-main" onclick="saveLanguages()">EMPEZAR A VER</button>
-        </div>
+    <div class="stats-bar" id="statsBar">
+        <div><span class="stat-label">PEERS:</span><span id="peers" class="stat-item">0</span></div>
+        <div><span class="stat-label">DOWNLOAD:</span><span id="speedDown" class="stat-item">0 KB/s</span></div>
+        <div><span class="stat-label">UPLOAD:</span><span id="speedUp" class="stat-item">0 KB/s</span></div>
     </div>
 
-    <header id="header-main" class="hidden">
-        <div class="nav-tools">
-            <h1 style="color: var(--accent); margin:0; font-size: 1.4rem; font-weight: 700;">SHICKAT <span style="font-weight:300; color:white; opacity:0.8;">WIKI</span></h1>
-            <div class="search-container">
-                <input type="text" id="main-search" class="search-box" placeholder="Buscar canales..." oninput="filterEverything()">
-                <button class="btn-export" onclick="exportDataBackup()" title="Respaldar Enlaces">
-                    <i class="fas fa-file-export"></i> EXPORTAR
-                </button>
-            </div>
-        </div>
-        <div class="filter-group" id="category-filters">
-            <div class="cat-chip active" onclick="selectCategory('all', this)">Todo</div>
-        </div>
-    </header>
-
-    <div id="loading" style="text-align:center; margin-top:150px;">
-        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--accent)"></i>
-        <p id="loading-text" style="color: var(--gray); margin-top:15px; font-size: 0.9rem;">Sincronizando contenido...</p>
+    <div class="video-wrapper">
+        <video id="video" controls crossorigin="anonymous"></video>
     </div>
 
-    <main id="app-content" class="hidden"></main>
+    <div id="status"></div>
+</div>
 
-    <script>
-        const BASE_URL = 'https://shickat.me/';
-        const PROXY_URL = 'https://api.allorigins.win/get?url=';
-        // URL RAW de tu Gist para usar como respaldo directo
-        const GIST_URL = 'https://gist.githubusercontent.com/Ciento20/be82cec2fed5b9886b07fc171f2d9744/raw/';
+<script>
+    const video = document.getElementById('video');
+    const statusDiv = document.getElementById('status');
+    let hls = new Hls();
+    let statsInterval = null;
+
+    function showStatus(msg, type) {
+        statusDiv.textContent = msg;
+        statusDiv.className = type;
+        statusDiv.style.display = 'block';
+    }
+
+    // Formateador de velocidad (convierto bytes/KB a formato legible)
+    function formatSpeed(speedInKB) {
+        if (speedInKB >= 1024) {
+            return (speedInKB / 1024).toFixed(2) + " MB/s";
+        }
+        return Math.round(speedInKB) + " KB/s";
+    }
+
+    // Función principal de estadísticas
+    async function updateStats(hash) {
+        try {
+            // El endpoint 'get_stat' es el más fiable para datos de red en tiempo real
+            const response = await fetch(`http://127.0.0.1:6878/ace/get_stat?id=${hash}`);
+            const data = await response.json();
+            
+            // AceStream suele devolver los datos en el objeto 'response'
+            const stats = data.response || data;
+            
+            if (stats) {
+                document.getElementById('peers').textContent = stats.peers || 0;
+                document.getElementById('speedDown').textContent = formatSpeed(stats.speed_down || 0);
+                document.getElementById('speedUp').textContent = formatSpeed(stats.speed_up || 0);
+            }
+        } catch (e) {
+            // Si el motor se desconecta, no mostramos error para no interrumpir, pero reseteamos visualmente
+            console.log("Esperando datos del motor...");
+        }
+    }
+
+    async function checkAndPlay() {
+        let hashInput = document.getElementById('hash').value.trim();
         
-        let rawData = [];
-        let selectedLangs = JSON.parse(localStorage.getItem('myLangs')) || [];
-        let currentCategory = 'all';
-
-        if (selectedLangs.length === 0) {
-            document.getElementById('onboarding-modal').classList.remove('hidden');
-        } else {
-            initApp();
+        // Limpieza de Hash: Extrae el ID si pegan el enlace completo acestream://ID
+        if (hashInput.includes("://")) {
+            hashInput = hashInput.split("://")[1].split("/")[0];
         }
 
-        document.querySelectorAll('.lang-option').forEach(opt => {
-            opt.addEventListener('click', () => opt.classList.toggle('selected'));
-        });
-
-        function saveLanguages() {
-            const selected = Array.from(document.querySelectorAll('.lang-option.selected'))
-                                  .map(el => el.dataset.lang);
-            if (selected.length === 0) return alert("Selecciona al menos un idioma");
-            localStorage.setItem('myLangs', JSON.stringify(selected));
-            selectedLangs = selected;
-            document.getElementById('onboarding-modal').classList.add('hidden');
-            initApp();
+        if (!hashInput || hashInput.length < 10) {
+            return showStatus("Por favor, introduce un Content ID válido", "error");
         }
 
-        async function initApp() {
-            document.getElementById('header-main').classList.remove('hidden');
-            const loadingText = document.getElementById('loading-text');
+        // Limpiar intervalos previos si existen
+        if (statsInterval) clearInterval(statsInterval);
+        
+        showStatus("Conectando con AceStream Engine local...", "success");
 
-            try {
-                // Intento 1: Carga desde la web original mediante Proxy
-                loadingText.innerText = "Conectando con la fuente original...";
-                const response = await fetch(PROXY_URL + encodeURIComponent(BASE_URL));
-                const data = await response.json();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, 'text/html');
-                
-                extractData(doc);
-                renderApp();
-            } catch (error) {
-                console.warn("Fallo carga original, intentando cargar desde el Respaldo Gist...");
-                loadFromGist();
-            }
-        }
+        const sessionId = Math.random().toString(36).substring(7);
+        // URL de streaming optimizada con transcodificación de audio y soporte HLS
+        const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${hashInput}&sid=${sessionId}&hlc=1&transcode_audio=1`;
 
-        async function loadFromGist() {
-            const loadingText = document.getElementById('loading-text');
-            loadingText.innerText = "Cargando desde respaldo (Gist)...";
+        if (Hls.isSupported()) {
+            hls.destroy();
+            hls = new Hls({
+                manifestLoadingMaxRetry: 10,
+                manifestLoadingRetryDelay: 1000
+            });
+            hls.loadSource(streamUrl);
+            hls.attachMedia(video);
             
-            try {
-                const response = await fetch(GIST_URL);
-                const backupData = await response.json();
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.play().catch(() => showStatus("Cargado. Haz clic en Play para iniciar.", "success"));
+                showStatus("Reproduciendo: " + hashInput, "success");
                 
-                // Si el JSON del Gist tiene la estructura { channels: [...] }
-                rawData = backupData.channels || backupData; 
-                
-                // Generar chips de categorías basados en el respaldo
-                const categories = [...new Set(rawData.map(item => item.category))];
-                categories.forEach(cat => {
-                    if (cat === "FAVORITOS") return;
-                    addCategoryChip(cat);
-                });
-
-                renderApp();
-            } catch (e) {
-                document.getElementById('loading').innerHTML = "Error crítico: No se pudo cargar ninguna fuente de datos.";
-            }
-        }
-
-        function extractData(doc) {
-            const sections = doc.querySelectorAll('.category-section');
-            const categoriasAExcluir = ["PROGRAMACION", "MYLINKPASTE CODIGOS", "REPETICIONES"];
-
-            sections.forEach(sec => {
-                const titleElement = sec.querySelector('.category-title');
-                if (!titleElement) return;
-
-                let catName = titleElement.innerText.trim();
-                if (categoriasAExcluir.includes(catName)) return;
-                if (catName === "BUSCADORES ACESTREAM") catName = "ACESTREAM";
-
-                const cards = sec.querySelectorAll('.canal-card');
-                cards.forEach(card => {
-                    rawData.push({
-                        category: catName,
-                        title: card.getAttribute('data-titulo') || card.querySelector('.canal-nombre').innerText,
-                        langs: (card.getAttribute('data-lang') || "").split(','),
-                        link: card.querySelector('.site-link')?.href || '#',
-                        info: card.querySelector('.has-tooltip')?.dataset.tooltip || "Ver ahora"
-                    });
-                });
-
-                if (catName !== "FAVORITOS") {
-                    addCategoryChip(catName);
+                // Iniciamos el contador cada 2 segundos
+                statsInterval = setInterval(() => updateStats(hashInput), 2000);
+            });
+            
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    showStatus("Error de conexión. Verifica que AceStream Engine esté abierto.", "error");
                 }
             });
-        }
-
-        function addCategoryChip(catName) {
-            const existingChips = Array.from(document.querySelectorAll('.cat-chip')).map(c => c.innerText);
-            if (!existingChips.includes(catName)) {
-                const chip = document.createElement('div');
-                chip.className = 'cat-chip';
-                chip.innerText = catName;
-                chip.onclick = () => selectCategory(catName, chip);
-                document.getElementById('category-filters').appendChild(chip);
-            }
-        }
-
-        function selectCategory(cat, el) {
-            document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            currentCategory = cat;
-            filterEverything();
-        }
-
-        function filterEverything() {
-            const query = document.getElementById('main-search').value.toLowerCase();
-            renderApp(query);
-        }
-
-        function openPlayer(link, title) {
-            const player = document.getElementById('player-container');
-            const iframe = document.getElementById('main-iframe');
-            const titleEl = document.getElementById('player-title');
-            
-            titleEl.innerText = "Viendo: " + title;
-            iframe.src = link;
-            player.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; 
-        }
-
-        function closePlayer() {
-            const player = document.getElementById('player-container');
-            const iframe = document.getElementById('main-iframe');
-            iframe.src = ""; 
-            player.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function exportDataBackup() {
-            if (rawData.length === 0) return alert("No hay datos.");
-            const backup = {
-                totalChannels: rawData.length,
-                exportDate: new Date().toLocaleString(),
-                channels: rawData
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 4));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "shickat_backup.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-        }
-
-        function renderApp(query = "") {
-            const main = document.getElementById('app-content');
-            const loading = document.getElementById('loading');
-            main.innerHTML = "";
-            loading.classList.add('hidden');
-            main.classList.remove('hidden');
-
-            const categories = [...new Set(rawData.map(item => item.category))];
-
-            categories.forEach(cat => {
-                if (currentCategory !== 'all' && currentCategory !== cat) return;
-
-                const filtered = rawData.filter(item => {
-                    const matchesLang = item.langs.some(l => selectedLangs.includes(l)) || item.langs.includes("");
-                    const matchesSearch = item.title.toLowerCase().includes(query);
-                    return item.category === cat && matchesLang && matchesSearch;
-                });
-
-                if (filtered.length > 0) {
-                    const row = document.createElement('section');
-                    row.className = 'category-row';
-                    row.innerHTML = `<h2 class="category-title">${cat}</h2><div class="ott-slider"></div>`;
-                    main.appendChild(row);
-
-                    const slider = row.querySelector('.ott-slider');
-                    filtered.forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = 'ott-card';
-                        card.onclick = () => openPlayer(item.link, item.title);
-                        const initial = item.title.charAt(0).toUpperCase();
-                        card.innerHTML = `
-                            <div class="card-visual">
-                                <span style="font-size: 2.2rem; font-weight: 700; opacity: 0.1;">${initial}</span>
-                                <div class="card-badge">${item.langs[0] || 'TV'}</div>
-                                <div class="card-info">
-                                    <span class="card-title">${item.title}</span>
-                                    <span class="card-meta">${item.info.substring(0, 30)}</span>
-                                </div>
-                            </div>
-                        `;
-                        slider.appendChild(card);
-                    });
-                }
+        } 
+        // Soporte nativo para Safari/iOS
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = streamUrl;
+            video.addEventListener('loadedmetadata', () => {
+                video.play();
+                statsInterval = setInterval(() => updateStats(hashInput), 2000);
             });
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
