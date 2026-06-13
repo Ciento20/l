@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FCTV Link">
+    <meta name="description" content="Streaming deportivo gratuito - FCTV33 y mirror">
+    <link rel="manifest" id="manifest-link">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" rel="stylesheet">
+    <title>FCTV Link · Deportes + cambio dominio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            background: #000;
+        }
+
+        .custom-header-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 112px;
+            background: rgba(12, 12, 14, 0.94);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 9998;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.45);
+            pointer-events: auto;
+            padding: 8px 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Modo minimalista: solo el botón de dominio flotando */
+        .custom-header-overlay.minimal {
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            box-shadow: none;
+            border-bottom: none;
+            height: auto;
+            padding: 0;
+            justify-content: center;
+            pointer-events: auto;
+        }
+
+        .custom-header-overlay.minimal .overlay-buttons-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: auto;
+            gap: 0;
+        }
+
+        .custom-header-overlay.minimal .overlay-buttons-grid button:not(#domainToggleBtn) {
+            display: none;
+        }
+
+        .custom-header-overlay.minimal .overlay-buttons-grid #domainToggleBtn {
+            margin: 15px 20px 20px 20px;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* BASE: para móviles verticales (grid, varias filas) */
+        .overlay-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(40px, 1fr));
+            gap: 6px;
+            width: 100%;
+            max-height: 100%;
+            align-items: center;
+            justify-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .overlay-buttons-grid button.custom-sport-btn {
+            background: rgba(20, 22, 26, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            width: 100%;
+            max-width: 52px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            padding: 0;
+            margin: 0 auto;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay-buttons-grid button.custom-sport-btn:active {
+            transform: scale(0.92);
+            background: rgba(245, 158, 11, 0.85);
+            border-color: rgba(245, 158, 11, 0.7);
+        }
+
+        .overlay-buttons-grid button.custom-sport-btn.active-filter {
+            background: #f59e0b;
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.7);
+        }
+
+        .overlay-buttons-grid button.domain-toggle-btn {
+            background: rgba(15, 17, 20, 0.95);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+        }
+        .overlay-buttons-grid button.domain-toggle-btn.mode-mirror {
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            border-color: #fbbf24;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+        }
+        .overlay-buttons-grid button.domain-toggle-btn.mode-original {
+            background: rgba(15, 17, 20, 0.95);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
+            font-size: 1.45rem;
+            color: #f0f0f0;
+            font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .overlay-buttons-grid button.custom-sport-btn.active-filter .material-symbols-outlined {
+            color: white;
+            font-variation-settings: 'FILL' 1, 'wght' 500;
+        }
+
+        /* MÓVIL PEQUEÑO (vertical) */
+        @media (max-width: 640px) {
+            .custom-header-overlay {
+                height: 96px;
+                padding: 6px 8px;
+                backdrop-filter: blur(10px);
+            }
+            .overlay-buttons-grid {
+                grid-template-columns: repeat(7, minmax(34px, 1fr));
+                gap: 4px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn {
+                max-width: 44px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .custom-header-overlay {
+                height: 90px;
+                background: rgba(8, 8, 10, 0.96);
+                backdrop-filter: blur(12px);
+            }
+            .overlay-buttons-grid {
+                grid-template-columns: repeat(7, minmax(30px, 1fr));
+                gap: 3px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn {
+                max-width: 38px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
+                font-size: 1.05rem;
+            }
+        }
+
+        /* ========== DISEÑO HORIZONTAL: PC, TV, TABLET LANDSCAPE ========== */
+        @media (min-width: 1024px) and (orientation: landscape) {
+            .custom-header-overlay {
+                height: 60px;            /* <- MUCHO MÁS BAJO */
+                padding: 4px 16px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                background: rgba(12, 12, 14, 0.96);
+                backdrop-filter: blur(14px);
+                justify-content: flex-start;
+                align-items: center;
+                display: flex;
+            }
+
+            .overlay-buttons-grid {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 8px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding-bottom: 4px;
+                padding-top: 4px;
+                scrollbar-width: thin;
+                -webkit-overflow-scrolling: touch;
+                width: auto;
+                min-width: 100%;
+                justify-content: flex-start;
+                grid-template-columns: unset;
+            }
+
+            .overlay-buttons-grid button.custom-sport-btn {
+                flex: 0 0 auto;
+                width: auto;
+                min-width: 46px;          /* Botones más compactos */
+                max-width: 54px;
+                margin: 0;
+                aspect-ratio: 1 / 1;
+            }
+
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
+                font-size: 1.35rem;       /* Icono ligeramente más pequeño */
+            }
+
+            /* Scrollbar personalizada */
+            .overlay-buttons-grid::-webkit-scrollbar {
+                height: 3px;
+            }
+            .overlay-buttons-grid::-webkit-scrollbar-track {
+                background: #1e1e2a;
+                border-radius: 4px;
+            }
+            .overlay-buttons-grid::-webkit-scrollbar-thumb {
+                background: #f59e0b;
+                border-radius: 4px;
+            }
+
+            /* Modo minimalista en horizontal */
+            .custom-header-overlay.minimal {
+                background: transparent;
+                backdrop-filter: none;
+                height: auto;
+                overflow: visible;
+                padding: 0;
+            }
+            .custom-header-overlay.minimal .overlay-buttons-grid {
+                display: flex;
+                justify-content: center;
+                overflow: visible;
+                gap: 0;
+                min-width: auto;
+            }
+            .custom-header-overlay.minimal .overlay-buttons-grid #domainToggleBtn {
+                margin: 12px;
+                transform: scale(1.05);
+            }
+            .custom-header-overlay.minimal .overlay-buttons-grid button:not(#domainToggleBtn) {
+                display: none;
+            }
+        }
+
+        /* Pantallas 4K o muy grandes - mantenemos altura baja */
+        @media (min-width: 1920px) and (orientation: landscape) {
+            .custom-header-overlay {
+                height: 70px;
+            }
+            .overlay-buttons-grid {
+                gap: 12px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn {
+                min-width: 58px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="iframe-container">
+    <iframe id="streamFrame" title="Live Streaming FCTV" allow="autoplay; fullscreen; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</div>
+
+<div class="custom-header-overlay" id="headerOverlay">
+    <div class="overlay-buttons-grid" id="customButtonsGrid">
+        <button class="custom-sport-btn domain-toggle-btn" id="domainToggleBtn" data-sport="domain_toggle" aria-label="Cambiar dominio original/espejo">
+            <span class="material-symbols-outlined">swap_horiz</span>
+        </button>
+
+        <!-- Fútbol -->
+        <button class="custom-sport-btn" data-sport="soccer" data-path="football.html" aria-label="Fútbol">
+            <span class="material-symbols-outlined">sports_and_outdoors</span>
+        </button>
+
+        <!-- Tenis -->
+        <button class="custom-sport-btn" data-sport="tennis" data-path="tennis.html" aria-label="Tenis">
+            <span class="material-symbols-outlined">sports_tennis</span>
+        </button>
+
+        <button class="custom-sport-btn" data-sport="motor" data-path="motorsport.html" aria-label="Motor">
+            <span class="material-symbols-outlined">sports_motorsports</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="rugby" data-path="rugby.html" aria-label="Rugby">
+            <span class="material-symbols-outlined">sports_rugby</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="american_football" data-path="american-football.html" aria-label="Fútbol americano">
+            <span class="material-symbols-outlined">sports_football</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="australian_football" data-path="aussie-rules.html" aria-label="Fútbol Australiano">
+            <span class="material-symbols-outlined">sports_soccer</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="cricket" data-path="cricket.html" aria-label="Cricket">
+            <span class="material-symbols-outlined">sports_cricket</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="hockey" data-path="hockey.html" aria-label="Hockey">
+            <span class="material-symbols-outlined">sports_hockey</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="badminton" data-path="badminton.html" aria-label="Bádminton">
+            <span class="material-symbols-outlined">badminton</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="baseball" data-path="baseball.html" aria-label="Béisbol">
+            <span class="material-symbols-outlined">sports_baseball</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="volleyball" data-path="volleyball.html" aria-label="Voleibol">
+            <span class="material-symbols-outlined">sports_volleyball</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="wrestling" data-path="fighting.html" aria-label="Lucha">
+            <span class="material-symbols-outlined">sports_mma</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="cycling" data-path="cycling.html" aria-label="Ciclismo">
+            <span class="material-symbols-outlined">directions_bike</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="handball" data-path="handball.html" aria-label="Handball">
+            <span class="material-symbols-outlined">sports_handball</span>
+        </button>
+        <button class="custom-sport-btn" data-sport="others" data-path="others.html" aria-label="Otros deportes">
+            <span class="material-symbols-outlined">emoji_events</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    const LINK_ORIGINAL = "https://www.fctv33hd.motorcycles/";
+    const LINK_MIRROR   = "https://www.rbtvplus18.pics/";
+    
+    let currentMode = 'original';
+    const iframe = document.getElementById('streamFrame');
+    const domainToggleBtn = document.getElementById('domainToggleBtn');
+    const headerOverlay = document.getElementById('headerOverlay');
+    
+    function loadStream(url) {
+        iframe.src = url;
+    }
+    
+    function getCurrentBaseUrl() {
+        return currentMode === 'original' ? LINK_ORIGINAL : LINK_MIRROR;
+    }
+    
+    function navigateToSportPage(path) {
+        const baseUrl = getCurrentBaseUrl();
+        let fullUrl = baseUrl;
+        if (!fullUrl.endsWith('/')) fullUrl += '/';
+        fullUrl += path;
+        loadStream(fullUrl);
+    }
+    
+    function toggleDomainMode() {
+        if (currentMode === 'original') {
+            currentMode = 'mirror';
+            loadStream(LINK_MIRROR);
+            domainToggleBtn.classList.add('mode-mirror');
+            domainToggleBtn.classList.remove('mode-original');
+        } else {
+            currentMode = 'original';
+            loadStream(LINK_ORIGINAL);
+            domainToggleBtn.classList.remove('mode-mirror');
+            domainToggleBtn.classList.add('mode-original');
+        }
+        if (navigator.vibrate) navigator.vibrate(30);
+        sessionStorage.setItem('fctv_mode', currentMode);
+        setActiveSportButton(null);
+    }
+    
+    function init() {
+        const savedMode = sessionStorage.getItem('fctv_mode');
+        if (savedMode === 'mirror') {
+            currentMode = 'mirror';
+            loadStream(LINK_MIRROR);
+            domainToggleBtn.classList.add('mode-mirror');
+            domainToggleBtn.classList.remove('mode-original');
+        } else {
+            currentMode = 'original';
+            loadStream(LINK_ORIGINAL);
+            domainToggleBtn.classList.remove('mode-mirror');
+            domainToggleBtn.classList.add('mode-original');
+        }
+    }
+    
+    // ========== PULSACIÓN LARGA PARA MODO MINIMALISTA CON PERSISTENCIA ==========
+    let pressTimer = null;
+    let isMinimalMode = false;
+    
+    function loadOverlayPreference() {
+        const savedOverlayMode = localStorage.getItem('fctv_overlay_mode');
+        if (savedOverlayMode === 'minimal') {
+            enableMinimalMode();
+        } else if (savedOverlayMode === 'full') {
+            disableMinimalMode();
+        } else {
+            enableMinimalMode();
+        }
+    }
+    
+    function enableMinimalMode() {
+        if (!isMinimalMode) {
+            headerOverlay.classList.add('minimal');
+            isMinimalMode = true;
+            localStorage.setItem('fctv_overlay_mode', 'minimal');
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            console.log("[UI] Modo minimalista activado: solo botón de dominio");
+        }
+    }
+    
+    function disableMinimalMode() {
+        if (isMinimalMode) {
+            headerOverlay.classList.remove('minimal');
+            isMinimalMode = false;
+            localStorage.setItem('fctv_overlay_mode', 'full');
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            console.log("[UI] Modo completo restaurado");
+        }
+    }
+    
+    function toggleMinimalMode() {
+        if (isMinimalMode) {
+            disableMinimalMode();
+        } else {
+            enableMinimalMode();
+        }
+    }
+    
+    // Eventos: mouse + touch para pulsación larga (dominio) y corto (cambio)
+    domainToggleBtn.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        pressTimer = setTimeout(() => {
+            toggleMinimalMode();
+            pressTimer = null;
+        }, 500);
+    });
+    
+    domainToggleBtn.addEventListener('mouseup', (e) => {
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+            toggleDomainMode();
+        }
+    });
+    
+    domainToggleBtn.addEventListener('mouseleave', () => {
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+    });
+    
+    domainToggleBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        pressTimer = setTimeout(() => {
+            toggleMinimalMode();
+            pressTimer = null;
+        }, 500);
+    });
+    
+    domainToggleBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+            toggleDomainMode();
+        }
+    });
+    
+    domainToggleBtn.addEventListener('touchcancel', (e) => {
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+    });
+    
+    init();
+    loadOverlayPreference();
+    
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.setItem('fctv_mode', currentMode);
+    });
+    
+    const sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn)');
+    
+    function setActiveSportButton(activeBtn) {
+        sportButtons.forEach(btn => btn.classList.remove('active-filter'));
+        if (activeBtn) activeBtn.classList.add('active-filter');
+    }
+    
+    sportButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const path = btn.getAttribute('data-path');
+            const isCurrentlyActive = btn.classList.contains('active-filter');
+            
+            if (isCurrentlyActive && path) {
+                const baseUrl = getCurrentBaseUrl();
+                loadStream(baseUrl);
+                setActiveSportButton(null);
+                if (navigator.vibrate) navigator.vibrate(15);
+                console.log(`[Navegación] Desactivando deporte: ${btn.getAttribute('data-sport')} → volviendo a base`);
+            } else if (path) {
+                navigateToSportPage(path);
+                setActiveSportButton(btn);
+                if (navigator.vibrate) navigator.vibrate(15);
+                console.log(`[Navegación] Deporte: ${btn.getAttribute('data-sport')} → ${getCurrentBaseUrl()}${path}`);
+            }
+        });
+    });
+</script>
+
+<script>
+    (function setupPWA() {
+        function createIcon(size, text, bgColor, textColor) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, size, size);
+            const grad = ctx.createLinearGradient(0, 0, size, size);
+            grad.addColorStop(0, '#1f2f3a');
+            grad.addColorStop(1, '#0a1219');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, size, size);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = size * 0.03;
+            ctx.strokeRect(size*0.1, size*0.1, size*0.8, size*0.8);
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${size * 0.28}px "Segoe UI", system-ui`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(text, size/2, size/2);
+            ctx.font = `${size * 0.09}px monospace`;
+            ctx.fillStyle = "#facc15";
+            ctx.fillText("LIVE", size/2, size * 0.8);
+            return canvas.toDataURL('image/png');
+        }
+        
+        const icon192 = createIcon(192, "F33", "#0f1722", "#ffffff");
+        const icon512 = createIcon(512, "FCTV", "#0f1722", "#ffffff");
+        
+        const manifestObj = {
+            name: "FCTV Link - Hubu",
+            short_name: "FCTV33",
+            description: "Streaming deportivo gratuito. Enlace principal + mirror",
+            start_url: ".",
+            display: "standalone",
+            theme_color: "#0a0a0a",
+            background_color: "#000000",
+            orientation: "any",
+            icons: [
+                { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+                { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+            ]
+        };
+        
+        const manifestBlob = new Blob([JSON.stringify(manifestObj)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const manifestLink = document.getElementById('manifest-link');
+        if (manifestLink) manifestLink.href = manifestURL;
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log("[PWA] Service Worker no registrado (opcional)", err);
+                });
+            });
+        }
+    })();
+</script>
+</body>
+</html>
