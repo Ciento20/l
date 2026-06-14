@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -305,7 +305,7 @@
 
 <div class="custom-header-overlay" id="headerOverlay">
     <div class="overlay-buttons-grid" id="customButtonsGrid">
-        <!-- ========== PRIMERA FILA: 9 BOTONES (sin cambios) ========== -->
+        <!-- ========== PRIMERA FILA: 9 BOTONES ========== -->
         <!-- 1. Inicio (home) -->
         <button class="custom-sport-btn" id="homeBtn" aria-label="Volver al inicio">
             <span class="material-symbols-outlined">home</span>
@@ -400,6 +400,39 @@
 </div>
 
 <script>
+    // --------------------------------------------------------------
+    // 🚫 PROTECCIÓN TOTAL CONTRA ROTACIÓN FORZADA
+    // La pantalla girará libremente SOLO si el dispositivo tiene
+    // la rotación desbloqueada (configuración del sistema).
+    // Si el usuario bloquea la rotación desde el sistema operativo,
+    // la web respetará esa decisión sin intentar anularla.
+    // --------------------------------------------------------------
+    (function preventForcedOrientation() {
+        // Prevenir cualquier intento futuro de bloquear la orientación mediante la API.
+        // Así nos aseguramos de que ningún script externo o interno pueda forzar 
+        // portrait/landscape en contra de la configuración del sistema.
+        if (window.screen && window.screen.orientation) {
+            const originalLock = window.screen.orientation.lock;
+            window.screen.orientation.lock = function(orientation) {
+                console.warn("[FCTV] Bloqueo de orientación no permitido. La app respeta la configuración del sistema.");
+                // Rechazamos inmediatamente la promesa para indicar que la acción no está permitida.
+                return Promise.reject(new DOMException("La orientación no puede ser bloqueada desde la web. La rotación sigue la decisión del sistema.", "NotAllowedError"));
+            };
+            // También deshabilitamos el método unlock por coherencia (no debería causar problemas)
+            if (window.screen.orientation.unlock) {
+                window.screen.orientation.unlock = function() {
+                    console.log("[FCTV] unlock ignorado por política de respeto a configuración del sistema.");
+                };
+            }
+        }
+        
+        // Prevenir que eventos relacionados con orientación sean forzados (por si algún marco intenta manipular el viewport)
+        // No bloqueamos el evento 'orientationchange' porque solo informa, pero aseguramos que ningún script
+        // pueda hacer screen.orientation.lock mediante eventos sustitutos.
+        // Adicionalmente, si el iframe intenta solicitar pantalla completa y forzar rotación, la sobreescritura de .lock lo impide.
+        console.log("[FCTV] Protección de rotación activada: la pantalla girará libremente solo si el sistema lo permite.");
+    })();
+
     const LINK_ORIGINAL = "https://www.fctv33hd.motorcycles/";
     const LINK_MIRROR   = "https://www.rbtvplus18.pics/";
     
