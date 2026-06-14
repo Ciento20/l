@@ -10,7 +10,7 @@
     <meta name="description" content="Streaming deportivo gratuito - FCTV33 y mirror">
     <link rel="manifest" id="manifest-link">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" rel="stylesheet">
-    <title>FCTV Link · Deportes + cambio dominio</title>
+    <title>FCTV Link · 9 botones por fila</title>
     <style>
         * {
             margin: 0;
@@ -46,37 +46,29 @@
             background: #000;
         }
 
+        /* HEADER: exactamente 2 filas de 9 botones cada una */
         .custom-header-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 112px;
-            background: rgba(12, 12, 14, 0.94);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            background: #141821;
             z-index: 9998;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
-            border-bottom: 1px solid rgba(245, 158, 11, 0.45);
+            border-bottom: 1px solid #f59e0b;
             pointer-events: auto;
             padding: 8px 12px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
+            overflow: visible;
             transition: all 0.3s ease;
         }
 
-        /* Modo minimalista: solo el botón de dominio flotando */
+        /* Modo minimalista: solo botón dominio flotante */
         .custom-header-overlay.minimal {
             background: transparent;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            box-shadow: none;
             border-bottom: none;
-            height: auto;
             padding: 0;
+            display: flex;
             justify-content: center;
-            pointer-events: auto;
+            align-items: center;
         }
 
         .custom-header-overlay.minimal .overlay-buttons-grid {
@@ -91,93 +83,135 @@
             display: none;
         }
 
-        .custom-header-overlay.minimal .overlay-buttons-grid #domainToggleBtn {
-            margin: 15px 20px 20px 20px;
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        /* ========== BOTÓN CIRCULAR FLOTANTE PLANO (MODO MINIMAL) ========== */
+        .custom-header-overlay.minimal .domain-toggle-btn {
+            border-radius: 50% !important;
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: none;
+            margin: 12px auto;
+            transform: none;
+            background: #343a50;
+            border: 1px solid #f59e0b;
         }
 
-        /* BASE: para móviles verticales (grid, varias filas) */
+        .custom-header-overlay.minimal .domain-toggle-btn.mode-mirror {
+            background: #fbbd14;
+            border-color: #fbbd14;
+        }
+
+        .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined {
+            font-size: 1.2rem;
+        }
+
+        /* Ajuste para pantallas pequeñas (móviles) */
+        @media (max-width: 640px) {
+            .custom-header-overlay.minimal .domain-toggle-btn {
+                width: 34px;
+                height: 34px;
+                margin: 10px auto;
+            }
+            .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .custom-header-overlay.minimal .domain-toggle-btn {
+                width: 32px;
+                height: 32px;
+            }
+            .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .custom-header-overlay.minimal .domain-toggle-btn {
+                width: 30px;
+                height: 30px;
+            }
+            .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ========== GRID EXACTAMENTE 9 COLUMNAS POR FILA ========== */
         .overlay-buttons-grid {
             display: grid;
-            grid-template-columns: repeat(7, minmax(40px, 1fr));
-            gap: 6px;
+            grid-template-columns: repeat(9, minmax(44px, 1fr));
+            gap: 8px;
             width: 100%;
-            max-height: 100%;
             align-items: center;
             justify-items: center;
             transition: all 0.2s ease;
+            margin: 0 auto;
         }
 
         .overlay-buttons-grid button.custom-sport-btn {
-            background: rgba(20, 22, 26, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 50%;
+            background: #343a50;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             width: 100%;
-            max-width: 52px;
-            aspect-ratio: 1 / 1;
+            max-width: 70px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.18s ease;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-            padding: 0;
-            margin: 0 auto;
-            backdrop-filter: blur(4px);
         }
 
         .overlay-buttons-grid button.custom-sport-btn:active {
             transform: scale(0.92);
-            background: rgba(245, 158, 11, 0.85);
-            border-color: rgba(245, 158, 11, 0.7);
+            background: #f59e0b;
+            border-color: #f59e0b;
         }
 
         .overlay-buttons-grid button.custom-sport-btn.active-filter {
-            background: #f59e0b;
-            border-color: #fbbf24;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.7);
+            background: #fbbd14;
+            border-color: #fbbd14;
         }
 
         .overlay-buttons-grid button.domain-toggle-btn {
-            background: rgba(15, 17, 20, 0.95);
-            border: 1px solid rgba(245, 158, 11, 0.5);
+            background: #343a50;
+            border: 1px solid #f59e0b;
         }
         .overlay-buttons-grid button.domain-toggle-btn.mode-mirror {
-            background: linear-gradient(145deg, #f59e0b, #d97706);
-            border-color: #fbbf24;
-            box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+            background: #fbbd14;
+            border-color: #fbbd14;
         }
         .overlay-buttons-grid button.domain-toggle-btn.mode-original {
-            background: rgba(15, 17, 20, 0.95);
-            border-color: rgba(255,255,255,0.1);
+            background: #343a50;
+            border-color: #f59e0b;
         }
 
         .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
             font-size: 1.45rem;
             color: #f0f0f0;
             font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
 
         .overlay-buttons-grid button.custom-sport-btn.active-filter .material-symbols-outlined {
-            color: white;
+            color: #000;
             font-variation-settings: 'FILL' 1, 'wght' 500;
         }
 
-        /* MÓVIL PEQUEÑO (vertical) */
+        /* ========== RESPONSIVE: 9 COLUMNAS EN TODOS LOS TAMAÑOS ========== */
         @media (max-width: 640px) {
             .custom-header-overlay {
-                height: 96px;
                 padding: 6px 8px;
-                backdrop-filter: blur(10px);
             }
             .overlay-buttons-grid {
-                grid-template-columns: repeat(7, minmax(34px, 1fr));
-                gap: 4px;
+                grid-template-columns: repeat(9, minmax(38px, 1fr));
+                gap: 5px;
             }
             .overlay-buttons-grid button.custom-sport-btn {
-                max-width: 44px;
+                height: 44px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
                 font-size: 1.25rem;
@@ -186,117 +220,88 @@
 
         @media (max-width: 480px) {
             .custom-header-overlay {
-                height: 90px;
-                background: rgba(8, 8, 10, 0.96);
-                backdrop-filter: blur(12px);
+                padding: 5px 6px;
             }
             .overlay-buttons-grid {
-                grid-template-columns: repeat(7, minmax(30px, 1fr));
-                gap: 3px;
+                grid-template-columns: repeat(9, minmax(32px, 1fr));
+                gap: 4px;
             }
             .overlay-buttons-grid button.custom-sport-btn {
-                max-width: 38px;
+                height: 40px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
                 font-size: 1.05rem;
             }
         }
 
-        /* ========== DISEÑO HORIZONTAL: PC, TV, TABLET LANDSCAPE ========== */
+        /* Pantallas muy estrechas (ej. 360px) */
+        @media (max-width: 380px) {
+            .overlay-buttons-grid {
+                grid-template-columns: repeat(9, minmax(28px, 1fr));
+                gap: 3px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn {
+                height: 36px;
+                padding: 0 2px;
+            }
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Modo horizontal (tablet, PC): se mantiene grid de 9 columnas */
         @media (min-width: 1024px) and (orientation: landscape) {
             .custom-header-overlay {
-                height: 60px;            /* <- MUCHO MÁS BAJO */
-                padding: 4px 16px;
-                overflow-x: auto;
-                overflow-y: hidden;
-                white-space: nowrap;
-                background: rgba(12, 12, 14, 0.96);
-                backdrop-filter: blur(14px);
-                justify-content: flex-start;
-                align-items: center;
-                display: flex;
+                padding: 6px 20px;
             }
-
             .overlay-buttons-grid {
-                display: flex;
-                flex-direction: row;
-                flex-wrap: nowrap;
-                gap: 8px;
-                overflow-x: auto;
-                overflow-y: hidden;
-                padding-bottom: 4px;
-                padding-top: 4px;
-                scrollbar-width: thin;
-                -webkit-overflow-scrolling: touch;
-                width: auto;
-                min-width: 100%;
-                justify-content: flex-start;
-                grid-template-columns: unset;
+                display: grid;
+                grid-template-columns: repeat(9, minmax(70px, auto));
+                gap: 12px;
+                justify-content: center;
             }
-
             .overlay-buttons-grid button.custom-sport-btn {
-                flex: 0 0 auto;
+                height: 58px;
                 width: auto;
-                min-width: 46px;          /* Botones más compactos */
-                max-width: 54px;
-                margin: 0;
-                aspect-ratio: 1 / 1;
+                min-width: 60px;
             }
-
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.35rem;       /* Icono ligeramente más pequeño */
+                font-size: 1.5rem;
             }
-
-            /* Scrollbar personalizada */
-            .overlay-buttons-grid::-webkit-scrollbar {
-                height: 3px;
-            }
-            .overlay-buttons-grid::-webkit-scrollbar-track {
-                background: #1e1e2a;
-                border-radius: 4px;
-            }
-            .overlay-buttons-grid::-webkit-scrollbar-thumb {
-                background: #f59e0b;
-                border-radius: 4px;
-            }
-
-            /* Modo minimalista en horizontal */
+            
             .custom-header-overlay.minimal {
                 background: transparent;
-                backdrop-filter: none;
-                height: auto;
-                overflow: visible;
                 padding: 0;
             }
             .custom-header-overlay.minimal .overlay-buttons-grid {
                 display: flex;
-                justify-content: center;
-                overflow: visible;
                 gap: 0;
-                min-width: auto;
             }
-            .custom-header-overlay.minimal .overlay-buttons-grid #domainToggleBtn {
-                margin: 12px;
-                transform: scale(1.05);
+            .custom-header-overlay.minimal .domain-toggle-btn {
+                width: 42px;
+                height: 42px;
+                margin: 14px auto;
             }
-            .custom-header-overlay.minimal .overlay-buttons-grid button:not(#domainToggleBtn) {
-                display: none;
+            .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined {
+                font-size: 1.3rem;
             }
         }
 
-        /* Pantallas 4K o muy grandes - mantenemos altura baja */
-        @media (min-width: 1920px) and (orientation: landscape) {
-            .custom-header-overlay {
-                height: 70px;
-            }
+        /* Pantallas grandes 4K */
+        @media (min-width: 1920px) {
             .overlay-buttons-grid {
-                gap: 12px;
+                gap: 16px;
             }
             .overlay-buttons-grid button.custom-sport-btn {
-                min-width: 58px;
+                height: 70px;
+                min-width: 80px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.6rem;
+                font-size: 1.8rem;
+            }
+            .custom-header-overlay.minimal .domain-toggle-btn {
+                width: 46px;
+                height: 46px;
             }
         }
     </style>
@@ -309,58 +314,96 @@
 
 <div class="custom-header-overlay" id="headerOverlay">
     <div class="overlay-buttons-grid" id="customButtonsGrid">
+        <!-- ========== PRIMERA FILA: 9 BOTONES ========== -->
+        <!-- Botón de dominio (columna 1) -->
         <button class="custom-sport-btn domain-toggle-btn" id="domainToggleBtn" data-sport="domain_toggle" aria-label="Cambiar dominio original/espejo">
             <span class="material-symbols-outlined">swap_horiz</span>
         </button>
 
-        <!-- Fútbol -->
+        <!-- Fútbol (columna 2) -->
         <button class="custom-sport-btn" data-sport="soccer" data-path="football.html" aria-label="Fútbol">
             <span class="material-symbols-outlined">sports_and_outdoors</span>
         </button>
 
-        <!-- Tenis -->
+        <!-- BALONCESTO (antes TENIS) -->
+        <button class="custom-sport-btn" data-sport="basketball" data-path="basketball.html" aria-label="Baloncesto">
+            <span class="material-symbols-outlined">sports_basketball</span>
+        </button>
+
+        <!-- HOCKEY (antes MOTOR) -->
+        <button class="custom-sport-btn" data-sport="hockey" data-path="hockey.html" aria-label="Hockey">
+            <span class="material-symbols-outlined">sports_hockey</span>
+        </button>
+
+        <!-- Rugby (columna 5) -->
+        <button class="custom-sport-btn" data-sport="rugby" data-path="rugby.html" aria-label="Rugby">
+            <span class="material-symbols-outlined">sports_rugby</span>
+        </button>
+
+        <!-- Fútbol americano (columna 6) -->
+        <button class="custom-sport-btn" data-sport="american_football" data-path="american-football.html" aria-label="Fútbol americano">
+            <span class="material-symbols-outlined">sports_football</span>
+        </button>
+
+        <!-- Fútbol Australiano (columna 7) -->
+        <button class="custom-sport-btn" data-sport="australian_football" data-path="aussie-rules.html" aria-label="Fútbol Australiano">
+            <span class="material-symbols-outlined">sports_soccer</span>
+        </button>
+
+        <!-- Cricket (columna 8) -->
+        <button class="custom-sport-btn" data-sport="cricket" data-path="cricket.html" aria-label="Cricket">
+            <span class="material-symbols-outlined">sports_cricket</span>
+        </button>
+
+        <!-- MOTOR (antes HOCKEY) -->
+        <button class="custom-sport-btn" data-sport="motor" data-path="motorsport.html" aria-label="Motor">
+            <span class="material-symbols-outlined">sports_motorsports</span>
+        </button>
+
+        <!-- ========== SEGUNDA FILA: 9 BOTONES ========== -->
+        <!-- INICIO (antes BÁDMINTON): botón home ahora en columna 1 de segunda fila -->
+        <button class="custom-sport-btn" id="homeBtn" aria-label="Volver al inicio">
+            <span class="material-symbols-outlined">home</span>
+        </button>
+
+        <!-- Béisbol (columna 2) -->
+        <button class="custom-sport-btn" data-sport="baseball" data-path="baseball.html" aria-label="Béisbol">
+            <span class="material-symbols-outlined">sports_baseball</span>
+        </button>
+
+        <!-- Voleibol (columna 3) -->
+        <button class="custom-sport-btn" data-sport="volleyball" data-path="volleyball.html" aria-label="Voleibol">
+            <span class="material-symbols-outlined">sports_volleyball</span>
+        </button>
+
+        <!-- Lucha (columna 4) -->
+        <button class="custom-sport-btn" data-sport="wrestling" data-path="fighting.html" aria-label="Lucha">
+            <span class="material-symbols-outlined">sports_mma</span>
+        </button>
+
+        <!-- Ciclismo (columna 5) -->
+        <button class="custom-sport-btn" data-sport="cycling" data-path="cycling.html" aria-label="Ciclismo">
+            <span class="material-symbols-outlined">directions_bike</span>
+        </button>
+
+        <!-- Handball (columna 6) -->
+        <button class="custom-sport-btn" data-sport="handball" data-path="handball.html" aria-label="Handball">
+            <span class="material-symbols-outlined">sports_handball</span>
+        </button>
+
+        <!-- Otros deportes (columna 7) -->
+        <button class="custom-sport-btn" data-sport="others" data-path="others.html" aria-label="Otros deportes">
+            <span class="material-symbols-outlined">emoji_events</span>
+        </button>
+
+        <!-- TENIS (antes BALONCESTO) -->
         <button class="custom-sport-btn" data-sport="tennis" data-path="tennis.html" aria-label="Tenis">
             <span class="material-symbols-outlined">sports_tennis</span>
         </button>
 
-        <button class="custom-sport-btn" data-sport="motor" data-path="motorsport.html" aria-label="Motor">
-            <span class="material-symbols-outlined">sports_motorsports</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="rugby" data-path="rugby.html" aria-label="Rugby">
-            <span class="material-symbols-outlined">sports_rugby</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="american_football" data-path="american-football.html" aria-label="Fútbol americano">
-            <span class="material-symbols-outlined">sports_football</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="australian_football" data-path="aussie-rules.html" aria-label="Fútbol Australiano">
-            <span class="material-symbols-outlined">sports_soccer</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="cricket" data-path="cricket.html" aria-label="Cricket">
-            <span class="material-symbols-outlined">sports_cricket</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="hockey" data-path="hockey.html" aria-label="Hockey">
-            <span class="material-symbols-outlined">sports_hockey</span>
-        </button>
+        <!-- BÁDMINTON (antes INICIO) -->
         <button class="custom-sport-btn" data-sport="badminton" data-path="badminton.html" aria-label="Bádminton">
             <span class="material-symbols-outlined">badminton</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="baseball" data-path="baseball.html" aria-label="Béisbol">
-            <span class="material-symbols-outlined">sports_baseball</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="volleyball" data-path="volleyball.html" aria-label="Voleibol">
-            <span class="material-symbols-outlined">sports_volleyball</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="wrestling" data-path="fighting.html" aria-label="Lucha">
-            <span class="material-symbols-outlined">sports_mma</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="cycling" data-path="cycling.html" aria-label="Ciclismo">
-            <span class="material-symbols-outlined">directions_bike</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="handball" data-path="handball.html" aria-label="Handball">
-            <span class="material-symbols-outlined">sports_handball</span>
-        </button>
-        <button class="custom-sport-btn" data-sport="others" data-path="others.html" aria-label="Otros deportes">
-            <span class="material-symbols-outlined">emoji_events</span>
         </button>
     </div>
 </div>
@@ -373,6 +416,10 @@
     const iframe = document.getElementById('streamFrame');
     const domainToggleBtn = document.getElementById('domainToggleBtn');
     const headerOverlay = document.getElementById('headerOverlay');
+    const homeBtn = document.getElementById('homeBtn');
+    
+    // Todos los botones de deporte (con data-path) excepto domainToggleBtn y homeBtn
+    const sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn):not(#homeBtn)');
     
     function loadStream(url) {
         iframe.src = url;
@@ -382,14 +429,41 @@
         return currentMode === 'original' ? LINK_ORIGINAL : LINK_MIRROR;
     }
     
-    function navigateToSportPage(path) {
+    // Función unificada para actualizar el botón activo (home o deporte)
+    function setActiveButton(activeBtn) {
+        // Remover clase active-filter de todos los botones (home + deportes)
+        homeBtn.classList.remove('active-filter');
+        sportButtons.forEach(btn => btn.classList.remove('active-filter'));
+        // Si hay un botón activo, agregarle la clase
+        if (activeBtn) {
+            activeBtn.classList.add('active-filter');
+        }
+    }
+    
+    // Navegar a una página de deporte específica
+    function navigateToSportPage(path, clickedBtn) {
         const baseUrl = getCurrentBaseUrl();
         let fullUrl = baseUrl;
         if (!fullUrl.endsWith('/')) fullUrl += '/';
         fullUrl += path;
         loadStream(fullUrl);
+        // Actualizar UI: activar el botón de deporte, desactivar home
+        setActiveButton(clickedBtn);
+        if (navigator.vibrate) navigator.vibrate(15);
+        console.log(`[Navegación] Cargando deporte: ${fullUrl}`);
     }
     
+    // Volver a la página principal (home)
+    function goToHome() {
+        const baseUrl = getCurrentBaseUrl();
+        loadStream(baseUrl);
+        // Activar el botón de inicio y desactivar cualquier deporte
+        setActiveButton(homeBtn);
+        if (navigator.vibrate) navigator.vibrate(15);
+        console.log(`[Navegación] Volver al inicio: ${baseUrl}`);
+    }
+    
+    // Cambiar entre dominio original y espejo (siempre carga la página base)
     function toggleDomainMode() {
         if (currentMode === 'original') {
             currentMode = 'mirror';
@@ -402,11 +476,14 @@
             domainToggleBtn.classList.remove('mode-mirror');
             domainToggleBtn.classList.add('mode-original');
         }
+        // Después de cambiar dominio, aseguramos que estamos en home (UI y estado)
+        setActiveButton(homeBtn);
         if (navigator.vibrate) navigator.vibrate(30);
         sessionStorage.setItem('fctv_mode', currentMode);
-        setActiveSportButton(null);
+        console.log(`[Navegación] Dominio cambiado a: ${currentMode === 'original' ? 'ORIGINAL' : 'MIRROR'} (home)`);
     }
     
+    // Inicializar la aplicación: cargar dominio guardado y UI coherente
     function init() {
         const savedMode = sessionStorage.getItem('fctv_mode');
         if (savedMode === 'mirror') {
@@ -420,9 +497,11 @@
             domainToggleBtn.classList.remove('mode-mirror');
             domainToggleBtn.classList.add('mode-original');
         }
+        // Al iniciar estamos en la página base (home), activar visualmente el botón home
+        setActiveButton(homeBtn);
     }
     
-    // ========== PULSACIÓN LARGA PARA MODO MINIMALISTA CON PERSISTENCIA ==========
+    // ========== PULSACIÓN LARGA PARA MODO MINIMALISTA ==========
     let pressTimer = null;
     let isMinimalMode = false;
     
@@ -433,7 +512,7 @@
         } else if (savedOverlayMode === 'full') {
             disableMinimalMode();
         } else {
-            enableMinimalMode();
+            enableMinimalMode(); // Por defecto minimalista
         }
     }
     
@@ -443,7 +522,7 @@
             isMinimalMode = true;
             localStorage.setItem('fctv_overlay_mode', 'minimal');
             if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-            console.log("[UI] Modo minimalista activado: solo botón de dominio");
+            console.log("[UI] Modo minimalista: botón circular flotante");
         }
     }
     
@@ -453,7 +532,7 @@
             isMinimalMode = false;
             localStorage.setItem('fctv_overlay_mode', 'full');
             if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-            console.log("[UI] Modo completo restaurado");
+            console.log("[UI] Modo completo restaurado (9 botones por fila)");
         }
     }
     
@@ -465,7 +544,7 @@
         }
     }
     
-    // Eventos: mouse + touch para pulsación larga (dominio) y corto (cambio)
+    // Eventos para el botón de dominio: pulsación larga (modo minimalista) / corta (cambio de dominio)
     domainToggleBtn.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
         pressTimer = setTimeout(() => {
@@ -513,20 +592,13 @@
         }
     });
     
-    init();
-    loadOverlayPreference();
-    
-    window.addEventListener('beforeunload', () => {
-        sessionStorage.setItem('fctv_mode', currentMode);
+    // Evento para el botón de inicio (home)
+    homeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        goToHome();
     });
     
-    const sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn)');
-    
-    function setActiveSportButton(activeBtn) {
-        sportButtons.forEach(btn => btn.classList.remove('active-filter'));
-        if (activeBtn) activeBtn.classList.add('active-filter');
-    }
-    
+    // Eventos para los botones de deportes
     sportButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -534,18 +606,22 @@
             const isCurrentlyActive = btn.classList.contains('active-filter');
             
             if (isCurrentlyActive && path) {
-                const baseUrl = getCurrentBaseUrl();
-                loadStream(baseUrl);
-                setActiveSportButton(null);
-                if (navigator.vibrate) navigator.vibrate(15);
-                console.log(`[Navegación] Desactivando deporte: ${btn.getAttribute('data-sport')} → volviendo a base`);
+                // Si ya está activo: recargar la página base (home)
+                goToHome();
             } else if (path) {
-                navigateToSportPage(path);
-                setActiveSportButton(btn);
-                if (navigator.vibrate) navigator.vibrate(15);
-                console.log(`[Navegación] Deporte: ${btn.getAttribute('data-sport')} → ${getCurrentBaseUrl()}${path}`);
+                // Navegar al deporte y activar este botón
+                navigateToSportPage(path, btn);
             }
         });
+    });
+    
+    // Iniciar toda la lógica
+    init();
+    loadOverlayPreference();
+    
+    // Guardar modo actual antes de cerrar
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.setItem('fctv_mode', currentMode);
     });
 </script>
 
@@ -563,7 +639,7 @@
             grad.addColorStop(1, '#0a1219');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, size, size);
-            ctx.strokeStyle = '#f59e0b';
+            ctx.strokeStyle = '#fbbd14';
             ctx.lineWidth = size * 0.03;
             ctx.strokeRect(size*0.1, size*0.1, size*0.8, size*0.8);
             ctx.fillStyle = textColor;
@@ -572,7 +648,7 @@
             ctx.textBaseline = "middle";
             ctx.fillText(text, size/2, size/2);
             ctx.font = `${size * 0.09}px monospace`;
-            ctx.fillStyle = "#facc15";
+            ctx.fillStyle = "#fbbd14";
             ctx.fillText("LIVE", size/2, size * 0.8);
             return canvas.toDataURL('image/png');
         }
