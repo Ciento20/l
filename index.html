@@ -401,36 +401,25 @@
 
 <script>
     // --------------------------------------------------------------
-    // 🚫 PROTECCIÓN TOTAL CONTRA ROTACIÓN FORZADA
+    // PROTECCIÓN TOTAL CONTRA ROTACIÓN FORZADA (PWA o web)
     // La pantalla girará libremente SOLO si el dispositivo tiene
     // la rotación desbloqueada (configuración del sistema).
-    // Si el usuario bloquea la rotación desde el sistema operativo,
-    // la web respetará esa decisión sin intentar anularla.
+    // Se anula cualquier intento de screen.orientation.lock().
     // --------------------------------------------------------------
     (function preventForcedOrientation() {
-        // Prevenir cualquier intento futuro de bloquear la orientación mediante la API.
-        // Así nos aseguramos de que ningún script externo o interno pueda forzar 
-        // portrait/landscape en contra de la configuración del sistema.
         if (window.screen && window.screen.orientation) {
             const originalLock = window.screen.orientation.lock;
             window.screen.orientation.lock = function(orientation) {
                 console.warn("[FCTV] Bloqueo de orientación no permitido. La app respeta la configuración del sistema.");
-                // Rechazamos inmediatamente la promesa para indicar que la acción no está permitida.
                 return Promise.reject(new DOMException("La orientación no puede ser bloqueada desde la web. La rotación sigue la decisión del sistema.", "NotAllowedError"));
             };
-            // También deshabilitamos el método unlock por coherencia (no debería causar problemas)
             if (window.screen.orientation.unlock) {
                 window.screen.orientation.unlock = function() {
                     console.log("[FCTV] unlock ignorado por política de respeto a configuración del sistema.");
                 };
             }
         }
-        
-        // Prevenir que eventos relacionados con orientación sean forzados (por si algún marco intenta manipular el viewport)
-        // No bloqueamos el evento 'orientationchange' porque solo informa, pero aseguramos que ningún script
-        // pueda hacer screen.orientation.lock mediante eventos sustitutos.
-        // Adicionalmente, si el iframe intenta solicitar pantalla completa y forzar rotación, la sobreescritura de .lock lo impide.
-        console.log("[FCTV] Protección de rotación activada: la pantalla girará libremente solo si el sistema lo permite.");
+        console.log("[FCTV] Protección de rotación activada: la pantalla girará solo si el sistema lo permite.");
     })();
 
     const LINK_ORIGINAL = "https://www.fctv33hd.motorcycles/";
@@ -653,6 +642,7 @@
         const icon192 = createIcon(192, "F33", "#0f1722", "#ffffff");
         const icon512 = createIcon(512, "FCTV", "#0f1722", "#ffffff");
         
+        // MANIFESTO SIN PROPIEDAD "orientation" para que la PWA respete el bloqueo del sistema
         const manifestObj = {
             name: "FCTV Link - Hubu",
             short_name: "FCTV33",
@@ -661,7 +651,7 @@
             display: "standalone",
             theme_color: "#0a0a0a",
             background_color: "#000000",
-            orientation: "any",
+            // "orientation" eliminada: el dispositivo decide según su configuración
             icons: [
                 { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
                 { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
