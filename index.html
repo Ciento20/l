@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-title" content="FCTV Link">
     <meta name="description" content="Streaming deportivo gratuito - FCTV33 y mirror">
     <link rel="manifest" id="manifest-link">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" rel="stylesheet">
-    <title>FCTV Link · 9 botones por fila</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <title>FCTV Link · Intercambios: fighting↔tenis, bádminton↔ciclismo</title>
     <style>
         * {
             margin: 0;
@@ -46,7 +46,6 @@
             background: #000;
         }
 
-        /* HEADER: exactamente 2 filas de 9 botones cada una */
         .custom-header-overlay {
             position: fixed;
             top: 0;
@@ -61,7 +60,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Modo minimalista: solo botón dominio flotante */
         .custom-header-overlay.minimal {
             background: transparent;
             border-bottom: none;
@@ -83,7 +81,6 @@
             display: none;
         }
 
-        /* ========== BOTÓN CIRCULAR FLOTANTE PLANO (MODO MINIMAL) ========== */
         .custom-header-overlay.minimal .domain-toggle-btn {
             border-radius: 50% !important;
             width: 38px;
@@ -108,7 +105,6 @@
             font-size: 1.2rem;
         }
 
-        /* Ajuste para pantallas pequeñas (móviles) */
         @media (max-width: 640px) {
             .custom-header-overlay.minimal .domain-toggle-btn {
                 width: 34px;
@@ -116,7 +112,7 @@
                 margin: 10px auto;
             }
             .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined {
-                font-size: 1rem;
+                font-size: 1.0rem;
             }
         }
 
@@ -140,7 +136,6 @@
             }
         }
 
-        /* ========== GRID EXACTAMENTE 9 COLUMNAS POR FILA ========== */
         .overlay-buttons-grid {
             display: grid;
             grid-template-columns: repeat(9, minmax(44px, 1fr));
@@ -191,17 +186,16 @@
         }
 
         .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-            font-size: 1.45rem;
-            color: #f0f0f0;
-            font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+            font-size: 1.65rem;
+            color: #787f91;
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
         }
 
         .overlay-buttons-grid button.custom-sport-btn.active-filter .material-symbols-outlined {
             color: #000;
-            font-variation-settings: 'FILL' 1, 'wght' 500;
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
         }
 
-        /* ========== RESPONSIVE: 9 COLUMNAS EN TODOS LOS TAMAÑOS ========== */
         @media (max-width: 640px) {
             .custom-header-overlay {
                 padding: 6px 8px;
@@ -214,7 +208,7 @@
                 height: 44px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.25rem;
+                font-size: 1.4rem;
             }
         }
 
@@ -230,11 +224,10 @@
                 height: 40px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.05rem;
+                font-size: 1.2rem;
             }
         }
 
-        /* Pantallas muy estrechas (ej. 360px) */
         @media (max-width: 380px) {
             .overlay-buttons-grid {
                 grid-template-columns: repeat(9, minmax(28px, 1fr));
@@ -245,11 +238,10 @@
                 padding: 0 2px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 0.9rem;
+                font-size: 1.05rem;
             }
         }
 
-        /* Modo horizontal (tablet, PC): se mantiene grid de 9 columnas */
         @media (min-width: 1024px) and (orientation: landscape) {
             .custom-header-overlay {
                 padding: 6px 20px;
@@ -266,7 +258,7 @@
                 min-width: 60px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.5rem;
+                font-size: 1.7rem;
             }
             
             .custom-header-overlay.minimal {
@@ -287,7 +279,6 @@
             }
         }
 
-        /* Pantallas grandes 4K */
         @media (min-width: 1920px) {
             .overlay-buttons-grid {
                 gap: 16px;
@@ -297,7 +288,7 @@
                 min-width: 80px;
             }
             .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.8rem;
+                font-size: 2.0rem;
             }
             .custom-header-overlay.minimal .domain-toggle-btn {
                 width: 46px;
@@ -314,96 +305,96 @@
 
 <div class="custom-header-overlay" id="headerOverlay">
     <div class="overlay-buttons-grid" id="customButtonsGrid">
-        <!-- ========== PRIMERA FILA: 9 BOTONES ========== -->
-        <!-- Botón de dominio (columna 1) -->
-        <button class="custom-sport-btn domain-toggle-btn" id="domainToggleBtn" data-sport="domain_toggle" aria-label="Cambiar dominio original/espejo">
-            <span class="material-symbols-outlined">swap_horiz</span>
-        </button>
-
-        <!-- Fútbol (columna 2) -->
-        <button class="custom-sport-btn" data-sport="soccer" data-path="football.html" aria-label="Fútbol">
-            <span class="material-symbols-outlined">sports_and_outdoors</span>
-        </button>
-
-        <!-- BALONCESTO (antes TENIS) -->
-        <button class="custom-sport-btn" data-sport="basketball" data-path="basketball.html" aria-label="Baloncesto">
-            <span class="material-symbols-outlined">sports_basketball</span>
-        </button>
-
-        <!-- HOCKEY (antes MOTOR) -->
-        <button class="custom-sport-btn" data-sport="hockey" data-path="hockey.html" aria-label="Hockey">
-            <span class="material-symbols-outlined">sports_hockey</span>
-        </button>
-
-        <!-- Rugby (columna 5) -->
-        <button class="custom-sport-btn" data-sport="rugby" data-path="rugby.html" aria-label="Rugby">
-            <span class="material-symbols-outlined">sports_rugby</span>
-        </button>
-
-        <!-- Fútbol americano (columna 6) -->
-        <button class="custom-sport-btn" data-sport="american_football" data-path="american-football.html" aria-label="Fútbol americano">
-            <span class="material-symbols-outlined">sports_football</span>
-        </button>
-
-        <!-- Fútbol Australiano (columna 7) -->
-        <button class="custom-sport-btn" data-sport="australian_football" data-path="aussie-rules.html" aria-label="Fútbol Australiano">
-            <span class="material-symbols-outlined">sports_soccer</span>
-        </button>
-
-        <!-- Cricket (columna 8) -->
-        <button class="custom-sport-btn" data-sport="cricket" data-path="cricket.html" aria-label="Cricket">
-            <span class="material-symbols-outlined">sports_cricket</span>
-        </button>
-
-        <!-- MOTOR (antes HOCKEY) -->
-        <button class="custom-sport-btn" data-sport="motor" data-path="motorsport.html" aria-label="Motor">
-            <span class="material-symbols-outlined">sports_motorsports</span>
-        </button>
-
-        <!-- ========== SEGUNDA FILA: 9 BOTONES ========== -->
-        <!-- INICIO (antes BÁDMINTON): botón home ahora en columna 1 de segunda fila -->
+        <!-- ========== PRIMERA FILA: 9 BOTONES (sin cambios) ========== -->
+        <!-- 1. Inicio (home) -->
         <button class="custom-sport-btn" id="homeBtn" aria-label="Volver al inicio">
             <span class="material-symbols-outlined">home</span>
         </button>
 
-        <!-- Béisbol (columna 2) -->
+        <!-- 2. Fútbol -->
+        <button class="custom-sport-btn" data-sport="soccer" data-path="football.html" aria-label="Fútbol">
+            <span class="material-symbols-outlined">sports_and_outdoors</span>
+        </button>
+
+        <!-- 3. Baloncesto -->
+        <button class="custom-sport-btn" data-sport="basketball" data-path="basketball.html" aria-label="Baloncesto">
+            <span class="material-symbols-outlined">sports_basketball</span>
+        </button>
+
+        <!-- 4. Béisbol -->
         <button class="custom-sport-btn" data-sport="baseball" data-path="baseball.html" aria-label="Béisbol">
             <span class="material-symbols-outlined">sports_baseball</span>
         </button>
 
-        <!-- Voleibol (columna 3) -->
+        <!-- 5. Rugby -->
+        <button class="custom-sport-btn" data-sport="rugby" data-path="rugby.html" aria-label="Rugby">
+            <span class="material-symbols-outlined">sports_rugby</span>
+        </button>
+
+        <!-- 6. Fútbol americano -->
+        <button class="custom-sport-btn" data-sport="american_football" data-path="american-football.html" aria-label="Fútbol americano">
+            <span class="material-symbols-outlined">sports_football</span>
+        </button>
+
+        <!-- 7. Fútbol Australiano -->
+        <button class="custom-sport-btn" data-sport="australian_football" data-path="aussie-rules.html" aria-label="Fútbol Australiano">
+            <span class="material-symbols-outlined">sports_soccer</span>
+        </button>
+
+        <!-- 8. Voleibol -->
         <button class="custom-sport-btn" data-sport="volleyball" data-path="volleyball.html" aria-label="Voleibol">
             <span class="material-symbols-outlined">sports_volleyball</span>
         </button>
 
-        <!-- Lucha (columna 4) -->
-        <button class="custom-sport-btn" data-sport="wrestling" data-path="fighting.html" aria-label="Lucha">
-            <span class="material-symbols-outlined">sports_mma</span>
+        <!-- 9. Motor -->
+        <button class="custom-sport-btn" data-sport="motor" data-path="motorsport.html" aria-label="Motor">
+            <span class="material-symbols-outlined">sports_motorsports</span>
         </button>
 
-        <!-- Ciclismo (columna 5) -->
-        <button class="custom-sport-btn" data-sport="cycling" data-path="cycling.html" aria-label="Ciclismo">
-            <span class="material-symbols-outlined">directions_bike</span>
+        <!-- ========== SEGUNDA FILA: 9 BOTONES con los intercambios ========== -->
+        <!-- 1. Dominio (swap) -->
+        <button class="custom-sport-btn domain-toggle-btn" id="domainToggleBtn" data-sport="domain_toggle" aria-label="Cambiar dominio original/espejo">
+            <span class="material-symbols-outlined">swap_horiz</span>
         </button>
 
-        <!-- Handball (columna 6) -->
-        <button class="custom-sport-btn" data-sport="handball" data-path="handball.html" aria-label="Handball">
-            <span class="material-symbols-outlined">sports_handball</span>
+        <!-- 2. Hockey -->
+        <button class="custom-sport-btn" data-sport="hockey" data-path="hockey.html" aria-label="Hockey">
+            <span class="material-symbols-outlined">sports_hockey</span>
         </button>
 
-        <!-- Otros deportes (columna 7) -->
-        <button class="custom-sport-btn" data-sport="others" data-path="others.html" aria-label="Otros deportes">
-            <span class="material-symbols-outlined">emoji_events</span>
+        <!-- 3. Cricket -->
+        <button class="custom-sport-btn" data-sport="cricket" data-path="cricket.html" aria-label="Cricket">
+            <span class="material-symbols-outlined">sports_cricket</span>
         </button>
 
-        <!-- TENIS (antes BALONCESTO) -->
+        <!-- 4. TENIS (antes fighting/lucha) - intercambiado -->
         <button class="custom-sport-btn" data-sport="tennis" data-path="tennis.html" aria-label="Tenis">
             <span class="material-symbols-outlined">sports_tennis</span>
         </button>
 
-        <!-- BÁDMINTON (antes INICIO) -->
+        <!-- 5. BÁDMINTON (antes ciclismo) - intercambiado -->
         <button class="custom-sport-btn" data-sport="badminton" data-path="badminton.html" aria-label="Bádminton">
             <span class="material-symbols-outlined">badminton</span>
+        </button>
+
+        <!-- 6. Handball -->
+        <button class="custom-sport-btn" data-sport="handball" data-path="handball.html" aria-label="Handball">
+            <span class="material-symbols-outlined">sports_handball</span>
+        </button>
+
+        <!-- 7. CICLISMO (antes bádminton) - intercambiado -->
+        <button class="custom-sport-btn" data-sport="cycling" data-path="cycling.html" aria-label="Ciclismo">
+            <span class="material-symbols-outlined">directions_bike</span>
+        </button>
+
+        <!-- 8. LUCHA / FIGHTING (antes tenis) - intercambiado -->
+        <button class="custom-sport-btn" data-sport="wrestling" data-path="fighting.html" aria-label="Lucha">
+            <span class="material-symbols-outlined">sports_mma</span>
+        </button>
+
+        <!-- 9. Otros deportes -->
+        <button class="custom-sport-btn" data-sport="others" data-path="others.html" aria-label="Otros deportes">
+            <span class="material-symbols-outlined">emoji_events</span>
         </button>
     </div>
 </div>
@@ -417,8 +408,6 @@
     const domainToggleBtn = document.getElementById('domainToggleBtn');
     const headerOverlay = document.getElementById('headerOverlay');
     const homeBtn = document.getElementById('homeBtn');
-    
-    // Todos los botones de deporte (con data-path) excepto domainToggleBtn y homeBtn
     const sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn):not(#homeBtn)');
     
     function loadStream(url) {
@@ -429,41 +418,33 @@
         return currentMode === 'original' ? LINK_ORIGINAL : LINK_MIRROR;
     }
     
-    // Función unificada para actualizar el botón activo (home o deporte)
     function setActiveButton(activeBtn) {
-        // Remover clase active-filter de todos los botones (home + deportes)
         homeBtn.classList.remove('active-filter');
         sportButtons.forEach(btn => btn.classList.remove('active-filter'));
-        // Si hay un botón activo, agregarle la clase
         if (activeBtn) {
             activeBtn.classList.add('active-filter');
         }
     }
     
-    // Navegar a una página de deporte específica
     function navigateToSportPage(path, clickedBtn) {
         const baseUrl = getCurrentBaseUrl();
         let fullUrl = baseUrl;
         if (!fullUrl.endsWith('/')) fullUrl += '/';
         fullUrl += path;
         loadStream(fullUrl);
-        // Actualizar UI: activar el botón de deporte, desactivar home
         setActiveButton(clickedBtn);
         if (navigator.vibrate) navigator.vibrate(15);
         console.log(`[Navegación] Cargando deporte: ${fullUrl}`);
     }
     
-    // Volver a la página principal (home)
     function goToHome() {
         const baseUrl = getCurrentBaseUrl();
         loadStream(baseUrl);
-        // Activar el botón de inicio y desactivar cualquier deporte
         setActiveButton(homeBtn);
         if (navigator.vibrate) navigator.vibrate(15);
         console.log(`[Navegación] Volver al inicio: ${baseUrl}`);
     }
     
-    // Cambiar entre dominio original y espejo (siempre carga la página base)
     function toggleDomainMode() {
         if (currentMode === 'original') {
             currentMode = 'mirror';
@@ -476,14 +457,12 @@
             domainToggleBtn.classList.remove('mode-mirror');
             domainToggleBtn.classList.add('mode-original');
         }
-        // Después de cambiar dominio, aseguramos que estamos en home (UI y estado)
         setActiveButton(homeBtn);
         if (navigator.vibrate) navigator.vibrate(30);
         sessionStorage.setItem('fctv_mode', currentMode);
         console.log(`[Navegación] Dominio cambiado a: ${currentMode === 'original' ? 'ORIGINAL' : 'MIRROR'} (home)`);
     }
     
-    // Inicializar la aplicación: cargar dominio guardado y UI coherente
     function init() {
         const savedMode = sessionStorage.getItem('fctv_mode');
         if (savedMode === 'mirror') {
@@ -497,11 +476,9 @@
             domainToggleBtn.classList.remove('mode-mirror');
             domainToggleBtn.classList.add('mode-original');
         }
-        // Al iniciar estamos en la página base (home), activar visualmente el botón home
         setActiveButton(homeBtn);
     }
     
-    // ========== PULSACIÓN LARGA PARA MODO MINIMALISTA ==========
     let pressTimer = null;
     let isMinimalMode = false;
     
@@ -512,7 +489,7 @@
         } else if (savedOverlayMode === 'full') {
             disableMinimalMode();
         } else {
-            enableMinimalMode(); // Por defecto minimalista
+            enableMinimalMode();
         }
     }
     
@@ -522,7 +499,7 @@
             isMinimalMode = true;
             localStorage.setItem('fctv_overlay_mode', 'minimal');
             if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-            console.log("[UI] Modo minimalista: botón circular flotante");
+            console.log("[UI] Modo minimalista activado");
         }
     }
     
@@ -532,7 +509,7 @@
             isMinimalMode = false;
             localStorage.setItem('fctv_overlay_mode', 'full');
             if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-            console.log("[UI] Modo completo restaurado (9 botones por fila)");
+            console.log("[UI] Modo completo restaurado");
         }
     }
     
@@ -544,7 +521,6 @@
         }
     }
     
-    // Eventos para el botón de dominio: pulsación larga (modo minimalista) / corta (cambio de dominio)
     domainToggleBtn.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
         pressTimer = setTimeout(() => {
@@ -552,7 +528,6 @@
             pressTimer = null;
         }, 500);
     });
-    
     domainToggleBtn.addEventListener('mouseup', (e) => {
         if (pressTimer) {
             clearTimeout(pressTimer);
@@ -560,14 +535,12 @@
             toggleDomainMode();
         }
     });
-    
     domainToggleBtn.addEventListener('mouseleave', () => {
         if (pressTimer) {
             clearTimeout(pressTimer);
             pressTimer = null;
         }
     });
-    
     domainToggleBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         pressTimer = setTimeout(() => {
@@ -575,7 +548,6 @@
             pressTimer = null;
         }, 500);
     });
-    
     domainToggleBtn.addEventListener('touchend', (e) => {
         e.preventDefault();
         if (pressTimer) {
@@ -584,7 +556,6 @@
             toggleDomainMode();
         }
     });
-    
     domainToggleBtn.addEventListener('touchcancel', (e) => {
         if (pressTimer) {
             clearTimeout(pressTimer);
@@ -592,34 +563,27 @@
         }
     });
     
-    // Evento para el botón de inicio (home)
     homeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         goToHome();
     });
     
-    // Eventos para los botones de deportes
     sportButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const path = btn.getAttribute('data-path');
             const isCurrentlyActive = btn.classList.contains('active-filter');
-            
             if (isCurrentlyActive && path) {
-                // Si ya está activo: recargar la página base (home)
                 goToHome();
             } else if (path) {
-                // Navegar al deporte y activar este botón
                 navigateToSportPage(path, btn);
             }
         });
     });
     
-    // Iniciar toda la lógica
     init();
     loadOverlayPreference();
     
-    // Guardar modo actual antes de cerrar
     window.addEventListener('beforeunload', () => {
         sessionStorage.setItem('fctv_mode', currentMode);
     });
