@@ -105,10 +105,10 @@
             font-size: 1.2rem;
         }
 
-        /* ---- AJUSTE: reducir espacio vertical en horizontal (una línea) ---- */
+        /* Modo horizontal (una línea) con espacio vertical reducido y orden intercalado */
         @media (min-width: 1024px) and (orientation: landscape) {
             .custom-header-overlay {
-                padding: 4px 12px;   /* antes 8px 12px, reducido arriba/abajo */
+                padding: 4px 12px;
             }
             .overlay-buttons-grid {
                 display: flex !important;
@@ -117,7 +117,7 @@
                 overflow-x: auto;
                 gap: 8px;
                 justify-content: center;
-                padding: 2px 12px;    /* antes 8px 12px, reducido verticalmente */
+                padding: 2px 12px;
                 width: 100%;
             }
             .overlay-buttons-grid button.custom-sport-btn {
@@ -125,7 +125,7 @@
                 width: auto;
                 min-width: 44px;
                 max-width: 70px;
-                height: 52px;  /* se mantiene el mismo alto */
+                height: 52px;
             }
             .custom-header-overlay.minimal .overlay-buttons-grid {
                 display: flex;
@@ -136,11 +136,11 @@
             .custom-header-overlay.minimal .domain-toggle-btn {
                 width: 44px;
                 height: 44px;
-                margin: 8px auto;  /* ligeramente reducido para consistencia */
+                margin: 8px auto;
             }
         }
 
-        /* Resto de estilos ORIGINALES intactos (dos filas en móvil/vertical) */
+        /* Por defecto (móvil, vertical): dos filas con orden original */
         .overlay-buttons-grid {
             display: grid;
             grid-template-columns: repeat(9, minmax(44px, 1fr));
@@ -150,6 +150,7 @@
             justify-items: center;
             transition: all 0.2s ease;
             margin: 0 auto;
+            padding: 8px 12px;
         }
 
         .overlay-buttons-grid button.custom-sport-btn {
@@ -201,14 +202,14 @@
             font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
         }
 
-        /* Ajustes responsive para móvil (sin cambios) */
         @media (max-width: 640px) {
             .custom-header-overlay {
                 padding: 6px 8px;
             }
             .overlay-buttons-grid {
-                grid-template-columns: repeat(9, minmax(38px, 1fr));
                 gap: 5px;
+                padding: 6px 8px;
+                grid-template-columns: repeat(9, minmax(38px, 1fr));
             }
             .overlay-buttons-grid button.custom-sport-btn {
                 height: 44px;
@@ -223,8 +224,9 @@
                 padding: 5px 6px;
             }
             .overlay-buttons-grid {
-                grid-template-columns: repeat(9, minmax(32px, 1fr));
                 gap: 4px;
+                padding: 5px 6px;
+                grid-template-columns: repeat(9, minmax(32px, 1fr));
             }
             .overlay-buttons-grid button.custom-sport-btn {
                 height: 40px;
@@ -236,8 +238,8 @@
 
         @media (max-width: 380px) {
             .overlay-buttons-grid {
-                grid-template-columns: repeat(9, minmax(28px, 1fr));
                 gap: 3px;
+                grid-template-columns: repeat(9, minmax(28px, 1fr));
             }
             .overlay-buttons-grid button.custom-sport-btn {
                 height: 36px;
@@ -257,7 +259,8 @@
 
 <div class="custom-header-overlay" id="headerOverlay">
     <div class="overlay-buttons-grid" id="customButtonsGrid">
-        <!-- 18 botones: primera fila + segunda fila (intercambios) -->
+        <!-- 18 botones: primera mitad (fila1) + segunda mitad (fila2) -->
+        <!-- FILA 1 (original) -->
         <button class="custom-sport-btn" id="homeBtn" aria-label="Volver al inicio">
             <span class="material-symbols-outlined">home</span>
         </button>
@@ -286,7 +289,7 @@
             <span class="material-symbols-outlined">sports_motorsports</span>
         </button>
 
-        <!-- Segunda fila (swap + intercambios) -->
+        <!-- FILA 2 (original) -->
         <button class="custom-sport-btn domain-toggle-btn" id="domainToggleBtn" data-sport="domain_toggle" aria-label="Cambiar dominio original/espejo">
             <span class="material-symbols-outlined">swap_horiz</span>
         </button>
@@ -342,7 +345,7 @@
     const domainToggleBtn = document.getElementById('domainToggleBtn');
     const headerOverlay = document.getElementById('headerOverlay');
     const homeBtn = document.getElementById('homeBtn');
-    const sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn):not(#homeBtn)');
+    let sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn):not(#homeBtn)');
     
     function loadStream(url) {
         iframe.src = url;
@@ -463,6 +466,53 @@
     init();
     loadOverlayPreference();
     window.addEventListener('beforeunload', () => sessionStorage.setItem('fctv_mode', currentMode));
+
+    // --------------------------------------------------------------
+    // REORDENACIÓN INTERCALADA CORRECTA (alterna fila1 y fila2)
+    // --------------------------------------------------------------
+    const container = document.getElementById('customButtonsGrid');
+    // Guardamos el orden original de los 18 botones (tal cual están en el HTML)
+    const originalOrder = Array.from(container.children);  // lista de nodos
+
+    function interleaveButtons() {
+        // Tomamos los primeros 9 (fila1) y los siguientes 9 (fila2)
+        const firstHalf = originalOrder.slice(0, 9);
+        const secondHalf = originalOrder.slice(9, 18);
+        const interleaved = [];
+        for (let i = 0; i < 9; i++) {
+            interleaved.push(firstHalf[i], secondHalf[i]);
+        }
+        // Vaciamos el contenedor y añadimos en el nuevo orden
+        while (container.firstChild) container.removeChild(container.firstChild);
+        for (let btn of interleaved) {
+            container.appendChild(btn);
+        }
+    }
+
+    function restoreOriginalOrder() {
+        while (container.firstChild) container.removeChild(container.firstChild);
+        for (let btn of originalOrder) {
+            container.appendChild(btn);
+        }
+    }
+
+    function applyOrderByOrientation() {
+        const isLargeLandscape = window.innerWidth >= 1024 && window.matchMedia("(orientation: landscape)").matches;
+        if (isLargeLandscape) {
+            interleaveButtons();
+        } else {
+            restoreOriginalOrder();
+        }
+    }
+
+    // Ejecutar al inicio y cuando cambie tamaño/orientación
+    window.addEventListener('resize', () => {
+        setTimeout(applyOrderByOrientation, 50);
+    });
+    window.addEventListener('orientationchange', () => {
+        setTimeout(applyOrderByOrientation, 50);
+    });
+    applyOrderByOrientation();
 </script>
 
 <script>
