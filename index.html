@@ -297,6 +297,24 @@
             transform: translateX(-50%) scale(0.92);
         }
 
+        /* Ocultar el botón cuando estamos en modo FCTV (solo visible en NTV) */
+        body:not(.ntv-mode) .source-toggle-btn {
+            display: none !important;
+        }
+
+        /* En modo NTV, el botón se pega abajo y un poco más grande */
+        body.ntv-mode .source-toggle-btn {
+            bottom: 0;
+            min-width: 72px;
+            padding: 10px 14px;
+        }
+        body.ntv-mode .source-toggle-btn .material-symbols-outlined {
+            font-size: 1.9rem;
+        }
+        body.ntv-mode .source-toggle-btn .source-label {
+            font-size: 0.9rem;
+        }
+
         /* ---- Botón flotante para cambiar mirror en NTV (múltiples fuentes) - ESQUINA INFERIOR DERECHA (cuadrado) ---- */
         #ntvMirrorToggleBtn {
             position: fixed;
@@ -339,18 +357,7 @@
             display: none !important;
         }
 
-        /* ---- NUEVO: botones pegados abajo y UN POCO MÁS GRANDES en modo NTV (tamaño moderado) ---- */
-        body.ntv-mode .source-toggle-btn {
-            bottom: 0;
-            min-width: 72px;
-            padding: 10px 14px;
-        }
-        body.ntv-mode .source-toggle-btn .material-symbols-outlined {
-            font-size: 1.9rem;
-        }
-        body.ntv-mode .source-toggle-btn .source-label {
-            font-size: 0.9rem;
-        }
+        /* Ajustes para modo NTV: botón de mirror pegado abajo */
         body.ntv-mode #ntvMirrorToggleBtn {
             bottom: 0;
             width: 68px;
@@ -363,7 +370,7 @@
             font-size: 1.1rem;
         }
 
-        /* Ajustes para pantallas muy pequeñas (también en modo NTV) con incremento moderado */
+        /* Ajustes para pantallas muy pequeñas */
         @media (max-width: 480px) {
             .source-toggle-btn {
                 min-width: 56px;
@@ -467,9 +474,10 @@
 </div>
 
 <!-- Botón flotante con ícono y etiqueta para cambiar entre FCTV y NTV (centro inferior) -->
+<!-- Solo visible en modo NTV, y su función es volver a FCTV -->
 <button id="sourceToggleBtn" class="source-toggle-btn">
     <span class="material-symbols-outlined">autorenew</span>
-    <span class="source-label">FCTV</span>
+    <span class="source-label">NTV</span>
 </button>
 
 <!-- Botón flotante para cambiar mirror en NTV (esquina inferior derecha) - cuadrado -->
@@ -614,7 +622,6 @@
 
     function updateNtvButtonLabel() {
         ntvIndexLabel.textContent = ntvIndex + 1;
-        // Mantener siempre el mismo estilo (sin clase extra)
     }
 
     // ---- Navegación ----
@@ -681,22 +688,26 @@
         currentSource = source;
         localStorage.setItem('fctv_source', source);
 
-        // Añadir o quitar clase 'ntv-mode' en el body para pegar botones abajo
+        // Añadir o quitar clase 'ntv-mode' en el body
         if (source === 'ntv') {
             document.body.classList.add('ntv-mode');
-        } else {
-            document.body.classList.remove('ntv-mode');
-        }
-
-        if (source === 'ntv') {
+            // Mostrar el botón flotante con etiqueta "NTV"
+            sourceToggleBtn.style.display = 'flex';
             sourceLabel.textContent = 'NTV';
+            // Ocultar overlay de deportes
             headerOverlay.classList.add('hidden');
+            // Mostrar botón de mirror NTV
             ntvMirrorToggleBtn.style.display = 'flex';
             updateNtvButtonLabel();
         } else {
-            sourceLabel.textContent = 'FCTV';
+            document.body.classList.remove('ntv-mode');
+            // Ocultar el botón flotante (porque estamos en FCTV)
+            sourceToggleBtn.style.display = 'none';
+            // Mostrar overlay de deportes
             headerOverlay.classList.remove('hidden');
+            // Ocultar botón de mirror NTV
             ntvMirrorToggleBtn.style.display = 'none';
+            // Restaurar minimal si procede
             if (isMinimalMode) {
                 headerOverlay.classList.add('minimal');
             } else {
@@ -707,11 +718,6 @@
         loadStream(getCurrentBaseUrl());
         setActiveButton(null);
         if (navigator.vibrate) navigator.vibrate(20);
-    }
-
-    function toggleSource() {
-        const next = (currentSource === 'fctv') ? 'ntv' : 'fctv';
-        setSource(next);
     }
 
     // ---- Modo minimal (solo para FCTV) ----
@@ -760,18 +766,29 @@
     // ---- Inicialización ----
     function init() {
         const savedSource = localStorage.getItem('fctv_source');
-        if (savedSource === 'ntv') {
-            currentSource = 'ntv';
+        // Forzamos a fctv si no hay guardado
+        const initialSource = (savedSource === 'ntv') ? 'ntv' : 'fctv';
+        // Llamamos a setSource para que configure todo, pero evitamos la doble carga
+        // Como setSource hace loadStream, lo llamamos directamente.
+        currentSource = initialSource;
+        localStorage.setItem('fctv_source', currentSource);
+        // Configurar DOM según el estado inicial sin recargar dos veces
+        if (currentSource === 'ntv') {
+            document.body.classList.add('ntv-mode');
+            sourceToggleBtn.style.display = 'flex';
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
-            document.body.classList.add('ntv-mode');
         } else {
-            currentSource = 'fctv';
-            sourceLabel.textContent = 'FCTV';
+            document.body.classList.remove('ntv-mode');
+            sourceToggleBtn.style.display = 'none';
             headerOverlay.classList.remove('hidden');
             ntvMirrorToggleBtn.style.display = 'none';
-            document.body.classList.remove('ntv-mode');
+            if (isMinimalMode) {
+                headerOverlay.classList.add('minimal');
+            } else {
+                headerOverlay.classList.remove('minimal');
+            }
         }
 
         const savedMode = sessionStorage.getItem('fctv_mode');
@@ -794,7 +811,10 @@
         }
         updateNtvButtonLabel();
 
+        // Cargar la URL correspondiente
         loadStream(getCurrentBaseUrl());
+
+        // Cargar preferencia de overlay
         loadOverlayPreference();
 
         if (currentSource === 'fctv') setActiveButton(homeBtn);
@@ -802,7 +822,14 @@
     }
 
     // ---- Eventos ----
-    sourceToggleBtn.addEventListener('click', toggleSource);
+    // Botón flotante: en modo NTV, al hacer clic vuelve a FCTV
+    sourceToggleBtn.addEventListener('click', () => {
+        if (currentSource === 'ntv') {
+            setSource('fctv');
+        }
+        // Nunca está visible en FCTV, así que no hay otra opción
+    });
+
     ntvMirrorToggleBtn.addEventListener('click', cycleNtvMirror);
 
     let pressTimer = null;
@@ -818,7 +845,17 @@
     domainToggleBtn.addEventListener('touchend', (e) => { e.preventDefault(); if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; toggleDomainMode(); } });
     domainToggleBtn.addEventListener('touchcancel', () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } });
 
-    homeBtn.addEventListener('click', (e) => { e.stopPropagation(); goToHome(); });
+    // ---- COMPORTAMIENTO DEL BOTÓN INICIO ----
+    homeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentSource === 'fctv') {
+            // En modo FCTV, cambia directamente a NTV
+            setSource('ntv');
+        } else {
+            // En modo NTV, recarga la URL base de NTV
+            goToHome();
+        }
+    });
 
     sportButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
