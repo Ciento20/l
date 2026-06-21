@@ -112,7 +112,6 @@
             width: auto;
             gap: 0;
         }
-        /* Ocultar todos los botones excepto mirror y el nuevo ntvMinimalBtn en modo minimal */
         .custom-header-overlay.minimal .overlay-buttons-grid button:not(#domainToggleBtn):not(#ntvMinimalBtn) {
             display: none;
         }
@@ -133,7 +132,7 @@
             position: relative;
         }
         .custom-header-overlay.minimal #ntvMinimalBtn {
-            margin-right: 6px; /* separación entre los dos botones */
+            margin-right: 6px;
         }
         .custom-header-overlay.minimal .domain-toggle-btn.mode-mirror {
             background: #fbbd14;
@@ -151,7 +150,6 @@
             font-size: 9px;
         }
 
-        /* Ocultar el nuevo botón en modo normal */
         #ntvMinimalBtn {
             display: none;
         }
@@ -269,7 +267,6 @@
             .mirror-badge { min-width: 12px; height: 12px; font-size: 7px; }
         }
 
-        /* Botón flotante NTV (izquierda) - base */
         .source-toggle-btn {
             position: fixed;
             bottom: 24px;
@@ -313,7 +310,6 @@
         }
         body:not(.ntv-mode) .source-toggle-btn { display: none !important; }
 
-        /* Estilos en modo NTV: circular, 64px, sin borde, a 4px del borde, con separación extra */
         body.ntv-mode .source-toggle-btn {
             bottom: 1px;
             min-width: unset;
@@ -321,7 +317,7 @@
             height: 65px;
             border-radius: 50%;
             padding: 0;
-            gap: 10px; /* más separación entre icono y texto */
+            gap: 10px;
             transform: translateX(-50%);
             background: #100f15;
             border: none;
@@ -336,7 +332,6 @@
             line-height: 1;
         }
 
-        /* Botón flotante mirror (derecha) - base */
         #ntvMirrorToggleBtn {
             position: fixed;
             bottom: 24px;
@@ -372,7 +367,6 @@
         #ntvMirrorToggleBtn:active { transform: scale(0.92); }
         .custom-header-overlay.hidden { display: none !important; }
 
-        /* Estilos en modo NTV: circular, 60px, sin borde, a 4px del borde */
         body.ntv-mode #ntvMirrorToggleBtn {
             bottom: 1px;
             width: 65px;
@@ -392,7 +386,6 @@
             margin: 0;
         }
 
-        /* Responsive para los botones flotantes */
         @media (max-width: 480px) {
             .source-toggle-btn { min-width: 56px; padding: 6px 10px; bottom: 20px; }
             .source-toggle-btn .material-symbols-outlined { font-size: 1.5rem; }
@@ -454,23 +447,57 @@
             #urlDisplay { bottom: 70px; font-size: 10px; }
         }
 
-        /* NTV Bottom Bar */
+        /* NTV Bottom Bar - Tamaño fijo y estable */
         .ntv-bottom-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             background: #100f15;
-            border-top: 1px solid #343a50;
+            border-top: none;
             display: none;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 0;
+            padding: 4px 0;
             z-index: 10005;
+            height: 56px;
+            overflow: hidden;
         }
         body.ntv-mode .ntv-bottom-bar.visible {
-            display: flex;
+            display: block;
         }
+
+        .ntv-bar-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+        .ntv-bar-original,
+        .ntv-bar-submenu {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.2s ease;
+        }
+        .ntv-bar-submenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .ntv-bottom-bar.submenu-active .ntv-bar-original {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .ntv-bottom-bar.submenu-active .ntv-bar-submenu {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .ntv-bar-btn {
             background: transparent;
             border: none;
@@ -478,36 +505,41 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             font-family: system-ui, sans-serif;
             cursor: pointer;
             transition: transform 0.2s;
+            flex: 1;
+            max-width: 70px;
+            padding: 2px 0;
+            font-size: 0.7rem;
         }
         .ntv-bar-btn:active {
             transform: scale(0.92);
         }
         .ntv-bar-btn .material-symbols-outlined {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
+        }
+        .ntv-bar-btn span:not(.material-symbols-outlined) {
+            font-size: 0.7rem;
+            font-weight: bold;
         }
         .ntv-bar-btn.active-kobra {
             color: #fbbd14;
         }
-        .ntv-bar-btn span:not(.material-symbols-outlined) {
-            font-size: 0.75rem;
-            font-weight: bold;
+        .ntv-bar-btn.active-channels {
+            color: #fbbd14;
         }
-        /* Ocultar botones base cuando la barra es visible */
+        .ntv-bar-btn.active-favorites {
+            color: #fbbd14;
+        }
         body.ntv-mode.bar-active .source-toggle-btn,
         body.ntv-mode.bar-active #ntvMirrorToggleBtn {
             display: none !important;
         }
 
-        /* --------------------------------------------------------------
-           NUEVO: En pantallas horizontales (tablet, escritorio) los
-           botones flotantes y la barra inferior se muestran ARRIBA
-        -------------------------------------------------------------- */
+        /* Landscape: barra arriba, sin borde */
         @media (orientation: landscape) and (min-width: 768px) {
-            /* Botón NTV (izquierda) */
             .source-toggle-btn {
                 top: 10px !important;
                 bottom: auto !important;
@@ -519,7 +551,6 @@
                 bottom: auto !important;
             }
 
-            /* Botón mirror NTV (derecha) */
             #ntvMirrorToggleBtn {
                 top: 10px !important;
                 bottom: auto !important;
@@ -530,16 +561,15 @@
                 bottom: auto !important;
             }
 
-            /* Barra inferior NTV */
             .ntv-bottom-bar {
                 top: 0 !important;
                 bottom: auto !important;
-                border-top: 1px solid #343a50 !important;
+                border-top: none !important;
                 border-bottom: none !important;
-                padding: 6px 0 !important;
+                padding: 4px 0 !important;
+                height: 50px !important;
             }
 
-            /* Ajuste de la URL display (opcional, la dejamos abajo) */
             #urlDisplay {
                 bottom: 20px;
             }
@@ -548,7 +578,6 @@
             }
         }
 
-        /* Ajuste fino para pantallas muy grandes */
         @media (orientation: landscape) and (min-width: 1200px) {
             .source-toggle-btn {
                 top: 16px !important;
@@ -558,7 +587,8 @@
                 right: 30px !important;
             }
             .ntv-bottom-bar {
-                padding: 10px 0 !important;
+                padding: 6px 0 !important;
+                height: 56px !important;
             }
         }
     </style>
@@ -582,26 +612,58 @@
 </button>
 
 <div id="ntvBottomBar" class="ntv-bottom-bar">
-    <button class="ntv-bar-btn active-kobra" data-action="kobra">
-        <span class="material-symbols-outlined">dns</span>
-        <span>KOBRA</span>
-    </button>
-    <button class="ntv-bar-btn" data-action="channels">
-        <span class="material-symbols-outlined">tv</span>
-        <span>Channels</span>
-    </button>
-    <button class="ntv-bar-btn" data-action="ntv">
-        <span class="material-symbols-outlined">language</span>
-        <span>NTV</span>
-    </button>
-    <button class="ntv-bar-btn" data-action="favorites">
-        <span class="material-symbols-outlined">favorite</span>
-        <span>Favorites</span>
-    </button>
-    <button class="ntv-bar-btn" id="ntvBarMirrorBtn">
-        <span class="material-symbols-outlined">linear_scale</span>
-        <span class="ntv-index-label" id="ntvBarIndexLabel">1</span>
-    </button>
+    <div class="ntv-bar-content">
+        <!-- Botones originales -->
+        <div class="ntv-bar-original" id="ntvBarOriginal">
+            <button class="ntv-bar-btn active-kobra" data-action="kobra">
+                <span class="material-symbols-outlined">dns</span>
+                <span>KOBRA</span>
+            </button>
+            <button class="ntv-bar-btn" data-action="channels">
+                <span class="material-symbols-outlined">tv</span>
+                <span>Channels</span>
+            </button>
+            <button class="ntv-bar-btn" data-action="ntv">
+                <span class="material-symbols-outlined">language</span>
+                <span>NTV</span>
+            </button>
+            <button class="ntv-bar-btn" data-action="favorites">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Favorites</span>
+            </button>
+            <button class="ntv-bar-btn" id="ntvBarMirrorBtn">
+                <span class="material-symbols-outlined">linear_scale</span>
+                <span class="ntv-index-label" id="ntvBarIndexLabel">1</span>
+            </button>
+        </div>
+        <!-- Submenú de Kobra -->
+        <div class="ntv-bar-submenu" id="ntvKobraSubmenu">
+            <button class="ntv-bar-btn" data-extension="/matches/kobra">
+                <span class="material-symbols-outlined">dns</span>
+                <span>Kobra</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/raptor">
+                <span class="material-symbols-outlined">dns</span>
+                <span>Raptor</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/falcon">
+                <span class="material-symbols-outlined">dns</span>
+                <span>Falcon</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/phoenix">
+                <span class="material-symbols-outlined">dns</span>
+                <span>Phoenix</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/titan">
+                <span class="material-symbols-outlined">dns</span>
+                <span>Titan</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/viper">
+                <span class="material-symbols-outlined">dns</span>
+                <span>Viper</span>
+            </button>
+        </div>
+    </div>
 </div>
 
 <div class="custom-header-overlay" id="headerOverlay">
@@ -634,7 +696,6 @@
             <span class="material-symbols-outlined">sports_motorsports</span>
         </button>
 
-        <!-- Nuevo botón para cambiar a NTV en modo minimal -->
         <button class="custom-sport-btn" id="ntvMinimalBtn" aria-label="Cambiar a NTV">
             <span class="material-symbols-outlined">language</span>
         </button>
@@ -710,6 +771,8 @@
     const ntvIndexLabel = ntvMirrorToggleBtn.querySelector('.ntv-index-label');
     const ntvMinimalBtn = document.getElementById('ntvMinimalBtn');
     let sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn):not(#homeBtn):not(#ntvMinimalBtn)');
+    const ntvBottomBar = document.getElementById('ntvBottomBar');
+    const ntvBarMirrorBtn = document.getElementById('ntvBarMirrorBtn');
 
     // ---- Utilidades ----
     function updateUrlDisplay(url) {
@@ -833,7 +896,9 @@
         homeBtn.classList.remove('active-filter');
         sportButtons.forEach(btn => btn.classList.remove('active-filter'));
         if (activeBtn) activeBtn.classList.add('active-filter');
-    }    function updateNtvButtonLabel() {
+    }
+
+    function updateNtvButtonLabel() {
         const total = ntvMirrors.length || 0;
         const val = total > 0 ? (ntvIndex % total) + 1 : '0';
         ntvIndexLabel.textContent = val;
@@ -844,7 +909,7 @@
     function updateMirrorBadge() {
         const total = fctvMirrors.length;
         if (total > 0) {
-            mirrorBadge.textContent = (fctvIndex % total) + 1 + '/' + total;
+            mirrorBadge.textContent = (fctvIndex % total) + 1;
             mirrorBadge.style.display = 'flex';
         } else {
             mirrorBadge.textContent = '0';
@@ -889,6 +954,47 @@
         setActiveButton(homeBtn);
     }
 
+    // ---- Navegación NTV con extensiones ----
+    function navigateNtvExtension(extension) {
+        if (currentSource !== 'ntv') return;
+        const baseUrl = getCurrentNtvUrl();
+        if (!baseUrl) {
+            loadStream(null);
+            return;
+        }
+        let url = baseUrl;
+        if (extension) {
+            url = baseUrl.replace(/\/+$/, '') + extension;
+        }
+        loadStream(url);
+        setActiveNtvButton(extension);
+        if (navigator.vibrate) navigator.vibrate(15);
+    }
+
+    function setActiveNtvButton(extension) {
+        document.querySelectorAll('.ntv-bar-btn').forEach(btn => {
+            btn.classList.remove('active-kobra', 'active-channels', 'active-favorites');
+        });
+        let action = 'kobra';
+        if (extension === '/channels') action = 'channels';
+        else if (extension === '/favorites') action = 'favorites';
+        else if (extension && extension.startsWith('/matches/')) action = 'kobra'; // todos los matches van a Kobra
+        const btn = document.querySelector(`.ntv-bar-btn[data-action="${action}"]`);
+        if (btn) btn.classList.add(`active-${action}`);
+    }
+
+    // ---- Kobra Submenu Toggle ----
+    function toggleKobraSubmenu() {
+        ntvBottomBar.classList.toggle('submenu-active');
+        if (ntvBottomBar.classList.contains('submenu-active')) {
+            // Aseguramos que el botón Kobra original esté activo
+            document.querySelector('.ntv-bar-btn[data-action="kobra"]')?.classList.add('active-kobra');
+        } else {
+            setActiveNtvButton('');
+        }
+    }
+
+    // ---- Cambiar mirror NTV (reinicia a la base, sin extensión) ----
     async function toggleNtvMirror() {
         if (currentSource !== 'ntv') return;
         if (ntvMirrors.length === 0) {
@@ -901,10 +1007,19 @@
         }
         ntvIndex = (ntvIndex + 1) % ntvMirrors.length;
         loadStream(getCurrentNtvUrl());
+        setActiveNtvButton('');
         updateNtvButtonLabel();
         localStorage.setItem('ntv_index', String(ntvIndex));
         if (navigator.vibrate) navigator.vibrate(30);
-        setActiveButton(null);
+        const kobraBtn = document.querySelector('.ntv-bar-btn[data-action="kobra"]');
+        if (kobraBtn) {
+            document.querySelectorAll('.ntv-bar-btn').forEach(b => b.classList.remove('active-kobra', 'active-channels', 'active-favorites'));
+            kobraBtn.classList.add('active-kobra');
+        }
+        // Si el submenú estaba abierto, lo cerramos
+        if (ntvBottomBar.classList.contains('submenu-active')) {
+            ntvBottomBar.classList.remove('submenu-active');
+        }
     }
 
     async function toggleSource() {
@@ -916,7 +1031,12 @@
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
+            document.body.classList.add('bar-active');
+            ntvBottomBar.classList.add('visible');
             updateNtvButtonLabel();
+            setActiveNtvButton('');
+            // Cerrar submenú por si acaso
+            ntvBottomBar.classList.remove('submenu-active');
         } else {
             currentSource = 'fctv';
             if (fctvMirrors.length === 0) await refreshFctvMirrors();
@@ -925,6 +1045,9 @@
             sourceLabel.textContent = 'FCTV';
             headerOverlay.classList.remove('hidden');
             ntvMirrorToggleBtn.style.display = 'none';
+            document.body.classList.remove('bar-active');
+            ntvBottomBar.classList.remove('visible');
+            ntvBottomBar.classList.remove('submenu-active');
             updateDomainToggleButton();
             if (isMinimalMode) headerOverlay.classList.add('minimal');
             else headerOverlay.classList.remove('minimal');
@@ -943,6 +1066,10 @@
             setActiveButton(null);
         }
         if (navigator.vibrate) navigator.vibrate(15);
+        // Si submenú abierto, cerrar
+        if (ntvBottomBar.classList.contains('submenu-active')) {
+            ntvBottomBar.classList.remove('submenu-active');
+        }
     }
 
     function navigateToSportPage(path, clickedBtn) {
@@ -1011,14 +1138,21 @@
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
+            document.body.classList.add('bar-active');
+            ntvBottomBar.classList.add('visible');
             if (ntvMirrors.length === 0) await refreshNtvMirrors();
             loadStream(getCurrentNtvUrl());
             updateNtvButtonLabel();
+            setActiveNtvButton('');
+            ntvBottomBar.classList.remove('submenu-active');
         } else {
             document.body.classList.remove('ntv-mode');
             sourceLabel.textContent = 'FCTV';
             headerOverlay.classList.remove('hidden');
             ntvMirrorToggleBtn.style.display = 'none';
+            document.body.classList.remove('bar-active');
+            ntvBottomBar.classList.remove('visible');
+            ntvBottomBar.classList.remove('submenu-active');
             if (fctvMirrors.length === 0) await refreshFctvMirrors();
             loadStream(getCurrentFctvUrl());
             updateDomainToggleButton();
@@ -1034,7 +1168,6 @@
     let isLongPress = false;
 
     // ---- Eventos ----
-    // Evento click del botón mirror (cambia mirror) - con comprobación de long press
     domainToggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (isLongPress) {
@@ -1045,7 +1178,6 @@
         toggleFctvMirror();
     });
 
-    // Doble clic en mirror para refrescar
     domainToggleBtn.addEventListener('dblclick', async (e) => {
         e.stopPropagation();
         if (currentSource === 'fctv') {
@@ -1058,7 +1190,6 @@
         }
     });
 
-    // ---- Long press en mirror para alternar modo minimal ----
     function startLongPress(e) {
         if (currentSource !== 'fctv') return;
         isLongPress = false;
@@ -1090,8 +1221,6 @@
     domainToggleBtn.addEventListener('touchend', endLongPress, { passive: false });
     domainToggleBtn.addEventListener('touchcancel', cancelLongPress, { passive: false });
 
-    // ---- Eventos de los botones ----
-    // Botón ntvMinimalBtn (cambiar a NTV)
     ntvMinimalBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (currentSource === 'fctv') {
@@ -1099,7 +1228,6 @@
         }
     });
 
-    // Home button: al hacer clic cambia de fuente (FCTV/NTV) o vuelve a home
     homeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (currentSource === 'fctv') {
@@ -1109,7 +1237,6 @@
         }
     });
 
-    // Botones de deportes
     sportButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1128,17 +1255,17 @@
     let ntvBarLongPressTimer = null;
     let ntvBarIsLongPress = false;
 
-    const ntvBottomBar = document.getElementById('ntvBottomBar');
-    const ntvBarMirrorBtn = document.getElementById('ntvBarMirrorBtn');
-
     function toggleNtvBottomBar() {
         if (currentSource !== 'ntv') return;
         document.body.classList.toggle('bar-active');
         ntvBottomBar.classList.toggle('visible');
         if (navigator.vibrate) navigator.vibrate([50,30,50]);
+        // Si se oculta la barra, cerrar submenú
+        if (!ntvBottomBar.classList.contains('visible')) {
+            ntvBottomBar.classList.remove('submenu-active');
+        }
     }
 
-    // ---- Long press en el botón mirror flotante (para toggle barra) ----
     ntvMirrorToggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (ntvIsLongPress) {
@@ -1181,13 +1308,12 @@
         if (currentSource === 'ntv') {
             await refreshNtvMirrors();
             loadStream(getCurrentNtvUrl());
+            setActiveNtvButton('');
             if (navigator.vibrate) navigator.vibrate([50,30,50]);
         }
     });
 
-    // ---- Long press en el botón mirror de la barra inferior (cierra la barra) ----
     if (ntvBarMirrorBtn) {
-        // Click normal: cambia de mirror, pero solo si no es long press
         ntvBarMirrorBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (ntvBarIsLongPress) {
@@ -1195,26 +1321,28 @@
                 e.preventDefault();
                 return;
             }
+            // Si submenú abierto, cerrar antes de cambiar mirror
+            if (ntvBottomBar.classList.contains('submenu-active')) {
+                ntvBottomBar.classList.remove('submenu-active');
+            }
             toggleNtvMirror();
         });
 
-        // Doble clic: refresca mirrors
         ntvBarMirrorBtn.addEventListener('dblclick', async (e) => {
             e.stopPropagation();
             if (currentSource === 'ntv') {
                 await refreshNtvMirrors();
                 loadStream(getCurrentNtvUrl());
+                setActiveNtvButton('');
                 if (navigator.vibrate) navigator.vibrate([50,30,50]);
             }
         });
 
-        // Long press: cierra la barra (toggle)
         function startNtvBarLongPress(e) {
             if (currentSource !== 'ntv') return;
             ntvBarIsLongPress = false;
             ntvBarLongPressTimer = setTimeout(() => {
                 ntvBarIsLongPress = true;
-                // Si la barra está visible, la ocultamos (toggle)
                 toggleNtvBottomBar();
                 e.preventDefault();
             }, 500);
@@ -1240,17 +1368,53 @@
         ntvBarMirrorBtn.addEventListener('touchcancel', cancelNtvBarLongPress, { passive: false });
     }
 
-    // ---- Botones de la barra (KOBRA, Channels, NTV, Favorites) ----
+    // ---- Eventos para botones de la barra NTV (Kobra, Channels, Favorites, NTV) ----
     document.querySelectorAll('.ntv-bar-btn[data-action]').forEach(btn => {
         btn.addEventListener('click', () => {
             if (navigator.vibrate) navigator.vibrate(15);
-            if (btn.dataset.action === 'ntv') {
-                // El botón NTV cierra la barra y cambia la fuente (su función original)
-                document.body.classList.remove('bar-active');
-                ntvBottomBar.classList.remove('visible');
-                toggleSource();
+            const action = btn.dataset.action;
+            const bar = document.getElementById('ntvBottomBar');
+            // Si el submenú está activo y no es el botón Kobra, cerrar submenú
+            if (bar.classList.contains('submenu-active') && action !== 'kobra') {
+                bar.classList.remove('submenu-active');
+                // Si es NTV, cambiar fuente y salir
+                if (action === 'ntv') {
+                    toggleSource();
+                    return;
+                }
+                // Para los demás, continuar con la acción
             }
-            // KOBRA, Channels y Favorites se mantienen sin cerrar la barra.
+            if (action === 'ntv') {
+                toggleSource();
+                return;
+            }
+            if (currentSource !== 'ntv') return;
+            if (action === 'kobra') {
+                // Toggle submenu
+                toggleKobraSubmenu();
+                return;
+            }
+            let extension = '';
+            if (action === 'channels') extension = '/channels';
+            else if (action === 'favorites') extension = '/favorites';
+            else return;
+            navigateNtvExtension(extension);
+        });
+    });
+
+    // ---- Eventos para los botones del submenú ----
+    document.querySelectorAll('.ntv-bar-submenu .ntv-bar-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const ext = btn.dataset.extension;
+            if (ext) {
+                navigateNtvExtension(ext);
+                // Cerrar submenú
+                document.getElementById('ntvBottomBar').classList.remove('submenu-active');
+                // Activar Kobra en la barra original
+                setActiveNtvButton('');
+                if (navigator.vibrate) navigator.vibrate(15);
+            }
         });
     });
 
@@ -1261,20 +1425,6 @@
     const originalOrder = Array.from(container.children);
 
     function interleaveButtons() {
-        // Como hemos agregado un botón extra (ntvMinimalBtn) en la posición 9,
-        // ahora la primera mitad son los 10 primeros (0-9) y la segunda mitad los 10 restantes (10-19)
-        // pero solo hay 20 botones en total (contando home, 18 deportes, mirror y ntvMinimalBtn)
-        // Realmente el orden original es: 0 home, 1 soccer, 2 basketball, 3 baseball, 4 rugby,
-        // 5 american_football, 6 australian_football, 7 volleyball, 8 motor,
-        // 9 ntvMinimalBtn, 10 domainToggleBtn, 11 hockey, 12 cricket, 13 tennis,
-        // 14 badminton, 15 handball, 16 cycling, 17 wrestling, 18 others.
-        // Son 19 botones. Para intercalar, dividimos en dos mitades: primera mitad 0-9 (10 botones) y segunda 10-18 (9 botones)
-        // Para mantener el orden deseado (que ntvMinimalBtn y domainToggleBtn queden juntos en el centro),
-        // es mejor no intercalar o hacerlo de forma que esos dos queden juntos.
-        // Como el usuario quiere que en modo minimal estén juntos, podemos no intercalar o intercalar manteniendo juntos.
-        // Para simplicidad, optamos por no intercalar en este caso, o mantener el orden original.
-        // Sin embargo, el código original intercalaba, así que lo mantendremos pero ajustando las mitades.
-        // Dividimos en dos grupos: del 0 al 9 (10 elementos) y del 10 al 18 (9 elementos).
         const firstHalf = originalOrder.slice(0, 10);
         const secondHalf = originalOrder.slice(10, 19);
         const interleaved = [];
