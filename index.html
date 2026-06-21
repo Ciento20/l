@@ -793,8 +793,19 @@
     // ---- Extracción con Jina AI (SIN FILTROS DE VALIDACIÓN) ----
     async function fetchUrlsFromSource(sourceUrl, sourceLabel) {
         try {
-            console.log(`[${sourceLabel}] Extrayendo de ${sourceUrl}...`);
-            const response = await fetch(`https://r.jina.ai/${sourceUrl}`);
+            // DECISIÓN: usar proxy CORS solo para NTV en GitHub Pages
+            let urlToFetch;
+            const isGithubPages = window.location.hostname.includes('github.io');
+            if (sourceLabel === 'ntv' && isGithubPages) {
+                // Usamos allorigins.win como proxy para evitar CORS
+                urlToFetch = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://r.jina.ai/' + sourceUrl)}`;
+                console.log(`[${sourceLabel}] Usando proxy CORS para extraer: ${urlToFetch}`);
+            } else {
+                urlToFetch = `https://r.jina.ai/${sourceUrl}`;
+                console.log(`[${sourceLabel}] Extrayendo directamente: ${urlToFetch}`);
+            }
+
+            const response = await fetch(urlToFetch);
             if (!response.ok) throw new Error("Jina AI error: " + response.status);
             const text = await response.text();
             
