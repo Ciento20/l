@@ -89,7 +89,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            background: #141821;
+            background: #100f15;
             z-index: 9998;
             border-bottom: 1px solid #f59e0b;
             pointer-events: auto;
@@ -269,6 +269,7 @@
             .mirror-badge { min-width: 12px; height: 12px; font-size: 7px; }
         }
 
+        /* Botón flotante NTV (izquierda) - base */
         .source-toggle-btn {
             position: fixed;
             bottom: 24px;
@@ -311,14 +312,31 @@
             transform: translateX(-50%) scale(0.92);
         }
         body:not(.ntv-mode) .source-toggle-btn { display: none !important; }
-        body.ntv-mode .source-toggle-btn {
-            bottom: 0;
-            min-width: 72px;
-            padding: 10px 14px;
-        }
-        body.ntv-mode .source-toggle-btn .material-symbols-outlined { font-size: 1.9rem; }
-        body.ntv-mode .source-toggle-btn .source-label { font-size: 0.9rem; }
 
+        /* Estilos en modo NTV: circular, 64px, sin borde, a 4px del borde, con separación extra */
+        body.ntv-mode .source-toggle-btn {
+            bottom: 1px;
+            min-width: unset;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            padding: 0;
+            gap: 10px; /* más separación entre icono y texto */
+            transform: translateX(-50%);
+            background: #100f15;
+            border: none;
+            box-shadow: none;
+        }
+        body.ntv-mode .source-toggle-btn .material-symbols-outlined {
+            font-size: 1.8rem;
+        }
+        body.ntv-mode .source-toggle-btn .source-label {
+            font-size: 0.75rem;
+            margin-top: 0;
+            line-height: 1;
+        }
+
+        /* Botón flotante mirror (derecha) - base */
         #ntvMirrorToggleBtn {
             position: fixed;
             bottom: 24px;
@@ -353,14 +371,28 @@
         }
         #ntvMirrorToggleBtn:active { transform: scale(0.92); }
         .custom-header-overlay.hidden { display: none !important; }
-        body.ntv-mode #ntvMirrorToggleBtn {
-            bottom: 0;
-            width: 68px;
-            height: 68px;
-        }
-        body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.9rem; }
-        body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label { font-size: 1.1rem; }
 
+        /* Estilos en modo NTV: circular, 60px, sin borde, a 4px del borde */
+        body.ntv-mode #ntvMirrorToggleBtn {
+            bottom: 1px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            padding: 0;
+            gap: 5;
+            background: #100f15;
+            border: none;
+            box-shadow: none;
+        }
+        body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined {
+            font-size: 1.7rem;
+        }
+        body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label {
+            font-size: 1.05rem;
+            margin: 0;
+        }
+
+        /* Responsive para los botones flotantes */
         @media (max-width: 480px) {
             .source-toggle-btn { min-width: 56px; padding: 6px 10px; bottom: 20px; }
             .source-toggle-btn .material-symbols-outlined { font-size: 1.5rem; }
@@ -368,12 +400,23 @@
             #ntvMirrorToggleBtn { width: 52px; height: 52px; bottom: 20px; right: 16px; }
             #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.5rem; }
             #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.9rem; }
-            body.ntv-mode .source-toggle-btn { min-width: 64px; padding: 8px 12px; bottom: 0; }
-            body.ntv-mode .source-toggle-btn .material-symbols-outlined { font-size: 1.7rem; }
-            body.ntv-mode .source-toggle-btn .source-label { font-size: 0.8rem; }
-            body.ntv-mode #ntvMirrorToggleBtn { width: 60px; height: 60px; bottom: 0; }
-            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.7rem; }
-            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label { font-size: 1rem; }
+
+            body.ntv-mode .source-toggle-btn {
+                bottom: 4px;
+                width: 56px;
+                height: 56px;
+                gap: 4px;
+            }
+            body.ntv-mode .source-toggle-btn .material-symbols-outlined { font-size: 1.6rem; }
+            body.ntv-mode .source-toggle-btn .source-label { font-size: 0.7rem; }
+
+            body.ntv-mode #ntvMirrorToggleBtn {
+                bottom: 4px;
+                width: 52px;
+                height: 52px;
+            }
+            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.5rem; }
+            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.95rem; }
         }
         @media (max-width: 380px) {
             .source-toggle-btn { min-width: 48px; padding: 5px 8px; bottom: 16px; }
@@ -382,12 +425,23 @@
             #ntvMirrorToggleBtn { width: 44px; height: 44px; bottom: 16px; right: 12px; }
             #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.3rem; }
             #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.8rem; }
-            body.ntv-mode .source-toggle-btn { min-width: 56px; padding: 6px 10px; bottom: 0; }
-            body.ntv-mode .source-toggle-btn .material-symbols-outlined { font-size: 1.5rem; }
-            body.ntv-mode .source-toggle-btn .source-label { font-size: 0.7rem; }
-            body.ntv-mode #ntvMirrorToggleBtn { width: 52px; height: 52px; bottom: 0; }
-            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.5rem; }
-            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.9rem; }
+
+            body.ntv-mode .source-toggle-btn {
+                bottom: 3px;
+                width: 48px;
+                height: 48px;
+                gap: 3px;
+            }
+            body.ntv-mode .source-toggle-btn .material-symbols-outlined { font-size: 1.4rem; }
+            body.ntv-mode .source-toggle-btn .source-label { font-size: 0.65rem; }
+
+            body.ntv-mode #ntvMirrorToggleBtn {
+                bottom: 3px;
+                width: 44px;
+                height: 44px;
+            }
+            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.3rem; }
+            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.85rem; }
         }
 
         #urlDisplay {
@@ -398,6 +452,114 @@
         }
         @media (max-width: 480px) {
             #urlDisplay { bottom: 70px; font-size: 10px; }
+        }
+
+        /* NTV Bottom Bar */
+        .ntv-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #100f15;
+            border-top: 1px solid #343a50;
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            z-index: 10005;
+        }
+        body.ntv-mode .ntv-bottom-bar.visible {
+            display: flex;
+        }
+        .ntv-bar-btn {
+            background: transparent;
+            border: none;
+            color: #cccbd9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: system-ui, sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .ntv-bar-btn:active {
+            transform: scale(0.92);
+        }
+        .ntv-bar-btn .material-symbols-outlined {
+            font-size: 1.5rem;
+        }
+        .ntv-bar-btn.active-kobra {
+            color: #fbbd14;
+        }
+        .ntv-bar-btn span:not(.material-symbols-outlined) {
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        /* Ocultar botones base cuando la barra es visible */
+        body.ntv-mode.bar-active .source-toggle-btn,
+        body.ntv-mode.bar-active #ntvMirrorToggleBtn {
+            display: none !important;
+        }
+
+        /* --------------------------------------------------------------
+           NUEVO: En pantallas horizontales (tablet, escritorio) los
+           botones flotantes y la barra inferior se muestran ARRIBA
+        -------------------------------------------------------------- */
+        @media (orientation: landscape) and (min-width: 768px) {
+            /* Botón NTV (izquierda) */
+            .source-toggle-btn {
+                top: 10px !important;
+                bottom: auto !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+            }
+            body.ntv-mode .source-toggle-btn {
+                top: 10px !important;
+                bottom: auto !important;
+            }
+
+            /* Botón mirror NTV (derecha) */
+            #ntvMirrorToggleBtn {
+                top: 10px !important;
+                bottom: auto !important;
+                right: 20px !important;
+            }
+            body.ntv-mode #ntvMirrorToggleBtn {
+                top: 10px !important;
+                bottom: auto !important;
+            }
+
+            /* Barra inferior NTV */
+            .ntv-bottom-bar {
+                top: 0 !important;
+                bottom: auto !important;
+                border-top: 1px solid #343a50 !important;
+                border-bottom: none !important;
+                padding: 6px 0 !important;
+            }
+
+            /* Ajuste de la URL display (opcional, la dejamos abajo) */
+            #urlDisplay {
+                bottom: 20px;
+            }
+            body.ntv-mode #urlDisplay {
+                bottom: 20px;
+            }
+        }
+
+        /* Ajuste fino para pantallas muy grandes */
+        @media (orientation: landscape) and (min-width: 1200px) {
+            .source-toggle-btn {
+                top: 16px !important;
+            }
+            #ntvMirrorToggleBtn {
+                top: 16px !important;
+                right: 30px !important;
+            }
+            .ntv-bottom-bar {
+                padding: 10px 0 !important;
+            }
         }
     </style>
 </head>
@@ -418,6 +580,29 @@
     <span class="material-symbols-outlined">linear_scale</span>
     <span class="ntv-index-label">1</span>
 </button>
+
+<div id="ntvBottomBar" class="ntv-bottom-bar">
+    <button class="ntv-bar-btn active-kobra" data-action="kobra">
+        <span class="material-symbols-outlined">dns</span>
+        <span>KOBRA</span>
+    </button>
+    <button class="ntv-bar-btn" data-action="channels">
+        <span class="material-symbols-outlined">tv</span>
+        <span>Channels</span>
+    </button>
+    <button class="ntv-bar-btn" data-action="ntv">
+        <span class="material-symbols-outlined">language</span>
+        <span>NTV</span>
+    </button>
+    <button class="ntv-bar-btn" data-action="favorites">
+        <span class="material-symbols-outlined">favorite</span>
+        <span>Favorites</span>
+    </button>
+    <button class="ntv-bar-btn" id="ntvBarMirrorBtn">
+        <span class="material-symbols-outlined">linear_scale</span>
+        <span class="ntv-index-label" id="ntvBarIndexLabel">1</span>
+    </button>
+</div>
 
 <div class="custom-header-overlay" id="headerOverlay">
     <div class="overlay-buttons-grid" id="customButtonsGrid">
@@ -648,11 +833,12 @@
         homeBtn.classList.remove('active-filter');
         sportButtons.forEach(btn => btn.classList.remove('active-filter'));
         if (activeBtn) activeBtn.classList.add('active-filter');
-    }
-
-    function updateNtvButtonLabel() {
+    }    function updateNtvButtonLabel() {
         const total = ntvMirrors.length || 0;
-        ntvIndexLabel.textContent = total > 0 ? (ntvIndex % total) + 1 : '0';
+        const val = total > 0 ? (ntvIndex % total) + 1 : '0';
+        ntvIndexLabel.textContent = val;
+        const barLabel = document.getElementById('ntvBarIndexLabel');
+        if (barLabel) barLabel.textContent = val;
     }
 
     function updateMirrorBadge() {
@@ -936,13 +1122,136 @@
         });
     });
 
-    ntvMirrorToggleBtn.addEventListener('click', toggleNtvMirror);
+    // ---- NTV Bottom Bar ----
+    let ntvLongPressTimer = null;
+    let ntvIsLongPress = false;
+    let ntvBarLongPressTimer = null;
+    let ntvBarIsLongPress = false;
+
+    const ntvBottomBar = document.getElementById('ntvBottomBar');
+    const ntvBarMirrorBtn = document.getElementById('ntvBarMirrorBtn');
+
+    function toggleNtvBottomBar() {
+        if (currentSource !== 'ntv') return;
+        document.body.classList.toggle('bar-active');
+        ntvBottomBar.classList.toggle('visible');
+        if (navigator.vibrate) navigator.vibrate([50,30,50]);
+    }
+
+    // ---- Long press en el botón mirror flotante (para toggle barra) ----
+    ntvMirrorToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (ntvIsLongPress) {
+            ntvIsLongPress = false;
+            e.preventDefault();
+            return;
+        }
+        toggleNtvMirror();
+    });
+
+    function startNtvLongPress(e) {
+        if (currentSource !== 'ntv') return;
+        ntvIsLongPress = false;
+        ntvLongPressTimer = setTimeout(() => {
+            ntvIsLongPress = true;
+            toggleNtvBottomBar();
+        }, 500);
+    }
+
+    function endNtvLongPress(e) {
+        clearTimeout(ntvLongPressTimer);
+        if (ntvIsLongPress && e.type === 'touchend') {
+            if (e.cancelable) e.preventDefault();
+        }
+    }
+
+    function cancelNtvLongPress(e) {
+        clearTimeout(ntvLongPressTimer);
+    }
+
+    ntvMirrorToggleBtn.addEventListener('mousedown', startNtvLongPress);
+    ntvMirrorToggleBtn.addEventListener('mouseup', endNtvLongPress);
+    ntvMirrorToggleBtn.addEventListener('mouseleave', cancelNtvLongPress);
+
+    ntvMirrorToggleBtn.addEventListener('touchstart', startNtvLongPress, { passive: false });
+    ntvMirrorToggleBtn.addEventListener('touchend', endNtvLongPress, { passive: false });
+    ntvMirrorToggleBtn.addEventListener('touchcancel', cancelNtvLongPress, { passive: false });
+
     ntvMirrorToggleBtn.addEventListener('dblclick', async () => {
         if (currentSource === 'ntv') {
             await refreshNtvMirrors();
             loadStream(getCurrentNtvUrl());
             if (navigator.vibrate) navigator.vibrate([50,30,50]);
         }
+    });
+
+    // ---- Long press en el botón mirror de la barra inferior (cierra la barra) ----
+    if (ntvBarMirrorBtn) {
+        // Click normal: cambia de mirror, pero solo si no es long press
+        ntvBarMirrorBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (ntvBarIsLongPress) {
+                ntvBarIsLongPress = false;
+                e.preventDefault();
+                return;
+            }
+            toggleNtvMirror();
+        });
+
+        // Doble clic: refresca mirrors
+        ntvBarMirrorBtn.addEventListener('dblclick', async (e) => {
+            e.stopPropagation();
+            if (currentSource === 'ntv') {
+                await refreshNtvMirrors();
+                loadStream(getCurrentNtvUrl());
+                if (navigator.vibrate) navigator.vibrate([50,30,50]);
+            }
+        });
+
+        // Long press: cierra la barra (toggle)
+        function startNtvBarLongPress(e) {
+            if (currentSource !== 'ntv') return;
+            ntvBarIsLongPress = false;
+            ntvBarLongPressTimer = setTimeout(() => {
+                ntvBarIsLongPress = true;
+                // Si la barra está visible, la ocultamos (toggle)
+                toggleNtvBottomBar();
+                e.preventDefault();
+            }, 500);
+        }
+
+        function endNtvBarLongPress(e) {
+            clearTimeout(ntvBarLongPressTimer);
+            if (ntvBarIsLongPress && e.type === 'touchend') {
+                if (e.cancelable) e.preventDefault();
+            }
+        }
+
+        function cancelNtvBarLongPress(e) {
+            clearTimeout(ntvBarLongPressTimer);
+        }
+
+        ntvBarMirrorBtn.addEventListener('mousedown', startNtvBarLongPress);
+        ntvBarMirrorBtn.addEventListener('mouseup', endNtvBarLongPress);
+        ntvBarMirrorBtn.addEventListener('mouseleave', cancelNtvBarLongPress);
+
+        ntvBarMirrorBtn.addEventListener('touchstart', startNtvBarLongPress, { passive: false });
+        ntvBarMirrorBtn.addEventListener('touchend', endNtvBarLongPress, { passive: false });
+        ntvBarMirrorBtn.addEventListener('touchcancel', cancelNtvBarLongPress, { passive: false });
+    }
+
+    // ---- Botones de la barra (KOBRA, Channels, NTV, Favorites) ----
+    document.querySelectorAll('.ntv-bar-btn[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (navigator.vibrate) navigator.vibrate(15);
+            if (btn.dataset.action === 'ntv') {
+                // El botón NTV cierra la barra y cambia la fuente (su función original)
+                document.body.classList.remove('bar-active');
+                ntvBottomBar.classList.remove('visible');
+                toggleSource();
+            }
+            // KOBRA, Channels y Favorites se mantienen sin cerrar la barra.
+        });
     });
 
     sourceToggleBtn.addEventListener('click', toggleSource);
