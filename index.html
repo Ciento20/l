@@ -18,7 +18,6 @@
             box-sizing: border-box;
             user-select: none;
         }
-
         html, body {
             width: 100%;
             height: 100%;
@@ -28,7 +27,6 @@
             top: 0;
             left: 0;
         }
-
         .iframe-container {
             position: absolute;
             top: 0;
@@ -37,7 +35,6 @@
             height: 100%;
             background: #000;
         }
-
         iframe {
             width: 100%;
             height: 100%;
@@ -46,13 +43,53 @@
             background: #000;
         }
 
-        /* ---- Header overlay (deportes) ---- */
+        #urlDisplay {
+            position: fixed;
+            bottom: 80px;
+            left: 10px;
+            z-index: 99999;
+            background: rgba(0,0,0,0.85);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #0f0;
+            pointer-events: none;
+            max-width: 80%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+        #urlDisplay:hover { opacity: 1; }
+
+        .mirror-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #fbbd14;
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #000;
+            pointer-events: none;
+            padding: 0 4px;
+        }
+
         .custom-header-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background: #141821;
+            background: #100f15;
             z-index: 9998;
             border-bottom: 1px solid #f59e0b;
             pointer-events: auto;
@@ -60,7 +97,6 @@
             overflow: visible;
             transition: all 0.3s ease;
         }
-
         .custom-header-overlay.minimal {
             background: transparent;
             border-bottom: none;
@@ -69,7 +105,6 @@
             justify-content: center;
             align-items: center;
         }
-
         .custom-header-overlay.minimal .overlay-buttons-grid {
             display: flex;
             justify-content: center;
@@ -77,12 +112,11 @@
             width: auto;
             gap: 0;
         }
-
-        .custom-header-overlay.minimal .overlay-buttons-grid button:not(#domainToggleBtn) {
+        .custom-header-overlay.minimal .overlay-buttons-grid button:not(#domainToggleBtn):not(#ntvMinimalBtn) {
             display: none;
         }
-
-        .custom-header-overlay.minimal .domain-toggle-btn {
+        .custom-header-overlay.minimal .domain-toggle-btn,
+        .custom-header-overlay.minimal #ntvMinimalBtn {
             border-radius: 50% !important;
             width: 34px;
             height: 34px;
@@ -91,26 +125,37 @@
             align-items: center;
             justify-content: center;
             max-width: none;
-            margin: 3px auto 10px auto;
+            margin: 3px 0 10px 0;
             transform: none;
             background: #343a50;
             border: 1px solid #f59e0b;
+            position: relative;
         }
-
+        .custom-header-overlay.minimal #ntvMinimalBtn {
+            margin-right: 6px;
+        }
         .custom-header-overlay.minimal .domain-toggle-btn.mode-mirror {
             background: #fbbd14;
             border-color: #fbbd14;
         }
-
-        .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined {
+        .custom-header-overlay.minimal .domain-toggle-btn .material-symbols-outlined,
+        .custom-header-overlay.minimal #ntvMinimalBtn .material-symbols-outlined {
             font-size: 1.1rem;
         }
+        .custom-header-overlay.minimal .mirror-badge {
+            top: -4px;
+            right: -4px;
+            min-width: 16px;
+            height: 16px;
+            font-size: 9px;
+        }
 
-        /* Modo horizontal (una línea) con espacio vertical reducido y orden intercalado */
+        #ntvMinimalBtn {
+            display: none;
+        }
+
         @media (min-width: 1024px) and (orientation: landscape) {
-            .custom-header-overlay {
-                padding: 3px 12px;
-            }
+            .custom-header-overlay { padding: 3px 12px; }
             .overlay-buttons-grid {
                 display: flex !important;
                 flex-direction: row;
@@ -134,14 +179,17 @@
                 gap: 0;
                 overflow: visible;
             }
-            .custom-header-overlay.minimal .domain-toggle-btn {
+            .custom-header-overlay.minimal .domain-toggle-btn,
+            .custom-header-overlay.minimal #ntvMinimalBtn {
                 width: 40px;
                 height: 40px;
-                margin: 2px auto;
+                margin: 2px 0;
+            }
+            .custom-header-overlay.minimal #ntvMinimalBtn {
+                margin-right: 6px;
             }
         }
 
-        /* Por defecto (móvil, vertical): dos filas con orden original */
         .overlay-buttons-grid {
             display: grid;
             grid-template-columns: repeat(9, minmax(42px, 1fr));
@@ -153,7 +201,6 @@
             margin: 0 auto;
             padding: 7px 10px;
         }
-
         .overlay-buttons-grid button.custom-sport-btn {
             background: #343a50;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -166,19 +213,17 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.18s ease;
+            position: relative;
         }
-
         .overlay-buttons-grid button.custom-sport-btn:active {
             transform: scale(0.92);
             background: #f59e0b;
             border-color: #f59e0b;
         }
-
         .overlay-buttons-grid button.custom-sport-btn.active-filter {
             background: #fbbd14;
             border-color: #fbbd14;
         }
-
         .overlay-buttons-grid button.domain-toggle-btn {
             background: #343a50;
             border: 1px solid #f59e0b;
@@ -191,70 +236,37 @@
             background: #343a50;
             border-color: #f59e0b;
         }
-
         .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
             font-size: 1.5rem;
             color: #787f91;
             font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
         }
-
         .overlay-buttons-grid button.custom-sport-btn.active-filter .material-symbols-outlined {
             color: #000;
             font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
         }
 
         @media (max-width: 640px) {
-            .custom-header-overlay {
-                padding: 5px 7px;
-            }
-            .overlay-buttons-grid {
-                gap: 5px;
-                padding: 5px 7px;
-                grid-template-columns: repeat(9, minmax(34px, 1fr));
-            }
-            .overlay-buttons-grid button.custom-sport-btn {
-                height: 40px;
-                max-width: 56px;
-            }
-            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.3rem;
-            }
+            .custom-header-overlay { padding: 5px 7px; }
+            .overlay-buttons-grid { gap: 5px; padding: 5px 7px; grid-template-columns: repeat(9, minmax(34px, 1fr)); }
+            .overlay-buttons-grid button.custom-sport-btn { height: 40px; max-width: 56px; }
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined { font-size: 1.3rem; }
+            .mirror-badge { min-width: 16px; height: 16px; font-size: 9px; top: -5px; right: -5px; }
         }
-
         @media (max-width: 480px) {
-            .custom-header-overlay {
-                padding: 4px 6px;
-            }
-            .overlay-buttons-grid {
-                gap: 4px;
-                padding: 4px 6px;
-                grid-template-columns: repeat(9, minmax(30px, 1fr));
-            }
-            .overlay-buttons-grid button.custom-sport-btn {
-                height: 36px;
-                max-width: 50px;
-            }
-            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1.15rem;
-            }
+            .custom-header-overlay { padding: 4px 6px; }
+            .overlay-buttons-grid { gap: 4px; padding: 4px 6px; grid-template-columns: repeat(9, minmax(30px, 1fr)); }
+            .overlay-buttons-grid button.custom-sport-btn { height: 36px; max-width: 50px; }
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined { font-size: 1.15rem; }
+            .mirror-badge { min-width: 14px; height: 14px; font-size: 8px; top: -4px; right: -4px; }
         }
-
         @media (max-width: 380px) {
-            .overlay-buttons-grid {
-                gap: 3px;
-                grid-template-columns: repeat(9, minmax(26px, 1fr));
-            }
-            .overlay-buttons-grid button.custom-sport-btn {
-                height: 32px;
-                padding: 0 2px;
-                max-width: 46px;
-            }
-            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined {
-                font-size: 1rem;
-            }
+            .overlay-buttons-grid { gap: 3px; grid-template-columns: repeat(9, minmax(26px, 1fr)); }
+            .overlay-buttons-grid button.custom-sport-btn { height: 32px; padding: 0 2px; max-width: 46px; }
+            .overlay-buttons-grid button.custom-sport-btn .material-symbols-outlined { font-size: 1rem; }
+            .mirror-badge { min-width: 12px; height: 12px; font-size: 7px; }
         }
 
-        /* ---- Botón flotante para cambiar fuente (FCTV / NTV) - CENTRO INFERIOR (cuadrado con etiqueta) ---- */
         .source-toggle-btn {
             position: fixed;
             bottom: 24px;
@@ -296,26 +308,30 @@
         .source-toggle-btn:active {
             transform: translateX(-50%) scale(0.92);
         }
+        body:not(.ntv-mode) .source-toggle-btn { display: none !important; }
 
-        /* Ocultar el botón cuando estamos en modo FCTV (solo visible en NTV) */
-        body:not(.ntv-mode) .source-toggle-btn {
-            display: none !important;
-        }
-
-        /* En modo NTV, el botón se pega abajo y un poco más grande */
         body.ntv-mode .source-toggle-btn {
-            bottom: 0;
-            min-width: 72px;
-            padding: 10px 14px;
+            bottom: 1px;
+            min-width: unset;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            padding: 0;
+            gap: 10px;
+            transform: translateX(-50%);
+            background: #100f15;
+            border: none;
+            box-shadow: none;
         }
         body.ntv-mode .source-toggle-btn .material-symbols-outlined {
-            font-size: 1.9rem;
+            font-size: 1.8rem;
         }
         body.ntv-mode .source-toggle-btn .source-label {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
+            margin-top: 0;
+            line-height: 1;
         }
 
-        /* ---- Botón flotante para cambiar mirror en NTV (múltiples fuentes) - ESQUINA INFERIOR DERECHA (cuadrado) ---- */
         #ntvMirrorToggleBtn {
             position: fixed;
             bottom: 24px;
@@ -348,121 +364,231 @@
             font-weight: bold;
             margin: 0;
         }
-        #ntvMirrorToggleBtn:active {
-            transform: scale(0.92);
+        #ntvMirrorToggleBtn:active { transform: scale(0.92); }
+        .custom-header-overlay.hidden { display: none !important; }
+
+        body.ntv-mode #ntvMirrorToggleBtn {
+            bottom: 1px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            padding: 0;
+            gap: 5;
+            background: #100f15;
+            border: none;
+            box-shadow: none;
+        }
+        body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined {
+            font-size: 1.7rem;
+        }
+        body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label {
+            font-size: 1.05rem;
+            margin: 0;
         }
 
-        /* Ocultar overlay de deportes cuando estamos en modo NTV */
-        .custom-header-overlay.hidden {
+        @media (max-width: 480px) {
+            .source-toggle-btn { min-width: 56px; padding: 6px 10px; bottom: 20px; }
+            .source-toggle-btn .material-symbols-outlined { font-size: 1.5rem; }
+            .source-toggle-btn .source-label { font-size: 0.7rem; }
+            #ntvMirrorToggleBtn { width: 52px; height: 52px; bottom: 20px; right: 16px; }
+            #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.5rem; }
+            #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.9rem; }
+
+            body.ntv-mode .source-toggle-btn {
+                bottom: 4px;
+                width: 56px;
+                height: 56px;
+                gap: 4px;
+            }
+            body.ntv-mode .source-toggle-btn .material-symbols-outlined { font-size: 1.6rem; }
+            body.ntv-mode .source-toggle-btn .source-label { font-size: 0.7rem; }
+
+            body.ntv-mode #ntvMirrorToggleBtn {
+                bottom: 4px;
+                width: 52px;
+                height: 52px;
+            }
+            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.5rem; }
+            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.95rem; }
+        }
+        @media (max-width: 380px) {
+            .source-toggle-btn { min-width: 48px; padding: 5px 8px; bottom: 16px; }
+            .source-toggle-btn .material-symbols-outlined { font-size: 1.3rem; }
+            .source-toggle-btn .source-label { font-size: 0.6rem; }
+            #ntvMirrorToggleBtn { width: 44px; height: 44px; bottom: 16px; right: 12px; }
+            #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.3rem; }
+            #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.8rem; }
+
+            body.ntv-mode .source-toggle-btn {
+                bottom: 3px;
+                width: 48px;
+                height: 48px;
+                gap: 3px;
+            }
+            body.ntv-mode .source-toggle-btn .material-symbols-outlined { font-size: 1.4rem; }
+            body.ntv-mode .source-toggle-btn .source-label { font-size: 0.65rem; }
+
+            body.ntv-mode #ntvMirrorToggleBtn {
+                bottom: 3px;
+                width: 44px;
+                height: 44px;
+            }
+            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined { font-size: 1.3rem; }
+            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label { font-size: 0.85rem; }
+        }
+
+        #urlDisplay {
+            bottom: 80px;
+        }
+        body.ntv-mode #urlDisplay {
+            bottom: 80px;
+        }
+        @media (max-width: 480px) {
+            #urlDisplay { bottom: 70px; font-size: 10px; }
+        }
+
+        /* NTV Bottom Bar - Tamaño fijo y estable */
+        .ntv-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #100f15;
+            border-top: none;
+            display: none;
+            padding: 4px 0;
+            z-index: 10005;
+            height: 56px;
+            overflow: hidden;
+        }
+        body.ntv-mode .ntv-bottom-bar.visible {
+            display: block;
+        }
+
+        .ntv-bar-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+        .ntv-bar-original,
+        .ntv-bar-submenu {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.2s ease;
+        }
+        .ntv-bar-submenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .ntv-bottom-bar.submenu-active .ntv-bar-original {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .ntv-bottom-bar.submenu-active .ntv-bar-submenu {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .ntv-bar-btn {
+            background: transparent;
+            border: none;
+            color: #cccbd9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-family: system-ui, sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex: 1;
+            max-width: 70px;
+            padding: 2px 0;
+            font-size: 0.7rem;
+        }
+        .ntv-bar-btn:active {
+            transform: scale(0.92);
+        }
+        .ntv-bar-btn .material-symbols-outlined {
+            font-size: 1.4rem;
+        }
+        .ntv-bar-btn span:not(.material-symbols-outlined) {
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .ntv-bar-btn.active-kobra {
+            color: #fbbd14;
+        }
+        .ntv-bar-btn.active-channels {
+            color: #fbbd14;
+        }
+        .ntv-bar-btn.active-favorites {
+            color: #fbbd14;
+        }
+        body.ntv-mode.bar-active .source-toggle-btn,
+        body.ntv-mode.bar-active #ntvMirrorToggleBtn {
             display: none !important;
         }
 
-        /* Ajustes para modo NTV: botón de mirror pegado abajo */
-        body.ntv-mode #ntvMirrorToggleBtn {
-            bottom: 0;
-            width: 68px;
-            height: 68px;
-        }
-        body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined {
-            font-size: 1.9rem;
-        }
-        body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label {
-            font-size: 1.1rem;
+        /* Landscape: barra arriba, sin borde */
+        @media (orientation: landscape) and (min-width: 768px) {
+            .source-toggle-btn {
+                top: 10px !important;
+                bottom: auto !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+            }
+            body.ntv-mode .source-toggle-btn {
+                top: 10px !important;
+                bottom: auto !important;
+            }
+
+            #ntvMirrorToggleBtn {
+                top: 10px !important;
+                bottom: auto !important;
+                right: 20px !important;
+            }
+            body.ntv-mode #ntvMirrorToggleBtn {
+                top: 10px !important;
+                bottom: auto !important;
+            }
+
+            .ntv-bottom-bar {
+                top: 0 !important;
+                bottom: auto !important;
+                border-top: none !important;
+                border-bottom: none !important;
+                padding: 4px 0 !important;
+                height: 50px !important;
+            }
+
+            #urlDisplay {
+                bottom: 20px;
+            }
+            body.ntv-mode #urlDisplay {
+                bottom: 20px;
+            }
         }
 
-        /* Ajustes para pantallas muy pequeñas */
-        @media (max-width: 480px) {
+        @media (orientation: landscape) and (min-width: 1200px) {
             .source-toggle-btn {
-                min-width: 56px;
-                padding: 6px 10px;
-                bottom: 20px;
-            }
-            .source-toggle-btn .material-symbols-outlined {
-                font-size: 1.5rem;
-            }
-            .source-toggle-btn .source-label {
-                font-size: 0.7rem;
+                top: 16px !important;
             }
             #ntvMirrorToggleBtn {
-                width: 52px;
-                height: 52px;
-                bottom: 20px;
-                right: 16px;
+                top: 16px !important;
+                right: 30px !important;
             }
-            #ntvMirrorToggleBtn .material-symbols-outlined {
-                font-size: 1.5rem;
-            }
-            #ntvMirrorToggleBtn .ntv-index-label {
-                font-size: 0.9rem;
-            }
-            body.ntv-mode .source-toggle-btn {
-                min-width: 64px;
-                padding: 8px 12px;
-                bottom: 0;
-            }
-            body.ntv-mode .source-toggle-btn .material-symbols-outlined {
-                font-size: 1.7rem;
-            }
-            body.ntv-mode .source-toggle-btn .source-label {
-                font-size: 0.8rem;
-            }
-            body.ntv-mode #ntvMirrorToggleBtn {
-                width: 60px;
-                height: 60px;
-                bottom: 0;
-            }
-            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined {
-                font-size: 1.7rem;
-            }
-            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label {
-                font-size: 1rem;
-            }
-        }
-        @media (max-width: 380px) {
-            .source-toggle-btn {
-                min-width: 48px;
-                padding: 5px 8px;
-                bottom: 16px;
-            }
-            .source-toggle-btn .material-symbols-outlined {
-                font-size: 1.3rem;
-            }
-            .source-toggle-btn .source-label {
-                font-size: 0.6rem;
-            }
-            #ntvMirrorToggleBtn {
-                width: 44px;
-                height: 44px;
-                bottom: 16px;
-                right: 12px;
-            }
-            #ntvMirrorToggleBtn .material-symbols-outlined {
-                font-size: 1.3rem;
-            }
-            #ntvMirrorToggleBtn .ntv-index-label {
-                font-size: 0.8rem;
-            }
-            body.ntv-mode .source-toggle-btn {
-                min-width: 56px;
-                padding: 6px 10px;
-                bottom: 0;
-            }
-            body.ntv-mode .source-toggle-btn .material-symbols-outlined {
-                font-size: 1.5rem;
-            }
-            body.ntv-mode .source-toggle-btn .source-label {
-                font-size: 0.7rem;
-            }
-            body.ntv-mode #ntvMirrorToggleBtn {
-                width: 52px;
-                height: 52px;
-                bottom: 0;
-            }
-            body.ntv-mode #ntvMirrorToggleBtn .material-symbols-outlined {
-                font-size: 1.5rem;
-            }
-            body.ntv-mode #ntvMirrorToggleBtn .ntv-index-label {
-                font-size: 0.9rem;
+            .ntv-bottom-bar {
+                padding: 6px 0 !important;
+                height: 56px !important;
             }
         }
     </style>
@@ -470,33 +596,80 @@
 <body>
 
 <div class="iframe-container">
-    <iframe id="streamFrame" 
-            title="Live Streaming" 
-            allow="autoplay; fullscreen; encrypted-media" 
-            referrerpolicy="no-referrer"
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"
-            loading="eager">
-    </iframe>
+    <iframe id="streamFrame" title="Live Streaming" allow="autoplay; fullscreen; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 </div>
 
-<!-- Botón flotante con ícono y etiqueta para cambiar entre FCTV y NTV (centro inferior) -->
+<div id="urlDisplay">Cargando...</div>
+
 <button id="sourceToggleBtn" class="source-toggle-btn">
-    <span class="material-symbols-outlined">autorenew</span>
+    <span class="material-symbols-outlined">language</span>
     <span class="source-label">NTV</span>
 </button>
 
-<!-- Botón flotante para cambiar mirror en NTV (esquina inferior derecha) - cuadrado -->
 <button id="ntvMirrorToggleBtn">
-    <span class="material-symbols-outlined">swap_horiz</span>
+    <span class="material-symbols-outlined">linear_scale</span>
     <span class="ntv-index-label">1</span>
 </button>
 
-<!-- Overlay de deportes (solo visible en modo FCTV) -->
+<div id="ntvBottomBar" class="ntv-bottom-bar">
+    <div class="ntv-bar-content">
+        <!-- Botones originales -->
+        <div class="ntv-bar-original" id="ntvBarOriginal">
+            <button class="ntv-bar-btn active-kobra" data-action="kobra">
+                <span class="material-symbols-outlined">dns</span>
+                <span>KOBRA</span>
+            </button>
+            <button class="ntv-bar-btn" data-action="channels">
+                <span class="material-symbols-outlined">tv</span>
+                <span>Channels</span>
+            </button>
+            <button class="ntv-bar-btn" data-action="ntv">
+                <span class="material-symbols-outlined">language</span>
+                <span>NTV</span>
+            </button>
+            <button class="ntv-bar-btn" data-action="favorites">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Favorites</span>
+            </button>
+            <button class="ntv-bar-btn" id="ntvBarMirrorBtn">
+                <span class="material-symbols-outlined">linear_scale</span>
+                <span class="ntv-index-label" id="ntvBarIndexLabel">1</span>
+            </button>
+        </div>
+        <!-- Submenú de Kobra -->
+        <div class="ntv-bar-submenu" id="ntvKobraSubmenu">
+            <button class="ntv-bar-btn" data-extension="/matches/kobra">
+                <span class="material-symbols-outlined">dns</span>
+                <span>Kobra</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/raptor">
+                <span class="material-symbols-outlined">bolt</span>
+                <span>Raptor</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/falcon">
+                <span class="material-symbols-outlined">flight_takeoff</span>
+                <span>Falcon</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/phoenix">
+                <span class="material-symbols-outlined">mode_heat</span>
+                <span>Phoenix</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/titan">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Titan</span>
+            </button>
+            <button class="ntv-bar-btn" data-extension="/matches/viper">
+                <span class="material-symbols-outlined">warning</span>
+                <span>Viper</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <div class="custom-header-overlay" id="headerOverlay">
     <div class="overlay-buttons-grid" id="customButtonsGrid">
-        <!-- FILA 1 (original) -->
         <button class="custom-sport-btn" id="homeBtn" aria-label="Volver al inicio">
-            <span class="material-symbols-outlined">home</span>
+            <span class="material-symbols-outlined">language</span>
         </button>
         <button class="custom-sport-btn" data-sport="soccer" data-path="football.html" aria-label="Fútbol">
             <span class="material-symbols-outlined">sports_and_outdoors</span>
@@ -523,9 +696,13 @@
             <span class="material-symbols-outlined">sports_motorsports</span>
         </button>
 
-        <!-- FILA 2 (original) -->
-        <button class="custom-sport-btn domain-toggle-btn" id="domainToggleBtn" data-sport="domain_toggle" aria-label="Cambiar dominio original/espejo">
-            <span class="material-symbols-outlined">swap_horiz</span>
+        <button class="custom-sport-btn" id="ntvMinimalBtn" aria-label="Cambiar a NTV">
+            <span class="material-symbols-outlined">language</span>
+        </button>
+
+        <button class="custom-sport-btn domain-toggle-btn" id="domainToggleBtn" data-sport="domain_toggle" aria-label="Cambiar mirror FCTV">
+            <span class="material-symbols-outlined">linear_scale</span>
+            <span class="mirror-badge" id="mirrorBadge">0</span>
         </button>
         <button class="custom-sport-btn" data-sport="hockey" data-path="hockey.html" aria-label="Hockey">
             <span class="material-symbols-outlined">sports_hockey</span>
@@ -556,118 +733,163 @@
 
 <script>
     // --------------------------------------------------------------
-    // PROTECCIÓN TOTAL CONTRA ROTACIÓN FORZADA
+    // PROTECCIÓN CONTRA ROTACIÓN
     // --------------------------------------------------------------
-    (function preventForcedOrientation() {
+    (function() {
         if (window.screen && window.screen.orientation) {
             const originalLock = window.screen.orientation.lock;
-            window.screen.orientation.lock = function(orientation) {
-                console.warn("[FCTV] Bloqueo de orientación no permitido.");
+            window.screen.orientation.lock = function() {
                 return Promise.reject(new DOMException("No permitido", "NotAllowedError"));
             };
-            if (window.screen.orientation.unlock) {
-                window.screen.orientation.unlock = function() {};
-            }
+            if (window.screen.orientation.unlock) window.screen.orientation.unlock = function() {};
         }
     })();
 
-    // ---- Constantes ----
-    const LINK_ORIGINAL = "https://www.fctv33hd.motorcycles/";
-    const LINK_MIRROR   = "https://www.rbtvplus18.pics/";
-
-    // Fallback manual con los 4 dominios que se ven en la captura (por si Jina falla)
-    const MANUAL_FALLBACK = [
-        "https://ntv.cx/",
-        "https://ntvs.cx/",
-        "https://ntv.st/",
-        "https://ntvstream.cx/"
-    ];
+    // ---- CONSTANTES ----
+    const FCTV_SOURCE_1 = "https://hubu.ru/fctvlink";
+    const FCTV_SOURCE_2 = "https://hubu.ru/sp77link";
+    const NTV_SOURCE = "https://ntv.direct/";
 
     // ---- Estado ----
-    let currentMode = 'original';          // 'original' o 'mirror' para FCTV
-    let currentSource = 'fctv';            // 'fctv' o 'ntv'
-    let ntvIndex = 0;                      // índice dentro de ntvUrls (dinámico)
-    let ntvUrls = [];                     // se llenará con la extracción de Jina
-    let loadTimeoutId = null;              // temporizador para fallback automático
+    let currentSource = 'fctv';
+    let fctvMirrors = [];
+    let fctvIndex = 0;
+    let ntvMirrors = [];
+    let ntvIndex = 0;
+    let isMinimalMode = false;
 
     // ---- DOM ----
     const iframe = document.getElementById('streamFrame');
+    const urlDisplay = document.getElementById('urlDisplay');
     const domainToggleBtn = document.getElementById('domainToggleBtn');
+    const mirrorBadge = document.getElementById('mirrorBadge');
     const headerOverlay = document.getElementById('headerOverlay');
     const homeBtn = document.getElementById('homeBtn');
     const sourceToggleBtn = document.getElementById('sourceToggleBtn');
     const sourceLabel = sourceToggleBtn.querySelector('.source-label');
     const ntvMirrorToggleBtn = document.getElementById('ntvMirrorToggleBtn');
     const ntvIndexLabel = ntvMirrorToggleBtn.querySelector('.ntv-index-label');
-    let sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn):not(#homeBtn)');
+    const ntvMinimalBtn = document.getElementById('ntvMinimalBtn');
+    let sportButtons = document.querySelectorAll('.custom-sport-btn:not(#domainToggleBtn):not(#homeBtn):not(#ntvMinimalBtn)');
+    const ntvBottomBar = document.getElementById('ntvBottomBar');
+    const ntvBarMirrorBtn = document.getElementById('ntvBarMirrorBtn');
 
-    // ---- Funciones de scraping con Jina AI ----
-    async function fetchNtvMirrors(baseUrl) {
-        const target = baseUrl || "https://ntv.direct/";
-        try {
-            const response = await fetch(`https://r.jina.ai/${target}`);
-            if (!response.ok) throw new Error("Jina AI devolvió HTTP " + response.status);
-            const text = await response.text();
-
-            const regex = /(?:https?:\/\/)?(?:www\.)?(ntv[\w-]*\.(?:cx|st))/gi;
-            const matches = [];
-            let match;
-            while ((match = regex.exec(text)) !== null) {
-                matches.push(match[1]);
-            }
-            const unique = [...new Set(matches)];
-            if (unique.length === 0) {
-                console.warn("Jina no encontró dominios, usando fallback manual");
-                return MANUAL_FALLBACK;
-            }
-            const domains = unique.map(d => `https://${d}/`);
-            return domains;
-        } catch (e) {
-            console.warn("Error al llamar a Jina AI:", e);
-            return MANUAL_FALLBACK;
+    // ---- Utilidades ----
+    function updateUrlDisplay(url) {
+        if (url) {
+            urlDisplay.textContent = url;
+            console.log('[URL] iframe cargando:', url);
+        } else {
+            urlDisplay.textContent = 'about:blank';
+            console.log('[URL] iframe vacío');
         }
     }
 
-    // ---- Funciones base ----
-    function loadStream(url) {
-        if (loadTimeoutId) {
-            clearTimeout(loadTimeoutId);
-            loadTimeoutId = null;
-        }
-        iframe.src = url;
-        // Iniciar temporizador de 5 segundos para fallback automático
-        loadTimeoutId = setTimeout(() => {
-            // Si después de 5 segundos el iframe no ha cargado (probablemente bloqueado), pasar al siguiente mirror
-            if (currentSource === 'ntv') {
-                console.warn("El mirror no cargó en el iframe, pasando al siguiente");
-                // Avanzar al siguiente índice sin incrementar manualmente (usamos cycleNtvMirror pero sin vibrar)
-                if (ntvUrls.length > 1) {
-                    ntvIndex = (ntvIndex + 1) % ntvUrls.length;
-                    updateNtvButtonLabel();
-                    loadStream(ntvUrls[ntvIndex]);
-                    localStorage.setItem('ntv_index', ntvIndex);
-                    // Reiniciamos el temporizador para el nuevo intento
+    function cleanBaseUrl(url) {
+        if (!url) return '';
+        return url.replace(/[()"']/g, '').trim();
+    }
+
+    // ---- Extracción con Jina AI (SIN FILTROS DE VALIDACIÓN) ----
+    async function fetchUrlsFromSource(sourceUrl, sourceLabel) {
+        try {
+            console.log(`[${sourceLabel}] Extrayendo de ${sourceUrl}...`);
+            const response = await fetch(`https://r.jina.ai/${sourceUrl}`);
+            if (!response.ok) throw new Error("Jina AI error: " + response.status);
+            const text = await response.text();
+            
+            const linkRegex = /🔗\s*Link\s*\(?(https?:\/\/[^\s)]+)/i;
+            const match = text.match(linkRegex);
+            let result = [];
+            
+            if (match) {
+                const mainUrl = cleanBaseUrl(match[1]);
+                result = [mainUrl];
+                console.log(`[${sourceLabel}] Enlace principal encontrado por patrón:`, mainUrl);
+            } else {
+                const urlRegex = /(?:https?:\/\/[^\s"'<>]+)/gi;
+                const matches = text.match(urlRegex) || [];
+                let cleaned = matches.map(u => cleanBaseUrl(u));
+                let unique = [...new Set(cleaned)];
+                const filtered = unique.filter(url => !url.includes('hubu.ru'));
+                if (filtered.length > 0) {
+                    result = [filtered[0]];
+                    console.log(`[${sourceLabel}] Enlace principal por filtro (primero no-hubu):`, result[0]);
+                } else {
+                    result = [];
+                    console.warn(`[${sourceLabel}] No se encontró enlace principal.`);
                 }
             }
-        }, 5000);
-    }
-
-    function getFctvBaseUrl() {
-        return currentMode === 'original' ? LINK_ORIGINAL : LINK_MIRROR;
-    }
-
-    function getNtvBaseUrl() {
-        if (ntvUrls.length === 0) return MANUAL_FALLBACK[0];
-        const idx = ntvIndex % ntvUrls.length;
-        return ntvUrls[idx];
-    }
-
-    function getCurrentBaseUrl() {
-        if (currentSource === 'fctv') {
-            return getFctvBaseUrl();
-        } else {
-            return getNtvBaseUrl();
+            
+            return result;
+        } catch (e) {
+            console.warn(`[${sourceLabel}] Error:`, e);
+            return [];
         }
+    }
+
+    // ---- Refrescar mirrors con ambas fuentes ----
+    async function refreshFctvMirrors() {
+        const results = await Promise.all([
+            fetchUrlsFromSource(FCTV_SOURCE_1, 'fctvlink'),
+            fetchUrlsFromSource(FCTV_SOURCE_2, 'sp77link')
+        ]);
+
+        const mirrorsFromFctvlink = results[0] || [];
+        const mirrorsFromSp77link = results[1] || [];
+
+        const combined = [...mirrorsFromFctvlink, ...mirrorsFromSp77link];
+        fctvMirrors = [...new Set(combined)];
+        fctvIndex = 0;
+
+        if (fctvMirrors.length > 0) {
+            sessionStorage.setItem('fctv_mirrors', JSON.stringify(fctvMirrors));
+            sessionStorage.setItem('fctv_index', '0');
+        } else {
+            sessionStorage.removeItem('fctv_mirrors');
+            sessionStorage.removeItem('fctv_index');
+        }
+
+        console.log('[FCTV] Total mirrors combinados:', fctvMirrors);
+        updateMirrorBadge();
+        return fctvMirrors;
+    }
+
+    async function refreshNtvMirrors() {
+        const result = await fetchUrlsFromSource(NTV_SOURCE, 'ntv');
+        ntvMirrors = result;
+        ntvIndex = 0;
+        if (ntvMirrors.length > 0) {
+            localStorage.setItem('ntv_mirrors', JSON.stringify(ntvMirrors));
+            localStorage.setItem('ntv_index', '0');
+        } else {
+            localStorage.removeItem('ntv_mirrors');
+            localStorage.removeItem('ntv_index');
+        }
+        updateNtvButtonLabel();
+        console.log('[NTV] Mirrors encontrados:', ntvMirrors);
+        return ntvMirrors;
+    }
+
+    // ---- Navegación ----
+    function loadStream(url) {
+        if (url) {
+            iframe.src = url;
+            updateUrlDisplay(url);
+        } else {
+            iframe.src = 'about:blank';
+            updateUrlDisplay(null);
+        }
+    }
+
+    function getCurrentFctvUrl() {
+        if (fctvMirrors.length === 0) return null;
+        return cleanBaseUrl(fctvMirrors[fctvIndex % fctvMirrors.length]);
+    }
+
+    function getCurrentNtvUrl() {
+        if (ntvMirrors.length === 0) return null;
+        return cleanBaseUrl(ntvMirrors[ntvIndex % ntvMirrors.length]);
     }
 
     function setActiveButton(activeBtn) {
@@ -677,249 +899,339 @@
     }
 
     function updateNtvButtonLabel() {
-        const total = ntvUrls.length || 1;
-        const displayIndex = (ntvIndex % total) + 1;
-        ntvIndexLabel.textContent = displayIndex;
+        const total = ntvMirrors.length || 0;
+        const val = total > 0 ? (ntvIndex % total) + 1 : '0';
+        ntvIndexLabel.textContent = val;
+        const barLabel = document.getElementById('ntvBarIndexLabel');
+        if (barLabel) barLabel.textContent = val;
     }
 
-    // ---- Navegación ----
+    function updateMirrorBadge() {
+        const total = fctvMirrors.length;
+        if (total > 0) {
+            mirrorBadge.textContent = (fctvIndex % total) + 1;
+            mirrorBadge.style.display = 'flex';
+        } else {
+            mirrorBadge.textContent = '0';
+            mirrorBadge.style.display = 'none';
+        }
+    }
+
+    function updateDomainToggleButton() {
+        if (fctvMirrors.length === 0) {
+            domainToggleBtn.classList.remove('mode-mirror', 'mode-original');
+            return;
+        }
+        if (fctvIndex === 0) {
+            domainToggleBtn.classList.remove('mode-mirror');
+            domainToggleBtn.classList.add('mode-original');
+        } else {
+            domainToggleBtn.classList.remove('mode-original');
+            domainToggleBtn.classList.add('mode-mirror');
+        }
+        updateMirrorBadge();
+        console.log(`[FCTV] Mirror actual: ${fctvIndex+1}/${fctvMirrors.length} - ${getCurrentFctvUrl()}`);
+    }
+
+    // ---- Acciones ----
+    async function toggleFctvMirror() {
+        if (currentSource !== 'fctv') return;
+        if (fctvMirrors.length === 0) {
+            await refreshFctvMirrors();
+        }
+        if (fctvMirrors.length === 0) {
+            loadStream(null);
+            updateDomainToggleButton();
+            return;
+        }
+        fctvIndex = (fctvIndex + 1) % fctvMirrors.length;
+        const baseUrl = getCurrentFctvUrl();
+        console.log('[FCTV] Cambiando a mirror:', baseUrl);
+        loadStream(baseUrl);
+        updateDomainToggleButton();
+        sessionStorage.setItem('fctv_index', String(fctvIndex));
+        if (navigator.vibrate) navigator.vibrate(30);
+        setActiveButton(homeBtn);
+    }
+
+    // ---- Navegación NTV con extensiones ----
+    function navigateNtvExtension(extension) {
+        if (currentSource !== 'ntv') return;
+        const baseUrl = getCurrentNtvUrl();
+        if (!baseUrl) {
+            loadStream(null);
+            return;
+        }
+        let url = baseUrl;
+        if (extension) {
+            url = baseUrl.replace(/\/+$/, '') + extension;
+        }
+        loadStream(url);
+        setActiveNtvButton(extension);
+        if (navigator.vibrate) navigator.vibrate(15);
+    }
+
+    function setActiveNtvButton(extension) {
+        document.querySelectorAll('.ntv-bar-btn').forEach(btn => {
+            btn.classList.remove('active-kobra', 'active-channels', 'active-favorites');
+        });
+        let action = 'kobra';
+        if (extension === '/channels') action = 'channels';
+        else if (extension === '/favorites') action = 'favorites';
+        else if (extension && extension.startsWith('/matches/')) action = 'kobra'; // todos los matches van a Kobra
+        const btn = document.querySelector(`.ntv-bar-btn[data-action="${action}"]`);
+        if (btn) btn.classList.add(`active-${action}`);
+    }
+
+    // ---- Kobra Submenu Toggle ----
+    function toggleKobraSubmenu() {
+        ntvBottomBar.classList.toggle('submenu-active');
+        if (ntvBottomBar.classList.contains('submenu-active')) {
+            // Aseguramos que el botón Kobra original esté activo
+            document.querySelector('.ntv-bar-btn[data-action="kobra"]')?.classList.add('active-kobra');
+        } else {
+            setActiveNtvButton('');
+        }
+    }
+
+    // ---- Cambiar mirror NTV (reinicia a la base, sin extensión) ----
+    async function toggleNtvMirror() {
+        if (currentSource !== 'ntv') return;
+        if (ntvMirrors.length === 0) {
+            await refreshNtvMirrors();
+        }
+        if (ntvMirrors.length === 0) {
+            loadStream(null);
+            updateNtvButtonLabel();
+            return;
+        }
+        ntvIndex = (ntvIndex + 1) % ntvMirrors.length;
+        loadStream(getCurrentNtvUrl());
+        setActiveNtvButton('');
+        updateNtvButtonLabel();
+        localStorage.setItem('ntv_index', String(ntvIndex));
+        if (navigator.vibrate) navigator.vibrate(30);
+        const kobraBtn = document.querySelector('.ntv-bar-btn[data-action="kobra"]');
+        if (kobraBtn) {
+            document.querySelectorAll('.ntv-bar-btn').forEach(b => b.classList.remove('active-kobra', 'active-channels', 'active-favorites'));
+            kobraBtn.classList.add('active-kobra');
+        }
+        // Si el submenú estaba abierto, lo cerramos
+        if (ntvBottomBar.classList.contains('submenu-active')) {
+            ntvBottomBar.classList.remove('submenu-active');
+        }
+    }
+
+    async function toggleSource() {
+        if (currentSource === 'fctv') {
+            currentSource = 'ntv';
+            if (ntvMirrors.length === 0) await refreshNtvMirrors();
+            loadStream(getCurrentNtvUrl());
+            document.body.classList.add('ntv-mode');
+            sourceLabel.textContent = 'NTV';
+            headerOverlay.classList.add('hidden');
+            ntvMirrorToggleBtn.style.display = 'flex';
+            document.body.classList.add('bar-active');
+            ntvBottomBar.classList.add('visible');
+            updateNtvButtonLabel();
+            setActiveNtvButton('');
+            // Cerrar submenú por si acaso
+            ntvBottomBar.classList.remove('submenu-active');
+        } else {
+            currentSource = 'fctv';
+            if (fctvMirrors.length === 0) await refreshFctvMirrors();
+            loadStream(getCurrentFctvUrl());
+            document.body.classList.remove('ntv-mode');
+            sourceLabel.textContent = 'FCTV';
+            headerOverlay.classList.remove('hidden');
+            ntvMirrorToggleBtn.style.display = 'none';
+            document.body.classList.remove('bar-active');
+            ntvBottomBar.classList.remove('visible');
+            ntvBottomBar.classList.remove('submenu-active');
+            updateDomainToggleButton();
+            if (isMinimalMode) headerOverlay.classList.add('minimal');
+            else headerOverlay.classList.remove('minimal');
+        }
+        setActiveButton(null);
+        if (navigator.vibrate) navigator.vibrate(20);
+        localStorage.setItem('fctv_source', currentSource);
+    }
+
+    function goToHome() {
+        if (currentSource === 'fctv') {
+            loadStream(getCurrentFctvUrl());
+            setActiveButton(homeBtn);
+        } else {
+            loadStream(getCurrentNtvUrl());
+            setActiveButton(null);
+        }
+        if (navigator.vibrate) navigator.vibrate(15);
+        // Si submenú abierto, cerrar
+        if (ntvBottomBar.classList.contains('submenu-active')) {
+            ntvBottomBar.classList.remove('submenu-active');
+        }
+    }
+
     function navigateToSportPage(path, clickedBtn) {
         if (currentSource !== 'fctv') {
-            loadStream(getNtvBaseUrl());
+            loadStream(getCurrentNtvUrl());
             setActiveButton(null);
             return;
         }
-        const baseUrl = getFctvBaseUrl();
-        let fullUrl = baseUrl.endsWith('/') ? baseUrl + path : baseUrl + '/' + path;
+        const baseUrl = getCurrentFctvUrl();
+        if (!baseUrl) {
+            loadStream(null);
+            return;
+        }
+        const cleanBase = baseUrl.replace(/\/+$/, '');
+        const fullUrl = cleanBase + '/es/' + path;
+        console.log('[Navegación] Cargando:', fullUrl);
         loadStream(fullUrl);
         setActiveButton(clickedBtn);
         if (navigator.vibrate) navigator.vibrate(15);
     }
 
-    function goToHome() {
-        if (currentSource === 'fctv') {
-            loadStream(getFctvBaseUrl());
-            setActiveButton(homeBtn);
-        } else {
-            loadStream(getNtvBaseUrl());
-            setActiveButton(null);
-        }
-        if (navigator.vibrate) navigator.vibrate(15);
-    }
-
-    // ---- Cambio de dominio (FCTV) ----
-    function toggleDomainMode() {
-        if (currentSource !== 'fctv') return;
-
-        if (currentMode === 'original') {
-            currentMode = 'mirror';
-            loadStream(LINK_MIRROR);
-            domainToggleBtn.classList.add('mode-mirror');
-            domainToggleBtn.classList.remove('mode-original');
-        } else {
-            currentMode = 'original';
-            loadStream(LINK_ORIGINAL);
-            domainToggleBtn.classList.remove('mode-mirror');
-            domainToggleBtn.classList.add('mode-original');
-        }
-        setActiveButton(homeBtn);
-        if (navigator.vibrate) navigator.vibrate(30);
-        sessionStorage.setItem('fctv_mode', currentMode);
-    }
-
-    // ---- Cambio de mirror en NTV (extraído dinámicamente) ----
-    async function cycleNtvMirror() {
-        if (currentSource !== 'ntv') return;
-
-        if (ntvUrls.length === 0) {
-            const fetched = await fetchNtvMirrors("https://ntv.direct/");
-            ntvUrls = (fetched && fetched.length > 0) ? fetched : MANUAL_FALLBACK;
-            ntvIndex = 0;
-            updateNtvButtonLabel();
-        }
-
-        ntvIndex = (ntvIndex + 1) % ntvUrls.length;
-        const newUrl = ntvUrls[ntvIndex];
-        loadStream(newUrl);
-        updateNtvButtonLabel();
-        if (navigator.vibrate) navigator.vibrate(30);
-        localStorage.setItem('ntv_index', ntvIndex);
-        setActiveButton(null);
-    }
-
-    // ---- Refrescar lista de mirrors (doble clic en el botón) ----
-    async function refreshNtvMirrors() {
-        if (currentSource !== 'ntv') return;
-        const fetched = await fetchNtvMirrors("https://ntv.direct/");
-        if (fetched && fetched.length > 0) {
-            ntvUrls = fetched;
-            if (ntvIndex >= ntvUrls.length) ntvIndex = 0;
-            updateNtvButtonLabel();
-            loadStream(ntvUrls[ntvIndex]);
-            if (navigator.vibrate) navigator.vibrate([50,30,50]);
-        } else {
-            console.warn("No se pudieron obtener mirrors, manteniendo los actuales.");
-        }
-    }
-
-    // ---- Cambio de fuente (FCTV <-> NTV) ----
-    async function setSource(source) {
-        if (source === currentSource) return;
-        currentSource = source;
-        localStorage.setItem('fctv_source', source);
-
-        if (source === 'ntv') {
-            document.body.classList.add('ntv-mode');
-            sourceToggleBtn.style.display = 'flex';
-            sourceLabel.textContent = 'NTV';
-            headerOverlay.classList.add('hidden');
-            ntvMirrorToggleBtn.style.display = 'flex';
-
-            const fetched = await fetchNtvMirrors("https://ntv.direct/");
-            ntvUrls = (fetched && fetched.length > 0) ? fetched : MANUAL_FALLBACK;
-            ntvIndex = 0;
-            updateNtvButtonLabel();
-            loadStream(ntvUrls[0]);
-        } else {
-            document.body.classList.remove('ntv-mode');
-            sourceToggleBtn.style.display = 'none';
-            headerOverlay.classList.remove('hidden');
-            ntvMirrorToggleBtn.style.display = 'none';
-            if (isMinimalMode) {
-                headerOverlay.classList.add('minimal');
-            } else {
-                headerOverlay.classList.remove('minimal');
-            }
-            loadStream(getFctvBaseUrl());
-        }
-        setActiveButton(null);
-        if (navigator.vibrate) navigator.vibrate(20);
-    }
-
-    // ---- Modo minimal (solo para FCTV) ----
-    let isMinimalMode = false;
-
-    function loadOverlayPreference() {
-        const saved = localStorage.getItem('fctv_overlay_mode');
-        if (saved === 'minimal') {
-            isMinimalMode = true;
-            if (currentSource === 'fctv') headerOverlay.classList.add('minimal');
-        } else if (saved === 'full') {
-            isMinimalMode = false;
-            if (currentSource === 'fctv') headerOverlay.classList.remove('minimal');
-        } else {
-            isMinimalMode = true;
-            if (currentSource === 'fctv') headerOverlay.classList.add('minimal');
-            localStorage.setItem('fctv_overlay_mode', 'minimal');
-        }
-    }
-
-    function enableMinimalMode() {
-        if (currentSource !== 'fctv') return;
-        if (!isMinimalMode) {
-            headerOverlay.classList.add('minimal');
-            isMinimalMode = true;
-            localStorage.setItem('fctv_overlay_mode', 'minimal');
-            if (navigator.vibrate) navigator.vibrate([50,30,50]);
-        }
-    }
-
-    function disableMinimalMode() {
-        if (currentSource !== 'fctv') return;
-        if (isMinimalMode) {
-            headerOverlay.classList.remove('minimal');
-            isMinimalMode = false;
-            localStorage.setItem('fctv_overlay_mode', 'full');
-            if (navigator.vibrate) navigator.vibrate([50,30,50]);
-        }
-    }
-
+    // ---- Modo minimal ----
     function toggleMinimalMode() {
         if (currentSource !== 'fctv') return;
-        isMinimalMode ? disableMinimalMode() : enableMinimalMode();
+        isMinimalMode = !isMinimalMode;
+        if (isMinimalMode) {
+            headerOverlay.classList.add('minimal');
+            localStorage.setItem('fctv_overlay_mode', 'minimal');
+        } else {
+            headerOverlay.classList.remove('minimal');
+            localStorage.setItem('fctv_overlay_mode', 'full');
+        }
+        if (navigator.vibrate) navigator.vibrate([50,30,50]);
     }
 
     // ---- Inicialización ----
     async function init() {
         const savedSource = localStorage.getItem('fctv_source');
-        const initialSource = (savedSource === 'ntv') ? 'ntv' : 'fctv';
-        currentSource = initialSource;
-        localStorage.setItem('fctv_source', currentSource);
+        currentSource = (savedSource === 'ntv') ? 'ntv' : 'fctv';
+
+        const savedFctv = sessionStorage.getItem('fctv_mirrors');
+        if (savedFctv) {
+            try { fctvMirrors = JSON.parse(savedFctv); } catch(e) {}
+        }
+        const savedFctvIdx = sessionStorage.getItem('fctv_index');
+        if (savedFctvIdx !== null && fctvMirrors.length > 0) {
+            const idx = parseInt(savedFctvIdx, 10);
+            if (!isNaN(idx) && idx >= 0 && idx < fctvMirrors.length) fctvIndex = idx;
+        }
+
+        const savedNtv = localStorage.getItem('ntv_mirrors');
+        if (savedNtv) {
+            try { ntvMirrors = JSON.parse(savedNtv); } catch(e) {}
+        }
+        const savedNtvIdx = localStorage.getItem('ntv_index');
+        if (savedNtvIdx !== null && ntvMirrors.length > 0) {
+            const idx = parseInt(savedNtvIdx, 10);
+            if (!isNaN(idx) && idx >= 0 && idx < ntvMirrors.length) ntvIndex = idx;
+        }
+
+        const overlayMode = localStorage.getItem('fctv_overlay_mode');
+        isMinimalMode = (overlayMode !== 'full');
 
         if (currentSource === 'ntv') {
             document.body.classList.add('ntv-mode');
-            sourceToggleBtn.style.display = 'flex';
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
-            const fetched = await fetchNtvMirrors("https://ntv.direct/");
-            ntvUrls = (fetched && fetched.length > 0) ? fetched : MANUAL_FALLBACK;
-            ntvIndex = 0;
+            document.body.classList.add('bar-active');
+            ntvBottomBar.classList.add('visible');
+            if (ntvMirrors.length === 0) await refreshNtvMirrors();
+            loadStream(getCurrentNtvUrl());
             updateNtvButtonLabel();
-            loadStream(ntvUrls[0]);
+            setActiveNtvButton('');
+            ntvBottomBar.classList.remove('submenu-active');
         } else {
             document.body.classList.remove('ntv-mode');
-            sourceToggleBtn.style.display = 'none';
+            sourceLabel.textContent = 'FCTV';
             headerOverlay.classList.remove('hidden');
             ntvMirrorToggleBtn.style.display = 'none';
-            loadOverlayPreference();
+            document.body.classList.remove('bar-active');
+            ntvBottomBar.classList.remove('visible');
+            ntvBottomBar.classList.remove('submenu-active');
+            if (fctvMirrors.length === 0) await refreshFctvMirrors();
+            loadStream(getCurrentFctvUrl());
+            updateDomainToggleButton();
             if (isMinimalMode) headerOverlay.classList.add('minimal');
             else headerOverlay.classList.remove('minimal');
-            loadStream(getFctvBaseUrl());
         }
-
-        const savedMode = sessionStorage.getItem('fctv_mode');
-        if (savedMode === 'mirror') {
-            currentMode = 'mirror';
-            domainToggleBtn.classList.add('mode-mirror');
-            domainToggleBtn.classList.remove('mode-original');
-        } else {
-            currentMode = 'original';
-            domainToggleBtn.classList.remove('mode-mirror');
-            domainToggleBtn.classList.add('mode-original');
-        }
-
-        const savedNtvIndex = localStorage.getItem('ntv_index');
-        if (savedNtvIndex !== null && ntvUrls.length > 0) {
-            const idx = parseInt(savedNtvIndex, 10);
-            if (!isNaN(idx) && idx >= 0 && idx < ntvUrls.length) {
-                ntvIndex = idx;
-                updateNtvButtonLabel();
-                if (currentSource === 'ntv') loadStream(ntvUrls[ntvIndex]);
-            }
-        }
-
-        if (currentSource === 'fctv') setActiveButton(homeBtn);
-        else setActiveButton(null);
+        setActiveButton(null);
+        console.log('[Init] Fuente actual:', currentSource, 'Mirrors FCTV:', fctvMirrors, 'Mirrors NTV:', ntvMirrors);
     }
 
+    // ---- Variables para long press ----
+    let longPressTimer = null;
+    let isLongPress = false;
+
     // ---- Eventos ----
-    sourceToggleBtn.addEventListener('click', () => {
-        if (currentSource === 'ntv') {
-            setSource('fctv');
+    domainToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isLongPress) {
+            isLongPress = false;
+            e.preventDefault();
+            return;
+        }
+        toggleFctvMirror();
+    });
+
+    domainToggleBtn.addEventListener('dblclick', async (e) => {
+        e.stopPropagation();
+        if (currentSource === 'fctv') {
+            await refreshFctvMirrors();
+            fctvIndex = 0;
+            loadStream(getCurrentFctvUrl());
+            updateDomainToggleButton();
+            sessionStorage.setItem('fctv_index', '0');
+            if (navigator.vibrate) navigator.vibrate([50,30,50]);
         }
     });
 
-    ntvMirrorToggleBtn.addEventListener('click', cycleNtvMirror);
-    ntvMirrorToggleBtn.addEventListener('dblclick', refreshNtvMirrors);
+    function startLongPress(e) {
+        if (currentSource !== 'fctv') return;
+        isLongPress = false;
+        longPressTimer = setTimeout(() => {
+            isLongPress = true;
+            toggleMinimalMode();
+            e.preventDefault();
+        }, 500);
+    }
 
-    let pressTimer = null;
-    domainToggleBtn.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return;
-        pressTimer = setTimeout(() => toggleMinimalMode(), 500);
+    function endLongPress(e) {
+        clearTimeout(longPressTimer);
+        if (isLongPress) {
+            isLongPress = false;
+            e.preventDefault();
+        }
+    }
+
+    function cancelLongPress(e) {
+        clearTimeout(longPressTimer);
+        isLongPress = false;
+    }
+
+    domainToggleBtn.addEventListener('mousedown', startLongPress);
+    domainToggleBtn.addEventListener('mouseup', endLongPress);
+    domainToggleBtn.addEventListener('mouseleave', cancelLongPress);
+
+    domainToggleBtn.addEventListener('touchstart', startLongPress, { passive: false });
+    domainToggleBtn.addEventListener('touchend', endLongPress, { passive: false });
+    domainToggleBtn.addEventListener('touchcancel', cancelLongPress, { passive: false });
+
+    ntvMinimalBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentSource === 'fctv') {
+            toggleSource();
+        }
     });
-    domainToggleBtn.addEventListener('mouseup', (e) => {
-        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; toggleDomainMode(); }
-    });
-    domainToggleBtn.addEventListener('mouseleave', () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } });
-    domainToggleBtn.addEventListener('touchstart', (e) => { e.preventDefault(); pressTimer = setTimeout(() => toggleMinimalMode(), 500); });
-    domainToggleBtn.addEventListener('touchend', (e) => { e.preventDefault(); if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; toggleDomainMode(); } });
-    domainToggleBtn.addEventListener('touchcancel', () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } });
 
     homeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (currentSource === 'fctv') {
-            setSource('ntv');
+            toggleSource();
         } else {
             goToHome();
         }
@@ -928,11 +1240,6 @@
     sportButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (currentSource !== 'fctv') {
-                loadStream(getNtvBaseUrl());
-                setActiveButton(null);
-                return;
-            }
             const path = btn.getAttribute('data-path');
             if (btn.classList.contains('active-filter') && path) {
                 goToHome();
@@ -942,56 +1249,229 @@
         });
     });
 
+    // ---- NTV Bottom Bar ----
+    let ntvLongPressTimer = null;
+    let ntvIsLongPress = false;
+    let ntvBarLongPressTimer = null;
+    let ntvBarIsLongPress = false;
+
+    function toggleNtvBottomBar() {
+        if (currentSource !== 'ntv') return;
+        document.body.classList.toggle('bar-active');
+        ntvBottomBar.classList.toggle('visible');
+        if (navigator.vibrate) navigator.vibrate([50,30,50]);
+        // Si se oculta la barra, cerrar submenú
+        if (!ntvBottomBar.classList.contains('visible')) {
+            ntvBottomBar.classList.remove('submenu-active');
+        }
+    }
+
+    ntvMirrorToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (ntvIsLongPress) {
+            ntvIsLongPress = false;
+            e.preventDefault();
+            return;
+        }
+        toggleNtvMirror();
+    });
+
+    function startNtvLongPress(e) {
+        if (currentSource !== 'ntv') return;
+        ntvIsLongPress = false;
+        ntvLongPressTimer = setTimeout(() => {
+            ntvIsLongPress = true;
+            toggleNtvBottomBar();
+        }, 500);
+    }
+
+    function endNtvLongPress(e) {
+        clearTimeout(ntvLongPressTimer);
+        if (ntvIsLongPress && e.type === 'touchend') {
+            if (e.cancelable) e.preventDefault();
+        }
+    }
+
+    function cancelNtvLongPress(e) {
+        clearTimeout(ntvLongPressTimer);
+    }
+
+    ntvMirrorToggleBtn.addEventListener('mousedown', startNtvLongPress);
+    ntvMirrorToggleBtn.addEventListener('mouseup', endNtvLongPress);
+    ntvMirrorToggleBtn.addEventListener('mouseleave', cancelNtvLongPress);
+
+    ntvMirrorToggleBtn.addEventListener('touchstart', startNtvLongPress, { passive: false });
+    ntvMirrorToggleBtn.addEventListener('touchend', endNtvLongPress, { passive: false });
+    ntvMirrorToggleBtn.addEventListener('touchcancel', cancelNtvLongPress, { passive: false });
+
+    ntvMirrorToggleBtn.addEventListener('dblclick', async () => {
+        if (currentSource === 'ntv') {
+            await refreshNtvMirrors();
+            loadStream(getCurrentNtvUrl());
+            setActiveNtvButton('');
+            if (navigator.vibrate) navigator.vibrate([50,30,50]);
+        }
+    });
+
+    if (ntvBarMirrorBtn) {
+        ntvBarMirrorBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (ntvBarIsLongPress) {
+                ntvBarIsLongPress = false;
+                e.preventDefault();
+                return;
+            }
+            // Si submenú abierto, cerrar antes de cambiar mirror
+            if (ntvBottomBar.classList.contains('submenu-active')) {
+                ntvBottomBar.classList.remove('submenu-active');
+            }
+            toggleNtvMirror();
+        });
+
+        ntvBarMirrorBtn.addEventListener('dblclick', async (e) => {
+            e.stopPropagation();
+            if (currentSource === 'ntv') {
+                await refreshNtvMirrors();
+                loadStream(getCurrentNtvUrl());
+                setActiveNtvButton('');
+                if (navigator.vibrate) navigator.vibrate([50,30,50]);
+            }
+        });
+
+        function startNtvBarLongPress(e) {
+            if (currentSource !== 'ntv') return;
+            ntvBarIsLongPress = false;
+            ntvBarLongPressTimer = setTimeout(() => {
+                ntvBarIsLongPress = true;
+                toggleNtvBottomBar();
+                e.preventDefault();
+            }, 500);
+        }
+
+        function endNtvBarLongPress(e) {
+            clearTimeout(ntvBarLongPressTimer);
+            if (ntvBarIsLongPress && e.type === 'touchend') {
+                if (e.cancelable) e.preventDefault();
+            }
+        }
+
+        function cancelNtvBarLongPress(e) {
+            clearTimeout(ntvBarLongPressTimer);
+        }
+
+        ntvBarMirrorBtn.addEventListener('mousedown', startNtvBarLongPress);
+        ntvBarMirrorBtn.addEventListener('mouseup', endNtvBarLongPress);
+        ntvBarMirrorBtn.addEventListener('mouseleave', cancelNtvBarLongPress);
+
+        ntvBarMirrorBtn.addEventListener('touchstart', startNtvBarLongPress, { passive: false });
+        ntvBarMirrorBtn.addEventListener('touchend', endNtvBarLongPress, { passive: false });
+        ntvBarMirrorBtn.addEventListener('touchcancel', cancelNtvBarLongPress, { passive: false });
+    }
+
+    // ---- Eventos para botones de la barra NTV (Kobra, Channels, Favorites, NTV) ----
+    document.querySelectorAll('.ntv-bar-btn[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (navigator.vibrate) navigator.vibrate(15);
+            const action = btn.dataset.action;
+            const bar = document.getElementById('ntvBottomBar');
+            // Si el submenú está activo y no es el botón Kobra, cerrar submenú
+            if (bar.classList.contains('submenu-active') && action !== 'kobra') {
+                bar.classList.remove('submenu-active');
+                // Si es NTV, cambiar fuente y salir
+                if (action === 'ntv') {
+                    toggleSource();
+                    return;
+                }
+                // Para los demás, continuar con la acción
+            }
+            if (action === 'ntv') {
+                toggleSource();
+                return;
+            }
+            if (currentSource !== 'ntv') return;
+            if (action === 'kobra') {
+                // Toggle submenu
+                toggleKobraSubmenu();
+                return;
+            }
+            let extension = '';
+            if (action === 'channels') extension = '/channels';
+            else if (action === 'favorites') extension = '/favorites';
+            else return;
+            navigateNtvExtension(extension);
+        });
+    });
+
+    // ---- Eventos para los botones del submenú ----
+    document.querySelectorAll('.ntv-bar-submenu .ntv-bar-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const ext = btn.dataset.extension;
+            if (ext) {
+                navigateNtvExtension(ext);
+                // Cerrar submenú
+                document.getElementById('ntvBottomBar').classList.remove('submenu-active');
+                // Activar Kobra en la barra original
+                setActiveNtvButton('');
+                if (navigator.vibrate) navigator.vibrate(15);
+            }
+        });
+    });
+
+    sourceToggleBtn.addEventListener('click', toggleSource);
+
     // ---- Reordenación intercalada ----
     const container = document.getElementById('customButtonsGrid');
     const originalOrder = Array.from(container.children);
 
     function interleaveButtons() {
-        const firstHalf = originalOrder.slice(0, 9);
-        const secondHalf = originalOrder.slice(9, 18);
+        const firstHalf = originalOrder.slice(0, 10);
+        const secondHalf = originalOrder.slice(10, 19);
         const interleaved = [];
-        for (let i = 0; i < 9; i++) {
-            interleaved.push(firstHalf[i], secondHalf[i]);
+        for (let i = 0; i < 10; i++) {
+            if (firstHalf[i]) interleaved.push(firstHalf[i]);
+            if (secondHalf[i]) interleaved.push(secondHalf[i]);
         }
         while (container.firstChild) container.removeChild(container.firstChild);
-        for (let btn of interleaved) {
-            container.appendChild(btn);
-        }
+        for (let btn of interleaved) container.appendChild(btn);
     }
 
     function restoreOriginalOrder() {
         while (container.firstChild) container.removeChild(container.firstChild);
-        for (let btn of originalOrder) {
-            container.appendChild(btn);
-        }
+        for (let btn of originalOrder) container.appendChild(btn);
     }
 
     function applyOrderByOrientation() {
         const isLargeLandscape = window.innerWidth >= 1024 && window.matchMedia("(orientation: landscape)").matches;
-        if (isLargeLandscape) {
-            interleaveButtons();
-        } else {
-            restoreOriginalOrder();
-        }
+        isLargeLandscape ? interleaveButtons() : restoreOriginalOrder();
     }
 
-    window.addEventListener('resize', () => {
-        setTimeout(applyOrderByOrientation, 50);
-    });
-    window.addEventListener('orientationchange', () => {
-        setTimeout(applyOrderByOrientation, 50);
-    });
+    window.addEventListener('resize', () => setTimeout(applyOrderByOrientation, 50));
+    window.addEventListener('orientationchange', () => setTimeout(applyOrderByOrientation, 50));
     applyOrderByOrientation();
+
+    // ---- Guardar estado ----
+    window.addEventListener('beforeunload', () => {
+        if (fctvMirrors.length > 0) {
+            sessionStorage.setItem('fctv_mirrors', JSON.stringify(fctvMirrors));
+            sessionStorage.setItem('fctv_index', String(fctvIndex));
+        } else {
+            sessionStorage.removeItem('fctv_mirrors');
+            sessionStorage.removeItem('fctv_index');
+        }
+        if (ntvMirrors.length > 0) {
+            localStorage.setItem('ntv_mirrors', JSON.stringify(ntvMirrors));
+            localStorage.setItem('ntv_index', String(ntvIndex));
+        } else {
+            localStorage.removeItem('ntv_mirrors');
+            localStorage.removeItem('ntv_index');
+        }
+        localStorage.setItem('fctv_source', currentSource);
+    });
 
     init().catch(err => console.error("Error en init:", err));
 
-    window.addEventListener('beforeunload', () => {
-        sessionStorage.setItem('fctv_mode', currentMode);
-        localStorage.setItem('fctv_source', currentSource);
-        localStorage.setItem('ntv_index', ntvIndex);
-    });
-
-    // ---- PWA ----
+    // ---- PWA (opcional) ----
     (function setupPWA() {
         function createIcon(size, text, bgColor, textColor) {
             const canvas = document.createElement('canvas');
@@ -1018,10 +1498,8 @@
             ctx.fillText("LIVE", size/2, size * 0.8);
             return canvas.toDataURL('image/png');
         }
-        
         const icon192 = createIcon(192, "F33", "#0f1722", "#ffffff");
         const icon512 = createIcon(512, "FCTV", "#0f1722", "#ffffff");
-        
         const manifestObj = {
             name: "FCTV Link - Hubu",
             short_name: "FCTV33",
@@ -1035,12 +1513,10 @@
                 { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
             ]
         };
-        
         const manifestBlob = new Blob([JSON.stringify(manifestObj)], {type: 'application/json'});
         const manifestURL = URL.createObjectURL(manifestBlob);
         const manifestLink = document.getElementById('manifest-link');
         if (manifestLink) manifestLink.href = manifestURL;
-        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(err => console.log("[PWA] SW no registrado", err));
