@@ -1048,6 +1048,7 @@
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
+            // Leer preferencia de barra (por defecto false si no existe)
             const barVisible = localStorage.getItem('ntv_bar_visible') === 'true';
             if (barVisible) {
                 document.body.classList.add('bar-active');
@@ -1267,6 +1268,7 @@
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
+            // Leer preferencia de barra (por defecto false)
             const barVisible = localStorage.getItem('ntv_bar_visible') === 'true';
             if (barVisible) {
                 document.body.classList.add('bar-active');
