@@ -1049,9 +1049,9 @@
     // ---- Navegación NTV (ahora guarda extensión y actualiza resaltados y etiqueta) ----
     function navigateNtvExtension(extension) {
         if (currentSource !== 'ntv') return;
-        // Guardar extensión
+        // Guardar extensión en localStorage
         currentNtvExtension = extension || '';
-        sessionStorage.setItem('ntv_current_extension', currentNtvExtension);
+        localStorage.setItem('ntv_current_extension', currentNtvExtension);
 
         const baseUrl = getCurrentBaseUrl();
         if (!baseUrl) {
@@ -1071,7 +1071,7 @@
     async function setSource(source) {
         if (source === currentSource) return;
         currentSource = source;
-        sessionStorage.setItem('fctv_source', currentSource);
+        localStorage.setItem('fctv_source', currentSource); // ahora en localStorage
 
         if (source === 'fctv' && fctvMirrors.length === 0) {
             await refreshFctvMirrors();
@@ -1086,8 +1086,8 @@
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
-            // Restaurar estado de la barra inferior
-            const barVisible = localStorage.getItem('ntv_bar_visible') !== 'false';
+            // Restaurar barra inferior
+            const barVisible = localStorage.getItem('ntv_bar_visible') === 'true';
             if (barVisible) {
                 document.body.classList.add('bar-active');
                 ntvBottomBar.classList.add('visible');
@@ -1097,7 +1097,7 @@
                 ntvBottomBar.classList.remove('submenu-active');
             }
             // Restaurar extensión guardada
-            const savedExt = sessionStorage.getItem('ntv_current_extension') || '';
+            const savedExt = localStorage.getItem('ntv_current_extension') || '';
             navigateNtvExtension(savedExt);
             // Asegurar que el submenú esté cerrado
             ntvBottomBar.classList.remove('submenu-active');
@@ -1109,11 +1109,11 @@
             document.body.classList.remove('bar-active');
             ntvBottomBar.classList.remove('visible');
             ntvBottomBar.classList.remove('submenu-active');
-            // Restaurar estado minimal
+            // Restaurar modo minimal
             if (isMinimalMode) headerOverlay.classList.add('minimal');
             else headerOverlay.classList.remove('minimal');
             // Restaurar sportPath guardado
-            const savedPath = sessionStorage.getItem('fctv_sport_path');
+            const savedPath = localStorage.getItem('fctv_sport_path');
             if (savedPath) {
                 currentSportPath = savedPath;
                 let foundBtn = null;
@@ -1197,7 +1197,7 @@
             navigateNtvExtension('');
         } else {
             currentSportPath = null;
-            sessionStorage.removeItem('fctv_sport_path');
+            localStorage.removeItem('fctv_sport_path');
             loadCurrentSource();
             setActiveButton(homeBtn);
             if (navigator.vibrate) navigator.vibrate(15);
@@ -1218,9 +1218,9 @@
         const fullUrl = cleanBase + '/es/' + path;
         console.log('[Navegación] Cargando:', fullUrl);
         loadStream(fullUrl);
-        // Guardar path en sessionStorage
+        // Guardar path en localStorage
         currentSportPath = path;
-        sessionStorage.setItem('fctv_sport_path', path);
+        localStorage.setItem('fctv_sport_path', path);
         setActiveButton(clickedBtn);
         if (navigator.vibrate) navigator.vibrate(15);
     }
@@ -1266,7 +1266,8 @@
 
     // ---- Inicialización (adaptada) ----
     async function init() {
-        const savedSource = sessionStorage.getItem('fctv_source');
+        // Leer modo desde localStorage
+        const savedSource = localStorage.getItem('fctv_source');
         if (savedSource === 'fctv' || savedSource === 'ntv') {
             currentSource = savedSource;
         }
@@ -1295,14 +1296,14 @@
         const overlayMode = localStorage.getItem('fctv_overlay_mode');
         isMinimalMode = (overlayMode !== 'full');
 
-        // Restaurar sportPath de FCTV
-        const savedSportPath = sessionStorage.getItem('fctv_sport_path');
+        // Restaurar sportPath de FCTV desde localStorage
+        const savedSportPath = localStorage.getItem('fctv_sport_path');
         if (savedSportPath) {
             currentSportPath = savedSportPath;
         }
 
-        // Restaurar extensión NTV
-        const savedExt = sessionStorage.getItem('ntv_current_extension') || '';
+        // Restaurar extensión NTV desde localStorage
+        const savedExt = localStorage.getItem('ntv_current_extension') || '';
         currentNtvExtension = savedExt;
 
         if (currentSource === 'ntv') {
@@ -1310,8 +1311,7 @@
             sourceLabel.textContent = 'NTV';
             headerOverlay.classList.add('hidden');
             ntvMirrorToggleBtn.style.display = 'flex';
-            // Restaurar estado de la barra inferior
-            const barVisible = localStorage.getItem('ntv_bar_visible') !== 'false';
+            const barVisible = localStorage.getItem('ntv_bar_visible') === 'true';
             if (barVisible) {
                 document.body.classList.add('bar-active');
                 ntvBottomBar.classList.add('visible');
@@ -1615,7 +1615,7 @@
 
     // ---- Guardar estado ----
     window.addEventListener('beforeunload', () => {
-        sessionStorage.setItem('fctv_source', currentSource);
+        localStorage.setItem('fctv_source', currentSource);
         if (fctvMirrors.length > 0) {
             sessionStorage.setItem('fctv_mirrors', JSON.stringify(fctvMirrors));
             sessionStorage.setItem('fctv_index', String(fctvIndex));
@@ -1631,14 +1631,14 @@
             sessionStorage.removeItem('ntv_index');
         }
         if (currentNtvExtension) {
-            sessionStorage.setItem('ntv_current_extension', currentNtvExtension);
+            localStorage.setItem('ntv_current_extension', currentNtvExtension);
         } else {
-            sessionStorage.removeItem('ntv_current_extension');
+            localStorage.removeItem('ntv_current_extension');
         }
         if (currentSportPath) {
-            sessionStorage.setItem('fctv_sport_path', currentSportPath);
+            localStorage.setItem('fctv_sport_path', currentSportPath);
         } else {
-            sessionStorage.removeItem('fctv_sport_path');
+            localStorage.removeItem('fctv_sport_path');
         }
         // El modo minimal y la visibilidad de la barra NTV ya se guardan en localStorage al cambiarlos
     });
