@@ -794,7 +794,7 @@
     // ---- CONSTANTES ----
     const FCTV_SOURCE_1 = "https://hubu.ru/fctvlink";
     const FCTV_SOURCE_2 = "https://hubu.ru/sp77link";
-    const NTV_SOURCE = "https://NTV.direct";
+    const NTV_SOURCE = "https://NTVx.link";
     const NTV_FALLBACK_MIRRORS = ['https://ntv.st/', 'https://ntvs.cx/'];
 
     // ---- Estado ----
@@ -872,7 +872,7 @@
                 const matches = text.match(urlRegex) || [];
                 let cleaned = matches.map(u => cleanBaseUrl(u));
                 let unique = [...new Set(cleaned)];
-                const filtered = unique.filter(url => !url.includes('hubu.ru') && !url.includes('NTV.direct'));
+                const filtered = unique.filter(url => !url.includes('hubu.ru') && !url.includes('NTVx.link'));
                 if (filtered.length > 0) {
                     result = filtered[0];
                     console.log(`[${sourceLabel}] Enlace principal por filtro (primero no-hubu):`, result);
@@ -911,20 +911,67 @@
         return fctvMirrors;
     }
 
-    async function refreshNtvMirrors() {
-        const extracted = await fetchUrlFromSource(NTV_SOURCE, 'NTV.direct');
-        let combined = [];
-        if (extracted) {
-            combined.push(extracted);
+    // NTVx.link es un INDEXADOR de URLs activas, no un mirror en sí mismo.
+    // Por eso nunca debe terminar dentro de ntvMirrors: solo se usa como fuente
+    // para extraer los mirrors reales que lista en su interior.
+    function isIndexerUrl(url) {
+        const low = url.toLowerCase();
+        return low.includes('ntvx.link') || low.includes('hubu.ru') || low.includes('r.jina.ai');
+    }
+
+    async function fetchNtvMirrorLinks(sourceUrl) {
+        try {
+            console.log(`[NTVx.link] Extrayendo mirrors de ${sourceUrl}...`);
+            const response = await fetch(`https://r.jina.ai/${sourceUrl}`);
+            if (!response.ok) throw new Error("Jina AI error: " + response.status);
+            const text = await response.text();
+
+            // 1) Intentar capturar TODAS las líneas con el patrón "🔗 Link (url)"
+            //    (con /g para no quedarnos solo con la primera coincidencia)
+            const linkRegex = /🔗\s*Link\s*\(?(https?:\/\/[^\s)]+)/gi;
+            let found = [];
+            let match;
+            while ((match = linkRegex.exec(text)) !== null) {
+                found.push(cleanBaseUrl(match[1]));
+            }
+
+            if (found.length > 0) {
+                console.log(`[NTVx.link] ${found.length} enlace(s) encontrados por patrón 🔗 Link:`, found);
+            } else {
+                // 2) Fallback: extraer todas las URLs del texto y descartar
+                //    el propio indexador y demás dominios no válidos
+                const urlRegex = /(?:https?:\/\/[^\s"'<>]+)/gi;
+                const matches = text.match(urlRegex) || [];
+                found = matches.map(u => cleanBaseUrl(u));
+                console.log('[NTVx.link] Enlaces encontrados por filtro genérico:', found);
+            }
+
+            // Quitar duplicados y descartar SIEMPRE el propio ntvx.link (no es un mirror)
+            const unique = [...new Set(found)];
+            const filtered = unique.filter(url => url && !isIndexerUrl(url));
+
+            console.log('[NTVx.link] Mirrors válidos tras filtrar el indexador:', filtered);
+            return filtered;
+        } catch (e) {
+            console.warn('[NTVx.link] Error:', e);
+            return [];
         }
+    }
+
+    async function refreshNtvMirrors() {
+        const extracted = await fetchNtvMirrorLinks(NTV_SOURCE);
+        let combined = [...extracted];
         for (let fallback of NTV_FALLBACK_MIRRORS) {
             const clean = cleanBaseUrl(fallback);
-            if (!combined.includes(clean)) {
+            if (!combined.some(u => u.toLowerCase() === clean.toLowerCase())) {
                 combined.push(clean);
             }
         }
-        ntvMirrors = combined;
-        console.log('[NTV] Total mirrors (extraído + respaldos):', ntvMirrors);
+        // Blindaje final: aunque algo se colara, nunca dejar que ntvx.link
+        // (el indexador) quede como mirror seleccionable
+        ntvMirrors = combined.filter(url => !isIndexerUrl(url));
+
+        console.log('[NTV] Total mirrors (extraídos de NTVx.link + respaldos, indexador excluido):', ntvMirrors);
         return ntvMirrors;
     }
 
@@ -1659,4 +1706,4 @@
     })();
 </script>
 </body>
-</html>
+</html>>
