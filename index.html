@@ -61,10 +61,14 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            opacity: 0.9;
-            transition: opacity 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
         }
-        #urlDisplay:hover { opacity: 1; }
+        #urlDisplay.url-visible {
+            opacity: 0.9;
+            visibility: visible;
+        }
 
         .mirror-badge {
             position: absolute;
@@ -1491,6 +1495,7 @@
     function startLongPress(e) {
         if (currentSource !== 'fctv') return;
         isLongPress = false;
+        urlDisplay.classList.add('url-visible');
         longPressTimer = setTimeout(() => {
             isLongPress = true;
             toggleMinimalMode();
@@ -1499,6 +1504,7 @@
     }
     function endLongPress(e) {
         clearTimeout(longPressTimer);
+        urlDisplay.classList.remove('url-visible');
         if (isLongPress) {
             isLongPress = false;
             e.preventDefault();
@@ -1506,6 +1512,7 @@
     }
     function cancelLongPress(e) {
         clearTimeout(longPressTimer);
+        urlDisplay.classList.remove('url-visible');
         isLongPress = false;
     }
     domainToggleBtn.addEventListener('mousedown', startLongPress);
