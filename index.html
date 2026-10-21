@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FCTV Link">
     <meta name="description" content="Streaming deportivo gratuito - FCTV33 y mirror">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <link rel="manifest" id="manifest-link">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     <title>FCTV Link · Intercambios: fighting↔tenis, bádminton↔ciclismo</title>
@@ -395,6 +396,7 @@
     <iframe id="streamFrame" title="Live Streaming" allow="autoplay; fullscreen; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 </div>
 
+<div id="verStamp" style="position:fixed;left:6px;bottom:4px;z-index:99999;font:10px monospace;color:#0f0;opacity:.6;pointer-events:none">v3</div>
 <div id="urlDisplay">Cargando...</div>
 
 <!-- === NUEVOS BOTONES (en lugar de los flotantes de la derecha) === -->
@@ -946,11 +948,12 @@
         const manifestURL = URL.createObjectURL(manifestBlob);
         const manifestLink = document.getElementById('manifest-link');
         if (manifestLink) manifestLink.href = manifestURL;
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.log("[PWA] SW no registrado", err));
-            });
-        }
+        // Service worker DESACTIVADO: un sw.js antiguo puede servir una página rota desde caché.
+        // En cada carga se eliminan los existentes y sus cachés.
+        try {
+            if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+            if (window.caches) caches.keys().then(ks => ks.forEach(k => caches.delete(k)));
+        } catch (e) {}
     })();
 </script>
 </body>
